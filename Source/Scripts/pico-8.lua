@@ -161,17 +161,19 @@ function fget(n, flag)
 
 end
 
-function map(celx, cely, sx, sy, celw, celh, layer)
+function map(celx, cely, sx, sy, celw, celh, mask)
 
-	layer = layer or 0x0
+	mask = mask or 0x0
     for cx=0,celw-1 do
         for cy=0,celh-1 do
-        	local i = mget(celx + cx, cely + cy)
-			local img = sprites:getImage(i + 1)
-			local x = sx + (cx * 8)
-			local y = sy + (cy * 8)
-			if (layer == 0) or (fget(i, layer)) then
-				img:draw(x, y)
+        	local tile = mget(celx + cx, cely + cy)
+        	if tile < #sprites then
+				local img = sprites:getImage(tile + 1)
+				local x = sx + (cx * 8)
+				local y = sy + (cy * 8)
+				if (mask == 0) or (fget(tile, mask)) then
+					img:draw(x, y)
+				end
 			end
         end
     end
