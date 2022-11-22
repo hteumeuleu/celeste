@@ -139,14 +139,14 @@ end
 function spr(n, x, y, w, h, flip_x, flip_y)
 
 	if n > #sprites or n < 0 then return end
-	n = flr(n) + 1 or 1
-	x = x or 0
-	y = y or 0
+	n = flr(n) or 1
+	x = flr(x) or 0
+	y = flr(y) or 0
 	w = w or 1.0
 	h = h or 1.0
 	flip_x = flip_x or false
 	flip_y = flip_y or false
-	local img = sprites:getImage(n)
+	local img = sprites:getImage(n + 1)
 	local flip =  playdate.graphics.kImageUnflipped
 	if flip_x and flip_y then
 		 flip = playdate.graphics.kImageFlippedXY
