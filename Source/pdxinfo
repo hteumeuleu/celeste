@@ -1,0 +1,7 @@
+name=Celeste
+author=HTeuMeuLeu
+description=Celeste Classic for the Playdate.
+bundleID=com.hteumeuleu.celeste
+version=1.0.0-alpha
+buildNumber=1
+imagePath=SystemAssets
