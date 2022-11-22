@@ -3,7 +3,7 @@ import "map.lua"
 math.randomseed(playdate.getSecondsSinceEpoch())
 
 local sprites <const> = playdate.graphics.imagetable.new("Assets/sprites")
-local spritesFlags <const> = {
+local mask <const> = {
 	0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,
 	0x4, 0x2, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x2, 0x0, 0x0, 0x0, 0x0,
 	0x3, 0x3, 0x3, 0x3, 0x3, 0x3, 0x3, 0x3, 0x4, 0x4, 0x4, 0x2, 0x2, 0x0, 0x0, 0x0,
@@ -148,33 +148,29 @@ end
 
 function mget(celx, cely)
 
-	local i = (celx % 128) + (cely * 128) + 1
-	return mapData[i]
+	local i = celx + (cely * 128)
+	return mapData[i + 1]
 
 end
 
+function fget(n, flag)
 
-function fget(n, f)
-
-	if f ~= nil then
-		return spritesFlags[n+1] == f
-	else
-		return spritesFlags[n+1]
-	end
+	n = n + 1
+	flag = flag or 0x0
+	return n <= #mask and (mask[n] & flag) ~= 0 
 
 end
 
 function map(celx, cely, sx, sy, celw, celh, layer)
 
+	layer = layer or 0x0
     for cx=0,celw-1 do
         for cy=0,celh-1 do
-        	local i = mget(celx + cx, cely + cy) + 1
-			local img = sprites:getImage(i)
+        	local i = mget(celx + cx, cely + cy)
+			local img = sprites:getImage(i + 1)
 			local x = sx + (cx * 8)
 			local y = sy + (cy * 8)
-			if layer ~= nil and fget(i) == layer then
-				img:draw(x, y)
-			else
+			if (layer == 0) or (fget(i, layer)) then
 				img:draw(x, y)
 			end
         end
