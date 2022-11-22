@@ -166,11 +166,21 @@ function mget(celx, cely)
 
 end
 
-function fget(n, flag)
+function fget(tile, flag)
 
-	n = n + 1
 	flag = flag or 0x0
-	return n <= #mask and (mask[n] & flag) ~= 0 
+	local mask_at = mask[tile+1]
+	if flag == mask_at then
+		return true
+	elseif flag == 1 and (mask_at == 19 or mask_at == 3) then
+		return true
+	elseif flag == 2 and (mask_at == 19 or mask_at == 3) then
+		return true
+	elseif flag == 16 and (mask_at == 19) then
+		return true
+	else
+		return false
+	end
 
 end
 
