@@ -17,6 +17,31 @@ local mask <const> = {
 local font <const> = playdate.graphics.font.new("Assets/pico")
 playdate.graphics.setFont(font)
 
+local fx <const> = {}
+for i=0, 64 do
+	local sample = playdate.sound.sample.new("Sounds/sfx" .. i .. ".wav")
+	table.insert(fx, sample)
+end
+
+local m <const> = {}
+m[1] = {21, 10}
+m[2] = {10, 22, 12}
+m[3] = {10, 22, 12}
+m[4] = {10, 11, 12}
+m[5] = {20, 19, 18}
+m[6] = {10, 22, 12}
+m[7] = {10, 22, 12}
+m[8] = {10, 17, 18}
+m[11] = {24, 25, 26}
+m[12] = {24, 25, 26}
+m[13] = {28, 27, 26}
+m[14] = {29, 27, 26}
+m[15] = {31, 33, 26}
+m[16] = {31, 26, 33}
+m[17] = {30, 26, 34}
+m[18] = {32, 26, 36}
+m[21] = {30, 26, 34}
+
 local kDisplayOffsetX = 0
 local kDisplayOffsetY = 0
 
@@ -29,7 +54,6 @@ function scale(x)
 
 end
 scale(2)
-
 
 function add(t, value, index)
 
@@ -215,7 +239,22 @@ function music()
 
 end
 
-function sfx()
+function sfx(n, channel, offset, length)
+
+	channel = channel or -1
+	offset = offset or 0
+	length = length or 0
+
+	if fxPlayer == nil then
+		fxPlayer = playdate.sound.sampleplayer.new(fx[n + 1])
+	else
+		if fxPlayer:isPlaying() then
+			fxPlayer:stop()
+		end
+		fxPlayer:setSample(fx[n + 1])
+	end
+
+	fxPlayer:play()
 
     -- TODO
 
