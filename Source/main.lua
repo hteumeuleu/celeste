@@ -8,8 +8,6 @@ import "CoreLibs/crank"
 import "Scripts/pico-8.lua"
 import "Scripts/celeste.lua"
 
-playdate.display.setScale(2)
-
 -- playdate.graphics.sprite.setBackgroundDrawingCallback(
 -- 	function(x, y, width, height)
 -- 		_draw()

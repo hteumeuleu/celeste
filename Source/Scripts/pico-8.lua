@@ -17,6 +17,19 @@ local mask <const> = {
 local font <const> = playdate.graphics.font.new("Assets/pico")
 playdate.graphics.setFont(font)
 
+local kDisplayOffsetX = 0
+local kDisplayOffsetY = 0
+
+function scale(x)
+
+	kDisplayOffsetX = math.max(0, (400 - (128 * x)) / 2)
+	kDisplayOffsetY = math.max(0, (240 - (128 * x)) / 2)
+	playdate.display.setScale(x)
+	playdate.display.setOffset(kDisplayOffsetX, kDisplayOffsetY)
+
+end
+scale(2)
+
 
 function add(t, value, index)
 
@@ -202,7 +215,7 @@ function camera(x, y)
 
 	x = x or 0
 	y = y or 0
-    playdate.display.setOffset(x, y)
+    playdate.display.setOffset(kDisplayOffsetX + x, kDisplayOffsetY + y)
 
 end
 
