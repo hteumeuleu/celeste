@@ -29,7 +29,6 @@ function drawInScene(func)
 end
 
 -- Screen scaling
-
 function scale(x)
 
 	playdate.display.setScale(2)
@@ -39,6 +38,14 @@ function scale(x)
 
 end
 scale(1)
+
+-- Celeste’s sprite
+local kCelesteImageTable <const> = playdate.graphics.imagetable.new("Assets/celeste")
+local kCeleste <const> = playdate.graphics.sprite.new(kCelesteImageTable:getImage(1))
+kCeleste:setSize(12, 12)
+kCeleste:setCenter(0, 0)
+kCeleste:setZIndex(2)
+kCeleste:moveTo(20, 20)
 
 -- PICO-8 functions
 function add(t, value, index)
@@ -172,6 +179,15 @@ function spr(n, x, y, w, h, flip_x, flip_y)
 	elseif flip_y then
 		 flip = playdate.graphics.kImageFlippedY
 	end
+
+	-- Celeste
+	if n >= 1 and n <= 7 then
+		kCeleste:add()
+		kCeleste:setImage(kCelesteImageTable:getImage(n))
+		kCeleste:setImageFlip(flip)
+		kCeleste:moveTo(x + 34, y - 6)
+	end
+
 	local img = data.tiles:getImage(n + 1)
 	drawInScene(function()
 		img:draw(x, y, flip)
@@ -187,8 +203,11 @@ end
 
 function fget(tile, flag)
 
-	flag = flag or 0x0
 	local mask_at = data.flags[tile+1]
+	if flag == nil then
+		return mask_at
+	end
+	flag = flag or 0x0
 	return (mask_at & (1 << flag)) ~= 0
 
 end
@@ -204,9 +223,12 @@ function map(celx, cely, sx, sy, celw, celh, mask)
 					local img = data.tiles:getImage(tile + 1)
 					local x = sx + (cx * 8)
 					local y = sy + (cy * 8)
-					drawInScene(function()
-						img:draw(x, y)
-					end)
+					-- Ignore rock background
+					if fget(tile) ~= 4 then
+						drawInScene(function()
+							img:draw(x, y)
+						end)
+					end
 				end
 			end
         end
