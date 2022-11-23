@@ -1,20 +1,46 @@
 -- Global settings
 math.randomseed(playdate.getSecondsSinceEpoch())
 playdate.graphics.setFont(data.font)
+playdate.graphics.setBackgroundColor(playdate.graphics.kColorBlack)
+playdate.graphics.sprite.setBackgroundDrawingCallback(
+	function(x, y, width, height)
+	end
+)
 
-local kDisplayOffsetX = 0
-local kDisplayOffsetY = 0
+-- Variables
+local kDisplayOffsetX = 200
+local kDisplayOffsetY = 120
+local sceneWidth = 128
+local sceneHeight = 128
+
+-- Scene sprite
+local kSceneImage <const> = playdate.graphics.image.new(sceneWidth,sceneHeight)
+local kScene <const> = playdate.graphics.sprite.new(kSceneImage)
+kScene:setRedrawsOnImageChange(true)
+kScene:moveTo(kDisplayOffsetX, kDisplayOffsetY)
+kScene:add()
+
+function drawInScene(func)
+
+	playdate.graphics.pushContext(kSceneImage)
+		func()
+	playdate.graphics.popContext()
+
+end
+
+-- Screen scaling
 
 function scale(x)
 
-	kDisplayOffsetX = math.max(0, (400 - (128 * x)) / 2)
-	kDisplayOffsetY = math.max(0, (240 - (128 * x)) / 2)
-	playdate.display.setScale(x)
-	playdate.display.setOffset(kDisplayOffsetX, kDisplayOffsetY)
+	playdate.display.setScale(2)
+	kDisplayOffsetX = playdate.display.getWidth() / 2
+	kDisplayOffsetY = playdate.display.getHeight() / 2
+	kScene:moveTo(kDisplayOffsetX, kDisplayOffsetY)
 
 end
-scale(2)
+scale(1)
 
+-- PICO-8 functions
 function add(t, value, index)
 
 	index = index or #t+1
@@ -88,20 +114,24 @@ function rectfill(x0, y0, x1, y1, col)
 	local top = math.min(y0, y1)
 	local width = math.max(x0, x1) - left + 1
 	local height = math.max(y0, y1) - top + 1
-	if col == nil then
-		playdate.graphics.setBackgroundColor(playdate.graphics.kColorBlack)
-	end
-	playdate.graphics.fillRect(left, top, width, height)
+	drawInScene(function()
+		if col == nil then
+			playdate.graphics.setBackgroundColor(playdate.graphics.kColorBlack)
+		end
+		playdate.graphics.fillRect(left, top, width, height)
+	end)
 
 end
 
 function circfill(x, y, r, col)
 
 	r = r or 4
-	if col == nil then
-		playdate.graphics.setBackgroundColor(playdate.graphics.kColorBlack)
-	end
-	playdate.graphics.fillCircleAtPoint(x, y, r)
+	drawInScene(function()
+		if col == nil then
+			playdate.graphics.setBackgroundColor(playdate.graphics.kColorBlack)
+		end
+		playdate.graphics.fillCircleAtPoint(x, y, r)
+	end)
 
 end
 
@@ -143,7 +173,9 @@ function spr(n, x, y, w, h, flip_x, flip_y)
 		 flip = playdate.graphics.kImageFlippedY
 	end
 	local img = data.tiles:getImage(n + 1)
-	img:draw(x, y, flip)
+	drawInScene(function()
+		img:draw(x, y, flip)
+	end)
 
 end
 
@@ -172,7 +204,9 @@ function map(celx, cely, sx, sy, celw, celh, mask)
 					local img = data.tiles:getImage(tile + 1)
 					local x = sx + (cx * 8)
 					local y = sy + (cy * 8)
-					img:draw(x, y)
+					drawInScene(function()
+						img:draw(x, y)
+					end)
 				end
 			end
         end
@@ -217,7 +251,8 @@ function camera(x, y)
 
 	x = x or 0
 	y = y or 0
-    playdate.display.setOffset(kDisplayOffsetX + x, kDisplayOffsetY + y)
+	kScene:moveTo(kDisplayOffsetX + x, kDisplayOffsetY + y)
+	playdate.graphics.sprite.redrawBackground()
 
 end
 
@@ -231,12 +266,10 @@ function _print(text, x, y, color)
 
 	x = x or 0
 	y = y or 0
-	if col == nil then
+	drawInScene(function()
 		playdate.graphics.setImageDrawMode(playdate.graphics.kDrawModeFillWhite)
-	end
-	playdate.graphics.drawText(text, x, y)
-	if col == nil then
+		playdate.graphics.drawText(text, x, y)
 		playdate.graphics.setImageDrawMode(playdate.graphics.kDrawModeCopy)
-	end
+	end)
 
 end
