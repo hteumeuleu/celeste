@@ -1270,7 +1270,7 @@ function _draw()
     playdate.graphics.setColor(previousColor)
 
     -- draw bg terrain
-    map(room.x * 16,room.y * 16,0,0,16,16,4)
+    map(room.x * 16,room.y * 16,0,0,16,16,2)
 
     -- platforms/big chest
     foreach(objects, function(o)
@@ -1281,7 +1281,7 @@ function _draw()
 
     -- draw terrain
     local off=is_title() and -4 or 0
-    map(room.x*16,room.y * 16,off,0,16,16,2)
+    map(room.x*16,room.y * 16,off,0,16,16,1)
 
     -- draw objects
     foreach(objects, function(o)
@@ -1291,7 +1291,7 @@ function _draw()
     end)
 
     -- draw fg terrain
-    map(room.x * 16,room.y * 16,0,0,16,16,8)
+    map(room.x * 16,room.y * 16,0,0,16,16,3)
 
     -- particles
     previousColor = playdate.graphics.getColor()
