@@ -84,10 +84,14 @@ end
 
 function rectfill(x0, y0, x1, y1, col)
 
+	local left = math.min(x0, x1)
+	local top = math.min(y0, y1)
+	local width = math.max(x0, x1) - left + 1
+	local height = math.max(y0, y1) - top + 1
 	if col == nil then
 		playdate.graphics.setBackgroundColor(playdate.graphics.kColorBlack)
 	end
-	playdate.graphics.fillRect(x0, y0, x1-x0, y1-y0)
+	playdate.graphics.fillRect(left, top, width, height)
 
 end
 
