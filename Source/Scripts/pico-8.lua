@@ -126,7 +126,7 @@ end
 -- spr(n, [x,] [y,] [w,] [h,] [flip_x,] [flip_y])
 function spr(n, x, y, w, h, flip_x, flip_y)
 
-	if n > #data.tiles or n < 0 then return end
+	if n > #data.tiles or n <= 0 then return end
 	n = flr(n) or 1
 	x = flr(x) or 0
 	y = flr(y) or 0
@@ -134,7 +134,6 @@ function spr(n, x, y, w, h, flip_x, flip_y)
 	h = h or 1.0
 	flip_x = flip_x or false
 	flip_y = flip_y or false
-	local img = data.tiles:getImage(n + 1)
 	local flip =  playdate.graphics.kImageUnflipped
 	if flip_x and flip_y then
 		 flip = playdate.graphics.kImageFlippedXY
@@ -143,14 +142,14 @@ function spr(n, x, y, w, h, flip_x, flip_y)
 	elseif flip_y then
 		 flip = playdate.graphics.kImageFlippedY
 	end
+	local img = data.tiles:getImage(n + 1)
 	img:draw(x, y, flip)
 
 end
 
 function mget(celx, cely)
 
-	local i = celx + (cely * 128)
-	return data.map[i + 1]
+	return data.map[celx + (cely * 128) + 1]
 
 end
 
@@ -158,17 +157,7 @@ function fget(tile, flag)
 
 	flag = flag or 0x0
 	local mask_at = data.flags[tile+1]
-	if flag == mask_at then
-		return true
-	elseif flag == 1 and (mask_at == 19 or mask_at == 3) then
-		return true
-	elseif flag == 2 and (mask_at == 19 or mask_at == 3) then
-		return true
-	elseif flag == 16 and (mask_at == 19) then
-		return true
-	else
-		return false
-	end
+	return (mask_at & (1 << flag)) ~= 0
 
 end
 
@@ -178,11 +167,11 @@ function map(celx, cely, sx, sy, celw, celh, mask)
     for cx=0,celw-1 do
         for cy=0,celh-1 do
         	local tile = mget(celx + cx, cely + cy)
-        	if tile < #data.tiles then
-				local img = data.tiles:getImage(tile + 1)
-				local x = sx + (cx * 8)
-				local y = sy + (cy * 8)
+        	if tile <= #data.tiles then
 				if (mask == 0) or (fget(tile, mask)) then
+					local img = data.tiles:getImage(tile + 1)
+					local x = sx + (cx * 8)
+					local y = sy + (cy * 8)
 					img:draw(x, y)
 				end
 			end
