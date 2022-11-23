@@ -224,11 +224,11 @@ function map(celx, cely, sx, sy, celw, celh, mask)
 					local x = sx + (cx * 8)
 					local y = sy + (cy * 8)
 					-- Ignore rock background
-					if fget(tile) ~= 4 then
+					-- if fget(tile) ~= 4 then
 						drawInScene(function()
 							img:draw(x, y)
 						end)
-					end
+					-- end
 				end
 			end
         end
