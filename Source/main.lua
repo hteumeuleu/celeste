@@ -5,6 +5,7 @@ import "CoreLibs/timer"
 import "CoreLibs/ui"
 import "CoreLibs/crank"
 
+import "Scripts/data.lua"
 import "Scripts/pico-8.lua"
 import "Scripts/celeste.lua"
 
