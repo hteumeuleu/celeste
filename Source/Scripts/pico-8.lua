@@ -43,14 +43,6 @@ function scale(x)
 end
 scale(2)
 
--- Celeste’s sprite
-local kCelesteImageTable <const> = playdate.graphics.imagetable.new("Assets/celeste")
-local kCeleste <const> = playdate.graphics.sprite.new(kCelesteImageTable:getImage(1))
-kCeleste:setSize(12, 12)
-kCeleste:setCenter(0, 0)
-kCeleste:setZIndex(2)
-kCeleste:moveTo(20, 20)
-
 -- PICO-8 functions
 function add(t, value, index)
 
@@ -182,14 +174,6 @@ function spr(n, x, y, w, h, flip_x, flip_y)
 		 flip = playdate.graphics.kImageFlippedX
 	elseif flip_y then
 		 flip = playdate.graphics.kImageFlippedY
-	end
-
-	-- Celeste
-	if n >= 1 and n <= 7 then
-		kCeleste:add()
-		kCeleste:setImage(kCelesteImageTable:getImage(n))
-		kCeleste:setImageFlip(flip)
-		kCeleste:moveTo(x + 34, y - 6)
 	end
 
 	local img = data.tiles:getImage(n + 1)
