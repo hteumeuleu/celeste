@@ -1261,9 +1261,6 @@ end
 function _draw()
 	if freeze>0 then return end
 
-	-- reset all palette values
-	pal()
-
 	-- start game flash
 	if start_game then
 		local c=10
@@ -1289,13 +1286,7 @@ function _draw()
 	end
 
 	-- clear screen
-	local bg_col = 0
-	if flash_bg then
-		bg_col = frames/5
-	elseif new_bg~=nil then
-		bg_col=2
-	end
-	rectfill(0,0,128,128,bg_col)
+	rectfill(0,0,128,128,0)
 
 	-- clouds
 	previousColor = playdate.graphics.getColor()
@@ -1359,12 +1350,6 @@ function _draw()
 		if p.t <= 0 then del(dead_particles,p) end
 		rectfill(p.x-p.t/5,p.y-p.t/5,p.x+p.t/5,p.y+p.t/5,14+p.t%2)
 	end)
-
-	-- draw outside of the screen for screenshake
-	rectfill(-5,-5,-1,133,0)
-	rectfill(-5,-5,133,-1,0)
-	rectfill(-5,128,133,133,0)
-	rectfill(128,-5,133,133,0)
 
 	-- credits
 	if is_title() then
