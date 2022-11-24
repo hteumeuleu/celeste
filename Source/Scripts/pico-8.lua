@@ -31,13 +31,13 @@ end
 -- Screen scaling
 function scale(x)
 
-	playdate.display.setScale(2)
-	kDisplayOffsetX = playdate.display.getWidth() / 2
-	kDisplayOffsetY = playdate.display.getHeight() / 2
+	playdate.display.setScale(x)
+	kDisplayOffsetX = playdate.display.getWidth() / x
+	kDisplayOffsetY = playdate.display.getHeight() / x
 	kScene:moveTo(kDisplayOffsetX, kDisplayOffsetY)
 
 end
-scale(1)
+scale(2)
 
 -- Celeste’s sprite
 local kCelesteImageTable <const> = playdate.graphics.imagetable.new("Assets/celeste")
