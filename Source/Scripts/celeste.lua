@@ -1,27 +1,27 @@
 -- globals --
 -------------
 
-room = { x=0, y=0 }
-objects = {}
-types = {}
-freeze=0
-shake=0
-will_restart=false
-delay_restart=0
-got_fruit={}
-has_dashed=false
-sfx_timer=0
-has_key=false
-pause_player=false
-flash_bg=false
-music_timer=0
+local room = { x=0, y=0 }
+local objects = {}
+local types = {}
+local freeze=0
+local shake=0
+local will_restart=false
+local delay_restart=0
+local got_fruit={}
+local has_dashed=false
+local sfx_timer=0
+local has_key=false
+local pause_player=false
+local flash_bg=false
+local music_timer=0
 
-k_left=playdate.kButtonLeft
-k_right=playdate.kButtonRight
-k_up=playdate.kButtonUp
-k_down=playdate.kButtonDown
-k_jump=playdate.kButtonA
-k_dash=playdate.kButtonB
+local k_left=playdate.kButtonLeft
+local k_right=playdate.kButtonRight
+local k_up=playdate.kButtonUp
+local k_down=playdate.kButtonDown
+local k_jump=playdate.kButtonA
+local k_dash=playdate.kButtonB
 
 -- entry point --
 -----------------
