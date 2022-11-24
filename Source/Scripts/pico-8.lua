@@ -34,8 +34,10 @@ end
 function scale(x)
 
 	playdate.display.setScale(x)
-	kDisplayOffsetX = playdate.display.getWidth() / x
-	kDisplayOffsetY = playdate.display.getHeight() / x
+	kDisplayOffsetX = playdate.display.getWidth() / 2
+	kDisplayOffsetY = playdate.display.getHeight() / 2
+	kDrawOffsetX = (playdate.display.getWidth() - sceneWidth) / 2
+	kDrawOffsetY = (playdate.display.getHeight() - sceneHeight) / 2
 	kScene:moveTo(kDisplayOffsetX, kDisplayOffsetY)
 
 end
@@ -275,8 +277,7 @@ function camera(x, y)
 
 	x = x or 0
 	y = y or 0
-	kScene:moveTo(kDisplayOffsetX + x, kDisplayOffsetY + y)
-	playdate.graphics.sprite.redrawBackground()
+	playdate.display.setOffset(x, y)
 
 end
 
