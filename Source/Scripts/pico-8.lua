@@ -10,6 +10,8 @@ playdate.graphics.sprite.setBackgroundDrawingCallback(
 -- Variables
 local kDisplayOffsetX = 200
 local kDisplayOffsetY = 120
+kDrawOffsetX = 0
+kDrawOffsetY = 0
 local sceneWidth = 128
 local sceneHeight = 128
 
