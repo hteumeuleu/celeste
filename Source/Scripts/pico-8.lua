@@ -1,6 +1,7 @@
 -- Global settings
 math.randomseed(playdate.getSecondsSinceEpoch())
 playdate.graphics.setFont(data.font)
+playdate.graphics.clear(playdate.graphics.kColorBlack)
 playdate.graphics.setBackgroundColor(playdate.graphics.kColorBlack)
 playdate.graphics.sprite.setBackgroundDrawingCallback(
 	function(x, y, width, height)
@@ -15,6 +16,70 @@ kDrawOffsetY = 0
 local sceneWidth = 128
 local sceneHeight = 128
 
+-- Scene layers
+layers = {
+	"clouds",
+	"bg_terrain",
+	"platforms_big_chest",
+	"terrain",
+	"objects",
+	"fg_terrain",
+	"particles",
+	"dead_particles",
+	"credits",
+	"level30",
+}
+
+for i, layer in ipairs(layers) do
+	local image <const> = playdate.graphics.image.new(sceneWidth,sceneHeight, playdate.graphics.kColorClear)
+	layers[layer] = playdate.graphics.sprite.new(image)
+	layers[layer]:setSize(sceneWidth, sceneHeight)
+	layers[layer]:moveTo(kDisplayOffsetX, kDisplayOffsetY)
+	layers[layer]:setZIndex(i)
+	layers[layer]:add()
+end
+
+function drawInLayer(layer, func)
+
+	if layers[layer] ~= nil and type(layers[layer]) == "table" then
+		local image <const> = layers[layer]:getImage()
+		playdate.graphics.pushContext(image)
+			func(image)
+		playdate.graphics.popContext()
+	end
+
+end
+
+-- Screen scaling
+function scale(x)
+
+	playdate.display.setScale(x)
+	kDisplayOffsetX = playdate.display.getWidth() / 2
+	kDisplayOffsetY = playdate.display.getHeight() / 2
+	kDrawOffsetX = (playdate.display.getWidth() - sceneWidth) / 2
+	kDrawOffsetY = (playdate.display.getHeight() - sceneHeight) / 2
+
+	for i, layer in ipairs(layers) do
+		if layers[layer] ~= nil and type(layers[layer]) == "table" then
+			layers[layer]:moveTo(kDisplayOffsetX, kDisplayOffsetY)
+		end
+	end
+
+end
+scale(2)
+
+-- layers.level30:setVisible(false)
+-- layers.credits:setVisible(false)
+layers.dead_particles:setVisible(false)
+-- layers.particles:setVisible(false)
+-- layers.fg_terrain:setVisible(false)
+layers.objects:setVisible(false)
+-- layers.terrain:setVisible(false)
+-- layers.platforms_big_chest:setVisible(false)
+-- layers.bg_terrain:setVisible(false)
+layers.clouds:setVisible(false)
+
+-- Returns Playdate’s flip value from two booleans
 function flip(flip_x, flip_y)
 
 	local flip =  playdate.graphics.kImageUnflipped
@@ -29,35 +94,9 @@ function flip(flip_x, flip_y)
 
 end
 
--- Scene sprite
-local kSceneImage <const> = playdate.graphics.image.new(sceneWidth,sceneHeight)
-local kScene <const> = playdate.graphics.sprite.new(kSceneImage)
-kScene:setRedrawsOnImageChange(true)
-kScene:moveTo(kDisplayOffsetX, kDisplayOffsetY)
-kScene:add()
-
-function drawInScene(func)
-
-	playdate.graphics.pushContext(kSceneImage)
-		func()
-	playdate.graphics.popContext()
-
-end
-
--- Screen scaling
-function scale(x)
-
-	playdate.display.setScale(x)
-	kDisplayOffsetX = playdate.display.getWidth() / 2
-	kDisplayOffsetY = playdate.display.getHeight() / 2
-	kDrawOffsetX = (playdate.display.getWidth() - sceneWidth) / 2
-	kDrawOffsetY = (playdate.display.getHeight() - sceneHeight) / 2
-	kScene:moveTo(kDisplayOffsetX, kDisplayOffsetY)
-
-end
-scale(2)
-
+--
 -- PICO-8 functions
+--
 function add(t, value, index)
 
 	index = index or #t+1
@@ -131,24 +170,20 @@ function rectfill(x0, y0, x1, y1, col)
 	local top = math.min(y0, y1)
 	local width = math.max(x0, x1) - left + 1
 	local height = math.max(y0, y1) - top + 1
-	drawInScene(function()
-		if col == nil then
-			playdate.graphics.setBackgroundColor(playdate.graphics.kColorBlack)
-		end
-		playdate.graphics.fillRect(left, top, width, height)
-	end)
+	if col == nil then
+		playdate.graphics.setBackgroundColor(playdate.graphics.kColorBlack)
+	end
+	playdate.graphics.fillRect(left, top, width, height)
 
 end
 
 function circfill(x, y, r, col)
 
 	r = r or 4
-	drawInScene(function()
-		if col == nil then
-			playdate.graphics.setBackgroundColor(playdate.graphics.kColorBlack)
-		end
-		playdate.graphics.fillCircleAtPoint(x, y, r)
-	end)
+	if col == nil then
+		playdate.graphics.setBackgroundColor(playdate.graphics.kColorBlack)
+	end
+	playdate.graphics.fillCircleAtPoint(x, y, r)
 
 end
 
@@ -191,9 +226,7 @@ function spr(n, x, y, w, h, flip_x, flip_y)
 	end
 
 	local img = data.tiles:getImage(n + 1)
-	drawInScene(function()
-		img:draw(x, y, flip)
-	end)
+	img:draw(x, y, flip)
 
 end
 
@@ -225,12 +258,7 @@ function map(celx, cely, sx, sy, celw, celh, mask)
 					local img = data.tiles:getImage(tile + 1)
 					local x = sx + (cx * 8)
 					local y = sy + (cy * 8)
-					-- Ignore rock background
-					-- if fget(tile) ~= 4 then
-						drawInScene(function()
-							img:draw(x, y)
-						end)
-					-- end
+					img:draw(x, y)
 				end
 			end
         end
@@ -289,10 +317,8 @@ function _print(text, x, y, color)
 
 	x = x or 0
 	y = y or 0
-	drawInScene(function()
-		playdate.graphics.setImageDrawMode(playdate.graphics.kDrawModeFillWhite)
-		playdate.graphics.drawText(text, x, y)
-		playdate.graphics.setImageDrawMode(playdate.graphics.kDrawModeCopy)
-	end)
+	playdate.graphics.setImageDrawMode(playdate.graphics.kDrawModeFillWhite)
+	playdate.graphics.drawText(text, x, y)
+	playdate.graphics.setImageDrawMode(playdate.graphics.kDrawModeCopy)
 
 end

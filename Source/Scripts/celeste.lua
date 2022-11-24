@@ -15,6 +15,7 @@ local has_key=false
 local pause_player=false
 local flash_bg=false
 local music_timer=0
+local room_just_changed=true
 
 local k_left=playdate.kButtonLeft
 local k_right=playdate.kButtonRight
@@ -28,7 +29,6 @@ local k_dash=playdate.kButtonB
 
 function _init()
 	title_screen()
-	begin_game()
 end
 
 function title_screen()
@@ -86,6 +86,12 @@ for i=0,24 do
 		off=rnd(1),
 		c=6+flr(0.5+rnd(1))
 	})
+end
+
+for i, item in ipairs(particles) do
+	local img <const> = playdate.graphics.image.new(item.s + 1, item.s + 1, playdate.graphics.kColorWhite)
+	item.spr = playdate.graphics.sprite.new(img)
+	item.spr:setZIndex(30)
 end
 
 dead_particles = {}
@@ -321,11 +327,12 @@ player =
 		if not this.pdspr then
 			this.pdspr = playdate.graphics.sprite.new(pdimg)
 			this.pdspr:setCenter(0,0)
+			this.pdspr:setZIndex(20)
 			this.pdspr:add()
 		else
 			this.pdspr:setImage(pdimg, flip(this.flip.x,this.flip.y))
 		end
-		this.pdspr:moveTo(kDrawOffsetX + this.x - 2, kDrawOffsetY + this.y - 2)
+		this.pdspr:moveTo(kDrawOffsetX + this.x - 1, kDrawOffsetY + this.y - 1)
 
 		-- TODO: hair color
 		-- set_hair_color(this.djump)
@@ -418,11 +425,12 @@ player_spawn = {
 		if not this.pdspr then
 			this.pdspr = playdate.graphics.sprite.new(pdimg)
 			this.pdspr:setCenter(0,0)
+			this.pdspr:setZIndex(20)
 			this.pdspr:add()
 		else
 			this.pdspr:setImage(pdimg, flip(this.flip.x,this.flip.y))
 		end
-		this.pdspr:moveTo(kDrawOffsetX + this.x - 2, kDrawOffsetY + this.y - 2)
+		this.pdspr:moveTo(kDrawOffsetX + this.x - 1, kDrawOffsetY + this.y - 1)
 
 		-- TODO: hair
 		-- set_hair_color(max_djump)
@@ -489,13 +497,13 @@ end
 
 balloon = {
 	tile=22,
-	init=function(this) 
+	init=function(this)
 		this.offset=rnd(1)
 		this.start=this.y
 		this.timer=0
 		this.hitbox={x=-1,y=-1,w=10,h=10}
 	end,
-	update=function(this) 
+	update=function(this)
 		if this.spr==22 then
 			this.offset+=0.01
 			this.y=this.start+sin(this.offset)*2
@@ -517,8 +525,31 @@ balloon = {
 	end,
 	draw=function(this)
 		if this.spr==22 then
-			spr(13+(this.offset*8)%3,this.x,this.y+6)
-			spr(this.spr,this.x,this.y)
+			-- Playdate sprite drawing
+			local function drawBalloon(img)
+				playdate.graphics.pushContext(img)
+					playdate.graphics.clear(playdate.graphics.kColorClear)
+					local pdtilestring = data.imagetables.balloon:getImage(flr(2+(this.offset*8)%3))
+					local pdtileballoon = data.imagetables.balloon:getImage(1)
+					pdtileballoon:draw(0,0)
+					pdtilestring:draw(0,8)
+				playdate.graphics.popContext()
+			end
+			if not this.pdspr then
+				local pdimg <const> = playdate.graphics.image.new(10, 20)
+				drawBalloon(pdimg)
+				this.pdspr = playdate.graphics.sprite.new(pdimg)
+				this.pdspr:setCenter(0,0)
+				this.pdspr:setZIndex(20)
+				this.pdspr:add()
+			else
+				local pdimg <const> = this.pdspr:getImage()
+				drawBalloon(pdimg)
+				this.pdspr:setImage(pdimg)
+			end
+			this.pdspr:moveTo(kDrawOffsetX + this.x - 1, kDrawOffsetY + this.y - 1)
+		else
+			this.pdspr:remove()
 		end
 	end
 }
@@ -618,6 +649,17 @@ fruit={
 		end
 		this.off+=1
 		this.y=this.start+sin(this.off/40)*2.5
+	end,
+	draw=function(this)
+		-- Playdate sprite drawing
+		if not this.pdspr then
+			local pdimg <const> = data.imagetables.fruit:getImage(1)
+			this.pdspr = playdate.graphics.sprite.new(pdimg)
+			this.pdspr:setCenter(0,0)
+			this.pdspr:setZIndex(20)
+			this.pdspr:add()
+		end
+		this.pdspr:moveTo(kDrawOffsetX + this.x - 1, kDrawOffsetY + this.y - 1)
 	end
 }
 add(types,fruit)
@@ -657,7 +699,7 @@ fly_fruit={
 		-- collect
 		local hit=this.collide(player,0,0)
 		if hit~=nil then
-		 hit.djump=max_djump
+			hit.djump=max_djump
 			sfx_timer=20
 			sfx(13)
 			got_fruit[1+level_index()] = true
@@ -675,9 +717,30 @@ fly_fruit={
 		else
 			off=(off+0.25)%3
 		end
-		spr(45+off,this.x-6,this.y-2,1,1,true,false)
-		spr(this.spr,this.x,this.y)
-		spr(45+off,this.x+6,this.y-2)
+		-- Playdate sprite drawing
+		local function drawFruit(img)
+			playdate.graphics.pushContext(img)
+				playdate.graphics.clear(playdate.graphics.kColorClear)
+				local pdtilewing = data.imagetables.fruit:getImage(flr(3+off))
+				local pdtilefruit = data.imagetables.fruit:getImage(2)
+				pdtilewing:draw(4,-1,flip(true, false))
+				pdtilewing:draw(16,-1)
+				pdtilefruit:draw(10,0)
+			playdate.graphics.popContext()
+		end
+		if not this.pdspr then
+			local pdimg <const> = playdate.graphics.image.new(30, 10)
+			drawFruit(pdimg)
+			this.pdspr = playdate.graphics.sprite.new(pdimg)
+			this.pdspr:setCenter(0,0)
+			this.pdspr:setZIndex(20)
+			this.pdspr:add()
+		else
+			local pdimg <const> = this.pdspr:getImage()
+			drawFruit(pdimg)
+			this.pdspr:setImage(pdimg)
+		end
+		this.pdspr:moveTo(kDrawOffsetX + this.x - 11, kDrawOffsetY + this.y - 1)
 	end
 }
 add(types,fly_fruit)
@@ -741,6 +804,7 @@ fake_wall = {
 			playdate.graphics.popContext()
 			this.pdspr = playdate.graphics.sprite.new(pdimg)
 			this.pdspr:setCenter(0,0)
+			this.pdspr:setZIndex(20)
 			this.pdspr:add()
 		end
 		this.pdspr:moveTo(kDrawOffsetX + this.x, kDrawOffsetY + this.y)
@@ -1159,9 +1223,16 @@ function load_room(x,y)
 	--remove existing objects
 	foreach(objects,destroy_object)
 
+	--remove sprites
+	playdate.graphics.sprite.removeAll()
+	for _, layer in ipairs(layers) do
+		layers[layer]:add()
+	end
+
 	--current room
 	room.x = x
 	room.y = y
+	room_just_changed = true
 
 	-- entities
 	for tx=0,15 do
@@ -1262,116 +1333,163 @@ function _draw()
 	if freeze>0 then return end
 
 	-- start game flash
-	if start_game then
-		local c=10
-		if start_game_flash>10 then
-			if frames%10<5 then
-				c=7
-			end
-		elseif start_game_flash>5 then
-			c=2
-		elseif start_game_flash>0 then
-			c=1
-		else
-			c=0
-		end
-		if c<10 then
-			pal(6,c)
-			pal(12,c)
-			pal(13,c)
-			pal(5,c)
-			pal(1,c)
-			pal(7,c)
-		end
-	end
+	-- if start_game then
+	-- 	local c=10
+	-- 	if start_game_flash>10 then
+	-- 		if frames%10<5 then
+	-- 			c=7
+	-- 		end
+	-- 	elseif start_game_flash>5 then
+	-- 		c=2
+	-- 	elseif start_game_flash>0 then
+	-- 		c=1
+	-- 	else
+	-- 		c=0
+	-- 	end
+	-- 	if c<10 then
+	-- 		pal(6,c)
+	-- 		pal(12,c)
+	-- 		pal(13,c)
+	-- 		pal(5,c)
+	-- 		pal(1,c)
+	-- 		pal(7,c)
+	-- 	end
+	-- end
 
 	-- clear screen
-	rectfill(0,0,128,128,0)
+	-- rectfill(0,0,128,128,0)
 
 	-- clouds
-	previousColor = playdate.graphics.getColor()
-	playdate.graphics.setColor(playdate.graphics.kColorWhite)
-	if not is_title() then
-		foreach(clouds, function(c)
-			c.x += c.spd
-			rectfill(c.x,c.y,c.x+c.w,c.y+4+(1-c.w/64)*12,new_bg~=nil and 14 or 1)
-			if c.x > 128 then
-				c.x = -c.w
-				c.y=rnd(128-8)
-			end
-		end)
-	end
-	playdate.graphics.setColor(previousColor)
-
-	-- draw bg terrain
-	map(room.x * 16,room.y * 16,0,0,16,16,2)
-
-	-- platforms/big chest
-	foreach(objects, function(o)
-		if o.type==platform or o.type==big_chest then
-			draw_object(o)
+	drawInLayer("clouds", function(img)
+		img:clear(playdate.graphics.kColorClear)
+		playdate.graphics.setColor(playdate.graphics.kColorWhite)
+		if not is_title() then
+			foreach(clouds, function(c)
+				c.x += c.spd
+				rectfill(c.x,c.y,c.x+c.w,c.y+4+(1-c.w/64)*12,new_bg~=nil and 14 or 1)
+				if c.x > 128 then
+					c.x = -c.w
+					c.y=rnd(128-8)
+				end
+			end)
 		end
 	end)
 
+	-- draw bg terrain
+	if room_just_changed then
+		drawInLayer("bg_terrain", function(img)
+			img:clear(playdate.graphics.kColorClear)
+			map(room.x * 16,room.y * 16,0,0,16,16,2)
+		end)
+	end
+
+	-- platforms/big chest
+	if room_just_changed then
+		drawInLayer("platforms_big_chest", function(img)
+			img:clear(playdate.graphics.kColorClear)
+			foreach(objects, function(o)
+				if o.type==platform or o.type==big_chest then
+					draw_object(o)
+				end
+			end)
+		end)
+	end
+
 	-- draw terrain
-	local off=is_title() and -4 or 0
-	map(room.x*16,room.y * 16,off,0,16,16,1)
+	if room_just_changed then
+		drawInLayer("terrain", function(img)
+			img:clear(playdate.graphics.kColorClear)
+			local off=is_title() and -4 or 0
+			map(room.x*16,room.y * 16,off,0,16,16,1)
+		end)
+	end
 
 	-- draw objects
-	foreach(objects, function(o)
-		if o.type~=platform and o.type~=big_chest then
-			draw_object(o)
-		end
+	drawInLayer("objects", function(img)
+		img:clear(playdate.graphics.kColorClear)
+		foreach(objects, function(o)
+			if o.type~=platform and o.type~=big_chest then
+				draw_object(o)
+			end
+		end)
 	end)
 
 	-- draw fg terrain
-	map(room.x * 16,room.y * 16,0,0,16,16,3)
+	if room_just_changed then
+		drawInLayer("fg_terrain", function(img)
+			img:clear(playdate.graphics.kColorClear)
+			map(room.x * 16,room.y * 16,0,0,16,16,3)
+		end)
+	end
 
 	-- particles
-	previousColor = playdate.graphics.getColor()
-	playdate.graphics.setColor(playdate.graphics.kColorWhite)
 	foreach(particles, function(p)
+		if room_just_changed then
+			p.spr:add()
+		end
 		p.x += p.spd
 		p.y += sin(p.off)
 		p.off+= min(0.05,p.spd/32)
-		rectfill(p.x,p.y,p.x+p.s,p.y+p.s,p.c)
-		if p.x>128+4 then
+		if is_title() then
+			p.spr:moveTo(p.x,p.y)
+		else
+			p.spr:moveTo(p.x + kDrawOffsetX,p.y + kDrawOffsetY)
+		end
+		local w = 128
+		if is_title() then w = 200 end
+		if p.x>w+4 then
 			p.x=-4
-			p.y=rnd(128)
+			p.y=rnd(w)
 		end
 	end)
-	playdate.graphics.setColor(previousColor)
 
 	-- dead particles
-	foreach(dead_particles, function(p)
-		p.x += p.spd.x
-		p.y += p.spd.y
-		p.t -=1
-		if p.t <= 0 then del(dead_particles,p) end
-		rectfill(p.x-p.t/5,p.y-p.t/5,p.x+p.t/5,p.y+p.t/5,14+p.t%2)
+	drawInLayer("dead_particles", function(img)
+		img:clear(playdate.graphics.kColorClear)
+		foreach(dead_particles, function(p)
+			p.x += p.spd.x
+			p.y += p.spd.y
+			p.t -=1
+			if p.t <= 0 then del(dead_particles,p) end
+			rectfill(p.x-p.t/5,p.y-p.t/5,p.x+p.t/5,p.y+p.t/5,14+p.t%2)
+		end)
 	end)
 
 	-- credits
-	if is_title() then
-		_print("a+b",58,80,5)
-		_print("matt thorson",42,96,5)
-		_print("noel berry",46,102,5)
+	if room_just_changed then
+		if is_title() then
+			drawInLayer("credits", function(img)
+				img:clear(playdate.graphics.kColorClear)
+				_print("a+b",58,80,5)
+				_print("matt thorson",42,96,5)
+				_print("noel berry",46,102,5)
+			end)
+		else
+			drawInLayer("credits", function(img)
+				img:clear(playdate.graphics.kColorClear)
+			end)
+		end
 	end
 
 	if level_index()==30 then
-		local p
-		for i=1,count(objects) do
-			if objects[i].type==player then
-				p = objects[i]
-				break
+		drawInLayer("level30", function(img)
+			img:clear(playdate.graphics.kColorClear)
+			local p
+			for i=1,count(objects) do
+				if objects[i].type==player then
+					p = objects[i]
+					break
+				end
 			end
-		end
-		if p~=nil then
-			local diff=min(24,40-abs(p.x+4-64))
-			rectfill(0,0,diff,128,0)
-			rectfill(128-diff,0,128,128,0)
-		end
+			if p~=nil then
+				local diff=min(24,40-abs(p.x+4-64))
+				rectfill(0,0,diff,128,0)
+				rectfill(128-diff,0,128,128,0)
+			end
+		end)
 	end
+
+	room_just_changed = false
 
 end
 
