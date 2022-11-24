@@ -15,6 +15,20 @@ kDrawOffsetY = 0
 local sceneWidth = 128
 local sceneHeight = 128
 
+function flip(flip_x, flip_y)
+
+	local flip =  playdate.graphics.kImageUnflipped
+	if flip_x and flip_y then
+		 flip = playdate.graphics.kImageFlippedXY
+	elseif flip_x then
+		 flip = playdate.graphics.kImageFlippedX
+	elseif flip_y then
+		 flip = playdate.graphics.kImageFlippedY
+	end
+	return flip
+
+end
+
 -- Scene sprite
 local kSceneImage <const> = playdate.graphics.image.new(sceneWidth,sceneHeight)
 local kScene <const> = playdate.graphics.sprite.new(kSceneImage)

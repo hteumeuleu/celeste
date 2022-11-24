@@ -315,10 +315,23 @@ player =
 			this.spd.x=0
 		end
 
-		set_hair_color(this.djump)
-		draw_hair(this,this.flip.x and -1 or 1)
-		spr(this.spr,this.x,this.y,1,1,this.flip.x,this.flip.y)
-		unset_hair_color()
+		-- Playdate sprite drawing
+		local pdimg <const> = data.imagetables.player:getImage(flr(this.spr))
+		pdimg:setInverted(this.djump == 0)
+		if not this.pdspr then
+			this.pdspr = playdate.graphics.sprite.new(pdimg)
+			this.pdspr:setCenter(0,0)
+			this.pdspr:add()
+		else
+			this.pdspr:setImage(pdimg, flip(this.flip.x,this.flip.y))
+		end
+		this.pdspr:moveTo(kDrawOffsetX + this.x - 2, kDrawOffsetY + this.y - 2)
+
+		-- TODO: hair color
+		-- set_hair_color(this.djump)
+		-- draw_hair(this,this.flip.x and -1 or 1)
+		-- spr(this.spr,this.x,this.y,1,1,this.flip.x,this.flip.y)
+		-- unset_hair_color()
 	end,
 }
 
@@ -400,10 +413,22 @@ player_spawn = {
 		end
 	end,
 	draw=function(this)
-		set_hair_color(max_djump)
-		draw_hair(this,1)
-		spr(this.spr,this.x,this.y,1,1,this.flip.x,this.flip.y)
-		unset_hair_color()
+		local pdimg <const> = data.imagetables.player:getImage(flr(this.spr))
+		pdimg:setInverted(max_djump == 0)
+		if not this.pdspr then
+			this.pdspr = playdate.graphics.sprite.new(pdimg)
+			this.pdspr:setCenter(0,0)
+			this.pdspr:add()
+		else
+			this.pdspr:setImage(pdimg, flip(this.flip.x,this.flip.y))
+		end
+		this.pdspr:moveTo(kDrawOffsetX + this.x - 2, kDrawOffsetY + this.y - 2)
+
+		-- TODO: hair
+		-- set_hair_color(max_djump)
+		-- draw_hair(this,1)
+		-- spr(this.spr,this.x,this.y,1,1,this.flip.x,this.flip.y)
+		-- unset_hair_color()
 	end
 }
 add(types,player_spawn)
@@ -701,10 +726,24 @@ fake_wall = {
 		this.hitbox={x=0,y=0,w=16,h=16}
 	end,
 	draw=function(this)
-		spr(64,this.x,this.y)
-		spr(65,this.x+8,this.y)
-		spr(80,this.x,this.y+8)
-		spr(81,this.x+8,this.y+8)
+		-- Playdate sprite drawing
+		if not this.pdspr then
+			local pdimg <const> = playdate.graphics.image.new(16, 16)
+			playdate.graphics.pushContext(pdimg)
+				local pdtile = data.tiles:getImage(64 + 1)
+				pdtile:draw(0,0)
+				pdtile = data.tiles:getImage(65 + 1)
+				pdtile:draw(8,0)
+				pdtile = data.tiles:getImage(80 + 1)
+				pdtile:draw(0,8)
+				pdtile = data.tiles:getImage(81 + 1)
+				pdtile:draw(8,8)
+			playdate.graphics.popContext()
+			this.pdspr = playdate.graphics.sprite.new(pdimg)
+			this.pdspr:setCenter(0,0)
+			this.pdspr:add()
+		end
+		this.pdspr:moveTo(kDrawOffsetX + this.x, kDrawOffsetY + this.y)
 	end
 }
 add(types,fake_wall)
@@ -1058,6 +1097,9 @@ function init_object(type,x,y)
 end
 
 function destroy_object(obj)
+	if obj.pdspr ~= nil then
+		obj.pdspr:remove()
+	end
 	del(objects,obj)
 end
 

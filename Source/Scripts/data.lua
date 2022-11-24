@@ -20,6 +20,13 @@ data.flags = {
 }
 
 --
+-- Image tables
+--
+data.imagetables = {
+	player=playdate.graphics.imagetable.new("Assets/player"),
+}
+
+--
 -- SFX
 --
 data.sfx = {}
