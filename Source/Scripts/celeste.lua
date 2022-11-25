@@ -334,11 +334,9 @@ player =
 		end
 		this.pdspr:moveTo(kDrawOffsetX + this.x - 1, kDrawOffsetY + this.y - 1)
 
-		-- TODO: hair color
-		-- set_hair_color(this.djump)
-		-- draw_hair(this,this.flip.x and -1 or 1)
-		-- spr(this.spr,this.x,this.y,1,1,this.flip.x,this.flip.y)
-		-- unset_hair_color()
+		set_hair_color(this.djump)
+		draw_hair(this,this.flip.x and -1 or 1)
+		unset_hair_color()
 	end,
 }
 
@@ -356,21 +354,63 @@ create_hair=function(obj)
 end
 
 set_hair_color=function(djump)
-	pal(8,(djump==1 and 8 or djump==2 and (7+flr((frames/3)%2)*4) or 12))
+	if djump ~= 0 then
+		hair_color = playdate.graphics.kColorBlack
+	else
+		hair_color = playdate.graphics.kColorWhite
+	end
+
 end
 
 draw_hair=function(obj,facing)
 	local last={x=obj.x+4-facing*2,y=obj.y+(btn(k_down) and 4 or 3)}
+	local coords={}
 	foreach(obj.hair,function(h)
 		h.x+=(last.x-h.x)/1.5
 		h.y+=(last.y+0.5-h.y)/1.5
-		circfill(h.x,h.y,h.size,8)
+		add(coords,{x=h.x,y=h.y,s=h.size})
 		last=h
 	end)
+	-- Playdate sprite drawing
+	local x1 = 128
+	local x2 = 0
+	local y1 = 128
+	local y2 = 0
+	foreach(coords,function(c)
+		x1 = math.min(x1, c.x - c.s)
+		x2 = math.max(x2, c.x + c.s)
+		y1 = math.min(y1, c.y - c.s)
+		y2 = math.max(y2, c.y + c.s)
+	end)
+	x1 = clamp(x1, 0, 128) - 1
+	x2 = clamp(x2, 0, 128) + 1
+	y1 = clamp(y1, 0, 128) - 1
+	y2 = clamp(y2, 0, 128) + 1
+	local w <const> = x2 - x1
+	local h <const> = y2 - y1
+	layers.hair:setSize(w, h)
+	layers.hair:setCenter(0, 0)
+	layers.hair:moveTo(x1 + kDrawOffsetX, y1 + kDrawOffsetY)
+	local pdimg <const> = playdate.graphics.image.new(w, h, playdate.graphics.kColorClear)
+	playdate.graphics.pushContext(pdimg)
+		-- Draw outline of hair
+		playdate.graphics.setColor(playdate.graphics.kColorWhite)
+		playdate.graphics.setLineWidth(1)
+		playdate.graphics.setStrokeLocation(playdate.graphics.kStrokeOutside)
+		foreach(coords,function(c)
+			playdate.graphics.drawCircleAtPoint(c.x - x1, c.y - y1, c.s)
+		end)
+		-- Draw fill of hair
+		playdate.graphics.setColor(hair_color)
+		foreach(coords,function(c)
+			playdate.graphics.fillCircleAtPoint(c.x - x1, c.y - y1, c.s)
+		end)
+	playdate.graphics.popContext()
+	layers.hair:setImage(pdimg)
 end
 
 unset_hair_color=function()
-	pal(8,8)
+	hair_color = playdate.graphics.kColorBlack
 end
 
 player_spawn = {
@@ -432,11 +472,9 @@ player_spawn = {
 		end
 		this.pdspr:moveTo(kDrawOffsetX + this.x - 1, kDrawOffsetY + this.y - 1)
 
-		-- TODO: hair
-		-- set_hair_color(max_djump)
-		-- draw_hair(this,1)
-		-- spr(this.spr,this.x,this.y,1,1,this.flip.x,this.flip.y)
-		-- unset_hair_color()
+		set_hair_color(max_djump)
+		draw_hair(this,1)
+		unset_hair_color()
 	end
 }
 add(types,player_spawn)
@@ -1173,6 +1211,10 @@ function kill_player(obj)
 	deaths+=1
 	shake=10
 	destroy_object(obj)
+	drawInLayer("hair", function(img)
+		img:clear(playdate.graphics.kColorClear)
+	end)
+	layers["hair"]:markDirty()
 	dead_particles={}
 	for dir=0,7 do
 		local angle=(dir/8)

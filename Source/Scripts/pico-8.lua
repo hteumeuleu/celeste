@@ -24,8 +24,8 @@ layers = {
 	"terrain",
 	"objects",
 	"fg_terrain",
-	"particles",
 	"dead_particles",
+	"hair",
 	"credits",
 	"level30",
 }
