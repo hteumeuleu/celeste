@@ -29,6 +29,9 @@ local k_dash=playdate.kButtonB
 
 function _init()
 	title_screen()
+	begin_game()
+	-- next_room()
+	-- next_room()
 end
 
 function title_screen()
@@ -306,7 +309,11 @@ player =
 		end
 
 		 -- next level
-		if this.y<-4 and level_index()<30 then next_room() end
+		if this.y<-4 and level_index()<30 then
+            this.y = 0
+            this.x = 0
+			next_room()
+		end
 
 		-- was on the ground
 		this.was_on_ground=on_ground
@@ -466,10 +473,9 @@ player_spawn = {
 			this.pdspr = playdate.graphics.sprite.new(pdimg)
 			this.pdspr:setCenter(0,0)
 			this.pdspr:setZIndex(20)
-			this.pdspr:add()
-		else
-			this.pdspr:setImage(pdimg, flip(this.flip.x,this.flip.y))
 		end
+		this.pdspr:add()
+		this.pdspr:setImage(pdimg, flip(this.flip.x,this.flip.y))
 		this.pdspr:moveTo(kDrawOffsetX + this.x - 1, kDrawOffsetY + this.y - 1)
 
 		set_hair_color(max_djump)
@@ -525,6 +531,17 @@ spring = {
 				this.spr=0
 			end
 		end
+	end,
+	draw=function(this)
+		local pdimg <const> = data.imagetables.spring:getImage(flr(this.spr - 17))
+		if not this.pdspr then
+			this.pdspr = playdate.graphics.sprite.new(pdimg)
+			this.pdspr:setCenter(0,0)
+			this.pdspr:setZIndex(20)
+			this.pdspr:add()
+		end
+		this.pdspr:setImage(pdimg)
+		this.pdspr:moveTo(kDrawOffsetX + this.x, kDrawOffsetY + this.y)
 	end
 }
 add(types,spring)
@@ -1227,6 +1244,8 @@ function kill_player(obj)
 				y=cos(angle)*3
 			}
 		})
+	end
+	if not room_just_changed then
 		restart_room()
 	end
 end
@@ -1261,20 +1280,23 @@ function load_room(x,y)
 
 	has_dashed=false
 	has_key=false
+	room_just_changed = true
+
+	--current room
+	room.x = x
+	room.y = y
 
 	--remove existing objects
 	foreach(objects,destroy_object)
+    if #objects > 0 then
+        objects = {}
+    end
 
 	--remove sprites
 	playdate.graphics.sprite.removeAll()
 	for _, layer in ipairs(layers) do
 		layers[layer]:add()
 	end
-
-	--current room
-	room.x = x
-	room.y = y
-	room_just_changed = true
 
 	-- entities
 	for tx=0,15 do

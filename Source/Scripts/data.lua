@@ -26,6 +26,7 @@ data.imagetables = {
 	player=playdate.graphics.imagetable.new("Assets/player"),
 	fruit=playdate.graphics.imagetable.new("Assets/fruit"),
 	balloon=playdate.graphics.imagetable.new("Assets/balloon"),
+	spring=playdate.graphics.imagetable.new("Assets/spring"),
 }
 
 --
