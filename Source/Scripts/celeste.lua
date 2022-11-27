@@ -69,6 +69,7 @@ end
 function _init(game)
 	game_obj = game
 	title_screen()
+	begin_game()
 end
 
 function title_screen()
@@ -438,12 +439,11 @@ create_hair=function(obj)
 end
 
 set_hair_color=function(djump)
-	if djump ~= 0 then
-		hair_color = GFX.kColorBlack
-	else
-		hair_color = GFX.kColorWhite
-	end
-
+	-- if djump ~= 0 then
+	-- 	hair_color = playdate.graphics.kColorBlack
+	-- else
+	-- 	hair_color = playdate.graphics.kColorWhite
+	-- end
 end
 
 draw_hair=function(obj,facing)
@@ -463,6 +463,7 @@ draw_hair=function(obj,facing)
 		lastY = y
 	end
 	-- Playdate sprite drawing
+	-- First, calculate new coords
 	local x1 = 128
 	local x2 = 0
 	local y1 = 128
@@ -497,32 +498,52 @@ draw_hair=function(obj,facing)
 	y2 = clamp(y2, 0, 128) + 1
 	local w <const> = x2 - x1
 	local h <const> = y2 - y1
-	local hairLayer = layers.hair
-	hairLayer:setSize(w, h)
-	hairLayer:setCenter(0, 0)
-	hairLayer:moveTo(x1 + kDrawOffsetX, y1 + kDrawOffsetY)
-	local pdimg <const> = GFX.image.new(w, h, GFX.kColorClear)
-	GFX.pushContext(pdimg)
-		-- Draw outline of hair
-		GFX.setColor(GFX.kColorWhite)
-		GFX.setLineWidth(1)
-		GFX.setStrokeLocation(GFX.kStrokeOutside)
-		for i=1, #coords do
-			local c = coords[i]
-			GFX.drawCircleAtPoint(c.x - x1, c.y - y1, c.s)
-		end
-		-- Draw fill of hair
-		GFX.setColor(hair_color)
-		for i=1, #coords do
-			local c = coords[i]
-			GFX.fillCircleAtPoint(c.x - x1, c.y - y1, c.s)
-		end
-	GFX.popContext()
-	hairLayer:setImage(pdimg)
+	-- Adjust hair sprite to new coordinates and size
+	layers.hair:setSize(w, h)
+	layers.hair:setCenter(0, 0)
+	layers.hair:moveTo(x1 + kDrawOffsetX, y1 + kDrawOffsetY)
+	-- Create mask image for hair
+	-- (will be used as a stencil so needs to be at least 32x32)
+	local pdmask = playdate.graphics.image.new(math.max(32, w), math.max(32, h), playdate.graphics.kColorClear)
+	playdate.graphics.pushContext(pdmask)
+		-- Fill the image with white except where the mask will be
+		playdate.graphics.setColor(playdate.graphics.kColorWhite)
+		playdate.graphics.fillRect(8, 0, 8, 8)
+		-- playdate.graphics.fillRect(0, 0, w-7, 8)
+		-- playdate.graphics.fillRect(15, 0, w, 8)
+		-- playdate.graphics.fillRect(0, 8, w, h)
+		-- Get player sprite’s mask and draw it
+		local pdmask_spr_index = math.floor(obj.spr+7)
+		local pdmask_img = data.imagetables.player:getImage(pdmask_spr_index)
+		pdmask_img:draw(0,0)
+	playdate.graphics.popContext()
+	-- Create new image for drawing hair
+	local pdimg <const> = playdate.graphics.image.new(math.max(32, w), math.max(32, h), playdate.graphics.kColorClear)
+	playdate.graphics.pushContext(pdimg)
+		-- Add mask
+		-- playdate.graphics.setStencilImage(pdmask)
+		-- Draw white outline of hair
+		playdate.graphics.setColor(playdate.graphics.kColorWhite)
+		playdate.graphics.setLineWidth(1)
+		playdate.graphics.setStrokeLocation(playdate.graphics.kStrokeOutside)
+		foreach(coords,function(c)
+			playdate.graphics.drawCircleAtPoint(c.x - x1, c.y - y1, c.s)
+		end)
+		-- Draw black fill of hair
+		playdate.graphics.setColor(playdate.graphics.kColorBlack)
+		foreach(coords,function(c)
+			playdate.graphics.fillCircleAtPoint(c.x - x1, c.y - y1, c.s)
+		end)
+		-- Clear mask's stencil
+		playdate.graphics.clearStencil()
+	playdate.graphics.popContext()
+	-- pdimg:setInverted(max_djump == 0)
+	layers.hair:setImage(pdimg)
+	layers.hair:setZIndex(200)
 end
 
 unset_hair_color=function()
-	hair_color = GFX.kColorBlack
+	-- hair_color = playdate.graphics.kColorBlack
 end
 
 player_spawn = {
