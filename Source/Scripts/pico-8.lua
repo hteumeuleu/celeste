@@ -20,7 +20,6 @@ local sceneHeight = 128
 layers = {
 	"clouds",
 	"bg_terrain",
-	"platforms_big_chest",
 	"terrain",
 	"objects",
 	"fg_terrain",
@@ -171,7 +170,9 @@ function rectfill(x0, y0, x1, y1, col)
 	local width = math.max(x0, x1) - left + 1
 	local height = math.max(y0, y1) - top + 1
 	if col == nil then
-		playdate.graphics.setBackgroundColor(playdate.graphics.kColorBlack)
+		playdate.graphics.setColor(playdate.graphics.kColorBlack)
+	elseif col == 7 then
+		playdate.graphics.setColor(playdate.graphics.kColorWhite)
 	end
 	playdate.graphics.fillRect(left, top, width, height)
 
@@ -317,7 +318,11 @@ function _print(text, x, y, color)
 
 	x = x or 0
 	y = y or 0
-	playdate.graphics.setImageDrawMode(playdate.graphics.kDrawModeFillWhite)
+	if color == 0 then
+		playdate.graphics.setImageDrawMode(playdate.graphics.kDrawModeFillBlack)
+	else
+		playdate.graphics.setImageDrawMode(playdate.graphics.kDrawModeFillWhite)
+	end
 	playdate.graphics.drawText(text, x, y)
 	playdate.graphics.setImageDrawMode(playdate.graphics.kDrawModeCopy)
 
@@ -332,5 +337,22 @@ function sub(str, pos0, pos1)
 		pos1 = pos1 or #str
 	end
 	return string.sub(str,pos0,pos1)
+
+end
+
+local line_last_x0 = 0
+local line_last_y0 = 0
+function line(x0, y0, x1, y1, col)
+
+	x1 = x1 or 1
+	y1 = y1 or 1
+	line_last_x0 = x0
+	line_last_y0 = y0
+	if col == nil then
+		playdate.graphics.setColor(playdate.graphics.kColorBlack)
+	elseif col == 7 then
+		playdate.graphics.setColor(playdate.graphics.kColorWhite)
+	end
+	playdate.graphics.drawLine(x0, y0, x1, y1)
 
 end

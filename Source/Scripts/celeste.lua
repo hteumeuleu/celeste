@@ -29,7 +29,6 @@ local k_dash=playdate.kButtonB
 
 function _init()
 	title_screen()
-	begin_game()
 end
 
 function title_screen()
@@ -43,7 +42,7 @@ function title_screen()
 	start_game=false
 	start_game_flash=0
 	music(40,0,7)
-	-- load_room(7,3)
+	load_room(7,3)
 end
 
 function begin_game()
@@ -53,7 +52,7 @@ function begin_game()
 	music_timer=0
 	start_game=false
 	music(0,0,7)
-	load_room(3,1)
+	load_room(0,0)
 end
 
 function level_index()
@@ -826,7 +825,17 @@ lifeup = {
 	draw=function(this)
 		this.flash+=0.5
 
-		_print("1000",this.x-2,this.y,7+this.flash%2)
+		if not this.pdspr then
+			local pdimg <const> = playdate.graphics.image.new(64, 24)
+			playdate.graphics.pushContext(pdimg)
+				_print("1000",0,0,7+this.flash%2)
+			playdate.graphics.popContext()
+			this.pdspr = playdate.graphics.sprite.new(pdimg)
+			this.pdspr:setCenter(0,0)
+			this.pdspr:setZIndex(20)
+			this.pdspr:add()
+		end
+		this.pdspr:moveTo(kDrawOffsetX + this.x-2, kDrawOffsetY + this.y)
 	end
 }
 
@@ -910,7 +919,7 @@ chest={
 	tile=20,
 	if_not_fruit=true,
 	init=function(this)
-		this.x-=4
+		this.x-=5
 		this.start=this.x
 		this.timer=20
 	end,
@@ -919,8 +928,8 @@ chest={
 			this.timer-=1
 			this.x=this.start-1+rnd(3)
 			if this.timer<=0 then
-			 sfx_timer=20
-			 sfx(16)
+				sfx_timer=20
+				sfx(16)
 				init_object(fruit,this.x,this.y-4)
 				destroy_object(this)
 			end
@@ -984,22 +993,36 @@ message={
 			if this.index<#this.text then
 			 this.index+=0.5
 				if this.index>=this.last+1 then
-				 this.last+=1
-				 sfx(35)
+					this.last+=1
+					sfx(35)
 				end
 			end
-			this.off={x=8,y=96}
-			for i=1,this.index do
-				if sub(this.text,i,i)~="#" then
-					rectfill(this.off.x-2,this.off.y-2,this.off.x+7,this.off.y+6 ,7)
-					_print(sub(this.text,i,i),this.off.x,this.off.y,0)
-					this.off.x+=5
-				else
-					this.off.x=8
-					this.off.y+=7
-				end
+			this.off={x=2,y=2}
+			local pdimg <const> = playdate.graphics.image.new(115, 23)
+			if not this.pdspr then
+				this.pdspr = playdate.graphics.sprite.new(pdimg)
+				this.pdspr:setCenter(0,0)
+				this.pdspr:setZIndex(20)
 			end
+			playdate.graphics.pushContext(pdimg)
+				for i=1,this.index do
+					if sub(this.text,i,i)~="#" then
+						rectfill(this.off.x-2,this.off.y-2,this.off.x+7,this.off.y+6,7)
+						_print(sub(this.text,i,i),this.off.x,this.off.y,0)
+						this.off.x+=5
+					else
+						this.off.x=2
+						this.off.y+=7
+					end
+				end
+			playdate.graphics.popContext()
+			this.pdspr:setImage(pdimg)
+			this.pdspr:moveTo(kDrawOffsetX + 6, kDrawOffsetY + 94)
+			this.pdspr:add()
 		else
+			if this.pdspr ~= nil then
+				this.pdspr:remove()
+			end
 			this.index=0
 			this.last=0
 		end
@@ -1014,6 +1037,12 @@ big_chest={
 		this.hitbox.w=16
 	end,
 	draw=function(this)
+		local pdimg <const> = playdate.graphics.image.new(16, 16, playdate.graphics.kColorClear)
+		if not this.pdspr then
+			this.pdspr = playdate.graphics.sprite.new(pdimg)
+			this.pdspr:setCenter(0,0)
+			this.pdspr:setZIndex(20)
+		end
 		if this.state==0 then
 			local hit=this.collide(player,0,8)
 			if hit~=nil and hit.is_solid(0,1) then
@@ -1028,8 +1057,12 @@ big_chest={
 				this.timer=60
 				this.particles={}
 			end
-			spr(96,this.x,this.y)
-			spr(97,this.x+8,this.y)
+			playdate.graphics.pushContext(pdimg)
+				local pdtile = data.imagetables.tiles:getImage(97)
+				pdtile:draw(0,0)
+				pdtile = data.imagetables.tiles:getImage(98)
+				pdtile:draw(8,0)
+			playdate.graphics.popContext()
 		elseif this.state==1 then
 			this.timer-=1
 			shake=5
@@ -1055,8 +1088,15 @@ big_chest={
 				line(this.x+p.x,this.y+8-p.y,this.x+p.x,min(this.y+8-p.y+p.h,this.y+8),7)
 			end)
 		end
-		spr(112,this.x,this.y+8)
-		spr(113,this.x+8,this.y+8)
+		playdate.graphics.pushContext(pdimg)
+			local pdtile = data.imagetables.tiles:getImage(113)
+			pdtile:draw(0,8)
+			pdtile = data.imagetables.tiles:getImage(114)
+			pdtile:draw(8,8)
+		playdate.graphics.popContext()
+		this.pdspr:setImage(pdimg)
+		this.pdspr:moveTo(kDrawOffsetX + this.x, kDrawOffsetY + this.y)
+		this.pdspr:add()
 	end
 }
 add(types,big_chest)
@@ -1079,8 +1119,18 @@ orb={
 			max_djump=2
 			hit.djump=2
 		end
-
-		spr(102,this.x,this.y)
+		local pdimg <const> = playdate.graphics.image.new(8, 8, playdate.graphics.kColorClear)
+		if not this.pdspr then
+			playdate.graphics.pushContext(pdimg)
+				local pdtile = data.imagetables.tiles:getImage(103)
+				pdtile:draw(0,0)
+			playdate.graphics.popContext()
+			this.pdspr = playdate.graphics.sprite.new(pdimg)
+			this.pdspr:setCenter(0,0)
+			this.pdspr:setZIndex(20)
+			this.pdspr:add()
+		end
+		this.pdspr:moveTo(kDrawOffsetX + this.x,kDrawOffsetY + this.y)
 		local off=frames/30
 		for i=0,7 do
 			circfill(this.x+4+cos(off+i/8)*8,this.y+4+sin(off+i/8)*8,1,7)
@@ -1498,18 +1548,6 @@ function _draw()
 		end)
 	end
 
-	-- platforms/big chest
-	if room_just_changed then
-		drawInLayer("platforms_big_chest", function(img)
-			img:clear(playdate.graphics.kColorClear)
-			foreach(objects, function(o)
-				if o.type==big_chest then
-					draw_object(o)
-				end
-			end)
-		end)
-	end
-
 	-- draw terrain
 	if room_just_changed then
 		drawInLayer("terrain", function(img)
@@ -1523,9 +1561,7 @@ function _draw()
 	drawInLayer("objects", function(img)
 		img:clear(playdate.graphics.kColorClear)
 		foreach(objects, function(o)
-			if o.type~=big_chest then
-				draw_object(o)
-			end
+			draw_object(o)
 		end)
 	end)
 
