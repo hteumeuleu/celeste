@@ -322,3 +322,15 @@ function _print(text, x, y, color)
 	playdate.graphics.setImageDrawMode(playdate.graphics.kDrawModeCopy)
 
 end
+
+function sub(str, pos0, pos1)
+
+	pos0 = pos0 or 1
+	if pos1 ~= nil and type(pos1) ~= "number" then
+		pos1 = pos0 + 1
+	else
+		pos1 = pos1 or #str
+	end
+	return string.sub(str,pos0,pos1)
+
+end

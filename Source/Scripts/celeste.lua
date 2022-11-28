@@ -30,8 +30,6 @@ local k_dash=playdate.kButtonB
 function _init()
 	title_screen()
 	begin_game()
-	-- next_room()
-	-- next_room()
 end
 
 function title_screen()
@@ -45,7 +43,7 @@ function title_screen()
 	start_game=false
 	start_game_flash=0
 	music(40,0,7)
-	load_room(7,3)
+	-- load_room(7,3)
 end
 
 function begin_game()
@@ -55,7 +53,7 @@ function begin_game()
 	music_timer=0
 	start_game=false
 	music(0,0,7)
-	load_room(0,0)
+	load_room(3,1)
 end
 
 function level_index()
@@ -596,12 +594,12 @@ balloon = {
 				this.pdspr = playdate.graphics.sprite.new(pdimg)
 				this.pdspr:setCenter(0,0)
 				this.pdspr:setZIndex(20)
-				this.pdspr:add()
 			else
 				local pdimg <const> = this.pdspr:getImage()
 				drawBalloon(pdimg)
 				this.pdspr:setImage(pdimg)
 			end
+			this.pdspr:add()
 			this.pdspr:moveTo(kDrawOffsetX + this.x - 1, kDrawOffsetY + this.y - 1)
 		else
 			this.pdspr:remove()
@@ -903,7 +901,7 @@ key={
 			this.pdspr:add()
 		end
 		this.pdspr:setImage(pdimg, flip(this.flip.x,this.flip.y))
-		this.pdspr:moveTo(kDrawOffsetX + this.x, kDrawOffsetY + this.y)
+		this.pdspr:moveTo(kDrawOffsetX + this.x - 1, kDrawOffsetY + this.y - 1)
 	end
 }
 add(types,key)
@@ -927,6 +925,17 @@ chest={
 				destroy_object(this)
 			end
 		end
+	end,
+	draw=function(this)
+		local pdimg <const> = data.imagetables.chest
+		if not this.pdspr then
+			this.pdspr = playdate.graphics.sprite.new(pdimg)
+			this.pdspr:setCenter(0,0)
+			this.pdspr:setZIndex(20)
+			this.pdspr:add()
+		end
+		this.pdspr:setImage(pdimg)
+		this.pdspr:moveTo(kDrawOffsetX + this.x, kDrawOffsetY + this.y)
 	end
 }
 add(types,chest)
@@ -940,8 +949,11 @@ platform={
 	end,
 	update=function(this)
 		this.spd.x=this.dir*0.65
-		if this.x<-16 then this.x=128
-		elseif this.x>128 then this.x=-16 end
+		if this.x<-16 then
+			this.x=128
+		elseif this.x>128 then
+			this.x=-16
+		end
 		if not this.check(player,0,0) then
 			local hit=this.collide(player,0,-1)
 			if hit~=nil then
@@ -951,8 +963,15 @@ platform={
 		this.last=this.x
 	end,
 	draw=function(this)
-		spr(11,this.x,this.y-1)
-		spr(12,this.x+8,this.y-1)
+		local pdimg <const> = data.imagetables.platform
+		if not this.pdspr then
+			this.pdspr = playdate.graphics.sprite.new(pdimg)
+			this.pdspr:setCenter(0,0)
+			this.pdspr:setZIndex(20)
+			this.pdspr:add()
+		end
+		this.pdspr:setImage(pdimg)
+		this.pdspr:moveTo(kDrawOffsetX + this.x-1, kDrawOffsetY + this.y-2)
 	end
 }
 
@@ -1107,19 +1126,30 @@ room_title = {
 		this.delay-=1
 		if this.delay<-30 then
 			destroy_object(this)
+			layers.time:remove()
 		elseif this.delay<0 then
-
-			rectfill(24,58,104,70,0)
-			if room.x==3 and room.y==1 then
-				_print("old site",48,62,7)
-			elseif level_index()==30 then
-				_print("summit",52,62,7)
-			else
-				local level=(1+level_index())*100
-				_print(level.." m",52+(level<1000 and 2 or 0),62,7)
+			local pdimg <const> = playdate.graphics.image.new(80, 12)
+			playdate.graphics.pushContext(pdimg)
+				playdate.graphics.fillRect(0, 0, 80, 12)
+				if room.x==3 and room.y==1 then
+					_print("old site",24,4,7)
+				elseif level_index()==30 then
+					_print("summit",28,4,7)
+				else
+					local level=(1+level_index())*100
+					_print(level.." m",28+(level<1000 and 2 or 0),4,7)
+				end
+			playdate.graphics.popContext()
+			if not this.pdspr then
+				this.pdspr = playdate.graphics.sprite.new(pdimg)
+				this.pdspr:setCenter(0,0)
+				this.pdspr:setZIndex(20)
+				this.pdspr:add()
 			end
+			this.pdspr:setImage(pdimg)
+			this.pdspr:moveTo(kDrawOffsetX + 24, kDrawOffsetY + 58)
 
-			draw_time(4,4)
+			draw_time(4,8)
 		end
 	end
 }
@@ -1473,7 +1503,7 @@ function _draw()
 		drawInLayer("platforms_big_chest", function(img)
 			img:clear(playdate.graphics.kColorClear)
 			foreach(objects, function(o)
-				if o.type==platform or o.type==big_chest then
+				if o.type==big_chest then
 					draw_object(o)
 				end
 			end)
@@ -1493,7 +1523,7 @@ function _draw()
 	drawInLayer("objects", function(img)
 		img:clear(playdate.graphics.kColorClear)
 		foreach(objects, function(o)
-			if o.type~=platform and o.type~=big_chest then
+			if o.type~=big_chest then
 				draw_object(o)
 			end
 		end)
@@ -1594,8 +1624,19 @@ function draw_time(x,y)
 	local m=minutes%60
 	local h=flr(minutes/60)
 
-	rectfill(x,y,x+32,y+6,0)
-	_print((h<10 and "0"..h or h)..":"..(m<10 and "0"..m or m)..":"..(s<10 and "0"..s or s),x+1,y+1,7)
+	local pdimg <const> = playdate.graphics.image.new(33, 7)
+	playdate.graphics.pushContext(pdimg)
+		playdate.graphics.fillRect(0, 0, 33, 7)
+		_print((h<10 and "0"..h or h)..":"..(m<10 and "0"..m or m)..":"..(s<10 and "0"..s or s),1,1,7)
+	playdate.graphics.popContext()
+	if not layers.time then
+		layers.time = playdate.graphics.sprite.new(pdimg)
+		layers.time:setCenter(0,0)
+		layers.time:setZIndex(20)
+		layers.time:add()
+	end
+	layers.time:setImage(pdimg)
+	layers.time:moveTo(kDrawOffsetX + x, kDrawOffsetY + y)
 
 end
 
