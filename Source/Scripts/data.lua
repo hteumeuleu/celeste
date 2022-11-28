@@ -1,11 +1,6 @@
 data = {}
 
 --
--- Tiles
---
-data.tiles = playdate.graphics.imagetable.new("Assets/tiles")
-
---
 -- Flags (Custom Sprites Attributes)
 --
 data.flags = {
@@ -23,10 +18,12 @@ data.flags = {
 -- Image tables
 --
 data.imagetables = {
+	tiles=playdate.graphics.imagetable.new("Assets/tiles"),
 	player=playdate.graphics.imagetable.new("Assets/player"),
 	fruit=playdate.graphics.imagetable.new("Assets/fruit"),
 	balloon=playdate.graphics.imagetable.new("Assets/balloon"),
 	spring=playdate.graphics.imagetable.new("Assets/spring"),
+	key=playdate.graphics.imagetable.new("Assets/key"),
 }
 
 --

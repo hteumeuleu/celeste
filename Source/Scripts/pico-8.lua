@@ -208,7 +208,7 @@ end
 -- spr(n, [x,] [y,] [w,] [h,] [flip_x,] [flip_y])
 function spr(n, x, y, w, h, flip_x, flip_y)
 
-	if n > #data.tiles or n <= 0 then return end
+	if n > #data.imagetables.tiles or n <= 0 then return end
 	n = flr(n) or 1
 	x = flr(x) or 0
 	y = flr(y) or 0
@@ -225,7 +225,7 @@ function spr(n, x, y, w, h, flip_x, flip_y)
 		 flip = playdate.graphics.kImageFlippedY
 	end
 
-	local img = data.tiles:getImage(n + 1)
+	local img = data.imagetables.tiles:getImage(n + 1)
 	img:draw(x, y, flip)
 
 end
@@ -253,9 +253,9 @@ function map(celx, cely, sx, sy, celw, celh, mask)
     for cx=0,celw-1 do
         for cy=0,celh-1 do
         	local tile = mget(celx + cx, cely + cy)
-        	if tile <= #data.tiles then
+        	if tile <= #data.imagetables.tiles then
 				if (mask == 0) or (fget(tile, mask)) then
-					local img = data.tiles:getImage(tile + 1)
+					local img = data.imagetables.tiles:getImage(tile + 1)
 					local x = sx + (cx * 8)
 					local y = sy + (cy * 8)
 					img:draw(x, y)

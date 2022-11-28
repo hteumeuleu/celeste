@@ -310,8 +310,8 @@ player =
 
 		 -- next level
 		if this.y<-4 and level_index()<30 then
-            this.y = 0
-            this.x = 0
+			this.y = 0
+			this.x = 0
 			next_room()
 		end
 
@@ -642,13 +642,23 @@ fall_floor = {
 		end
 	end,
 	draw=function(this)
+		local spr_index = 0
 		if this.state~=2 then
 			if this.state~=1 then
-				spr(23,this.x,this.y)
+				spr_index = 24
 			else
-				spr(23+(15-this.delay)/5,this.x,this.y)
+				spr_index = 24+(15-this.delay)/5
 			end
 		end
+		local pdimg <const> = data.imagetables.tiles:getImage(flr(spr_index))
+		if not this.pdspr then
+			this.pdspr = playdate.graphics.sprite.new(pdimg)
+			this.pdspr:setCenter(0,0)
+			this.pdspr:setZIndex(20)
+			this.pdspr:add()
+		end
+		this.pdspr:setImage(pdimg)
+		this.pdspr:moveTo(kDrawOffsetX + this.x, kDrawOffsetY + this.y)
 	end
 }
 add(types,fall_floor)
@@ -848,13 +858,13 @@ fake_wall = {
 		if not this.pdspr then
 			local pdimg <const> = playdate.graphics.image.new(16, 16)
 			playdate.graphics.pushContext(pdimg)
-				local pdtile = data.tiles:getImage(64 + 1)
+				local pdtile = data.imagetables.tiles:getImage(64 + 1)
 				pdtile:draw(0,0)
-				pdtile = data.tiles:getImage(65 + 1)
+				pdtile = data.imagetables.tiles:getImage(65 + 1)
 				pdtile:draw(8,0)
-				pdtile = data.tiles:getImage(80 + 1)
+				pdtile = data.imagetables.tiles:getImage(80 + 1)
 				pdtile:draw(0,8)
-				pdtile = data.tiles:getImage(81 + 1)
+				pdtile = data.imagetables.tiles:getImage(81 + 1)
 				pdtile:draw(8,8)
 			playdate.graphics.popContext()
 			this.pdspr = playdate.graphics.sprite.new(pdimg)
@@ -883,6 +893,17 @@ key={
 			destroy_object(this)
 			has_key=true
 		end
+	end,
+	draw=function(this)
+		local pdimg <const> = data.imagetables.key:getImage(flr(this.spr) - 7)
+		if not this.pdspr then
+			this.pdspr = playdate.graphics.sprite.new(pdimg)
+			this.pdspr:setCenter(0,0)
+			this.pdspr:setZIndex(20)
+			this.pdspr:add()
+		end
+		this.pdspr:setImage(pdimg, flip(this.flip.x,this.flip.y))
+		this.pdspr:moveTo(kDrawOffsetX + this.x, kDrawOffsetY + this.y)
 	end
 }
 add(types,key)
@@ -1288,9 +1309,9 @@ function load_room(x,y)
 
 	--remove existing objects
 	foreach(objects,destroy_object)
-    if #objects > 0 then
-        objects = {}
-    end
+	if #objects > 0 then
+		objects = {}
+	end
 
 	--remove sprites
 	playdate.graphics.sprite.removeAll()
