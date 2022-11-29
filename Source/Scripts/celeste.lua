@@ -1675,10 +1675,10 @@ function draw_time(x,y)
 		layers.time = playdate.graphics.sprite.new(pdimg)
 		layers.time:setCenter(0,0)
 		layers.time:setZIndex(20)
-		layers.time:add()
 	end
 	layers.time:setImage(pdimg)
 	layers.time:moveTo(kDrawOffsetX + x, kDrawOffsetY + y)
+	layers.time:add()
 
 end
 
