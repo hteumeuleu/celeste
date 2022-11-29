@@ -919,7 +919,10 @@ chest={
 	tile=20,
 	if_not_fruit=true,
 	init=function(this)
-		this.x-=5
+		if this.x == 120 then
+			this.x = 116
+		end
+		this.x-=1
 		this.start=this.x
 		this.timer=20
 	end,
