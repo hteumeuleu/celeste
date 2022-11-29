@@ -26,6 +26,8 @@ data.imagetables = {
 	key=playdate.graphics.imagetable.new("Assets/key"),
 	chest=playdate.graphics.image.new("Assets/chest"),
 	platform=playdate.graphics.image.new("Assets/platform"),
+	big_chest=playdate.graphics.imagetable.new("Assets/big_chest"),
+	flag=playdate.graphics.imagetable.new("Assets/flag"),
 }
 
 --

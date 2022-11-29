@@ -1040,7 +1040,7 @@ big_chest={
 		this.hitbox.w=16
 	end,
 	draw=function(this)
-		local pdimg <const> = playdate.graphics.image.new(16, 16, playdate.graphics.kColorClear)
+		local pdimg <const> = playdate.graphics.image.new(18, 16, playdate.graphics.kColorClear)
 		if not this.pdspr then
 			this.pdspr = playdate.graphics.sprite.new(pdimg)
 			this.pdspr:setCenter(0,0)
@@ -1061,10 +1061,8 @@ big_chest={
 				this.particles={}
 			end
 			playdate.graphics.pushContext(pdimg)
-				local pdtile = data.imagetables.tiles:getImage(97)
+				local pdtile = data.imagetables.big_chest:getImage(1)
 				pdtile:draw(0,0)
-				pdtile = data.imagetables.tiles:getImage(98)
-				pdtile:draw(8,0)
 			playdate.graphics.popContext()
 		elseif this.state==1 then
 			this.timer-=1
@@ -1091,14 +1089,14 @@ big_chest={
 				line(this.x+p.x,this.y+8-p.y,this.x+p.x,min(this.y+8-p.y+p.h,this.y+8),7)
 			end)
 		end
-		playdate.graphics.pushContext(pdimg)
-			local pdtile = data.imagetables.tiles:getImage(113)
-			pdtile:draw(0,8)
-			pdtile = data.imagetables.tiles:getImage(114)
-			pdtile:draw(8,8)
-		playdate.graphics.popContext()
+		if this.state~=0 then
+			playdate.graphics.pushContext(pdimg)
+				local pdtile = data.imagetables.big_chest:getImage(2)
+				pdtile:draw(0,0)
+			playdate.graphics.popContext()
+		end
 		this.pdspr:setImage(pdimg)
-		this.pdspr:moveTo(kDrawOffsetX + this.x, kDrawOffsetY + this.y)
+		this.pdspr:moveTo(kDrawOffsetX + this.x-1, kDrawOffsetY + this.y)
 		this.pdspr:add()
 	end
 }
@@ -1155,18 +1153,46 @@ flag = {
 	end,
 	draw=function(this)
 		this.spr=118+(frames/5)%3
-		spr(this.spr,this.x,this.y)
+		if not this.show then
+			if layers.time ~= nil then
+				layers.time:remove()
+			end
+			if layers.score ~= nil then
+				layers.score:remove()
+			end
+		end
 		if this.show then
-			rectfill(32,2,96,31,0)
-			spr(26,55,6)
-			_print("x"..this.score,64,9,7)
-			draw_time(49,16)
-			_print("deaths:"..deaths,48,24,7)
+			if not layers.score then
+				local pdimg = playdate.graphics.image.new(64, 29)
+				playdate.graphics.pushContext(pdimg)
+					playdate.graphics.setColor(playdate.graphics.kColorBlack)
+					playdate.graphics.fillRect(0, 0, 64, 29)
+					local fruit = data.imagetables.fruit:getImage(1)
+					fruit:draw(22, 3)
+					_print("x"..this.score,32,7,7)
+					_print(get_time(),17,15)
+					_print("deaths:"..deaths,16,22,7)
+				playdate.graphics.popContext()
+				layers.score = playdate.graphics.sprite.new(pdimg)
+				layers.score:setCenter(0,0)
+				layers.score:setZIndex(20)
+				layers.score:moveTo(kDrawOffsetX + 32, 2)
+				layers.score:add()
+			end
 		elseif this.check(player,0,0) then
 			sfx(55)
 			sfx_timer=30
 			this.show=true
 		end
+		local pdimg <const> = data.imagetables.flag:getImage(flr(this.spr) - 117)
+		if not this.pdspr then
+			this.pdspr = playdate.graphics.sprite.new(pdimg)
+			this.pdspr:setCenter(0,0)
+			this.pdspr:setZIndex(20)
+			this.pdspr:add()
+		end
+		this.pdspr:setImage(pdimg)
+		this.pdspr:moveTo(kDrawOffsetX + this.x - 1, kDrawOffsetY + this.y - 1)
 	end
 }
 add(types,flag)
@@ -1665,14 +1691,10 @@ end
 
 function draw_time(x,y)
 
-	local s=seconds
-	local m=minutes%60
-	local h=flr(minutes/60)
-
 	local pdimg <const> = playdate.graphics.image.new(33, 7)
 	playdate.graphics.pushContext(pdimg)
 		playdate.graphics.fillRect(0, 0, 33, 7)
-		_print((h<10 and "0"..h or h)..":"..(m<10 and "0"..m or m)..":"..(s<10 and "0"..s or s),1,1,7)
+		_print(get_time(),1,1,7)
 	playdate.graphics.popContext()
 	if not layers.time then
 		layers.time = playdate.graphics.sprite.new(pdimg)
@@ -1682,6 +1704,15 @@ function draw_time(x,y)
 	layers.time:setImage(pdimg)
 	layers.time:moveTo(kDrawOffsetX + x, kDrawOffsetY + y)
 	layers.time:add()
+
+end
+
+function get_time()
+
+	local s=seconds
+	local m=minutes%60
+	local h=flr(minutes/60)
+	return (h<10 and "0"..h or h)..":"..(m<10 and "0"..m or m)..":"..(s<10 and "0"..s or s)
 
 end
 
