@@ -1546,6 +1546,12 @@ function _draw()
 			img:clear(playdate.graphics.kColorClear)
 			map(room.x * 16,room.y * 16,0,0,16,16,2)
 		end)
+		if layers.bg_terrain ~= nil then
+			local pdimg = layers.bg_terrain:getImage()
+			local alpha = 0.3
+			local ditherType = playdate.graphics.image.kDitherTypeDiagonalLine
+			layers.bg_terrain:setImage(pdimg:fadedImage(alpha, ditherType))
+		end
 	end
 
 	-- draw terrain
