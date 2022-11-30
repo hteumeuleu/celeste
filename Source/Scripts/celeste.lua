@@ -1113,6 +1113,24 @@ big_chest={
 }
 add(types,big_chest)
 
+tree={
+	tile=44,
+	init=function(this)
+		print("tree!")
+	end,
+	draw=function(this)
+		if not this.pdspr then
+			local pdimg <const> = data.imagetables.tree
+			this.pdspr = playdate.graphics.sprite.new(pdimg)
+			this.pdspr:setCenter(0,0)
+			this.pdspr:setZIndex(20)
+			this.pdspr:moveTo(kDrawOffsetX + this.x-1, kDrawOffsetY + this.y -1)
+			this.pdspr:add()
+		end
+	end,
+}
+add(types,tree)
+
 orb={
 	init=function(this)
 		this.spd.y=-4

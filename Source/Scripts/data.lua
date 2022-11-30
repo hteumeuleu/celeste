@@ -28,6 +28,7 @@ data.imagetables = {
 	platform=playdate.graphics.image.new("Assets/platform"),
 	big_chest=playdate.graphics.imagetable.new("Assets/big_chest"),
 	flag=playdate.graphics.imagetable.new("Assets/flag"),
+	tree=playdate.graphics.image.new("Assets/tree"),
 }
 
 --
