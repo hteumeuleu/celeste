@@ -369,23 +369,25 @@ end
 draw_hair=function(obj,facing)
 	local last={x=obj.x+4-facing*2,y=obj.y+(btn(k_down) and 4 or 3)}
 	local coords={}
-	foreach(obj.hair,function(h)
+	for i=1, #obj.hair do
+		local h = obj.hair[i]
 		h.x+=(last.x-h.x)/1.5
 		h.y+=(last.y+0.5-h.y)/1.5
-		add(coords,{x=h.x,y=h.y,s=h.size})
+		table.insert(coords, {x=h.x,y=h.y,s=h.size})
 		last=h
-	end)
+	end
 	-- Playdate sprite drawing
 	local x1 = 128
 	local x2 = 0
 	local y1 = 128
 	local y2 = 0
-	foreach(coords,function(c)
+	for i=1, #coords do
+		local c = coords[i]
 		x1 = math.min(x1, c.x - c.s)
 		x2 = math.max(x2, c.x + c.s)
 		y1 = math.min(y1, c.y - c.s)
 		y2 = math.max(y2, c.y + c.s)
-	end)
+	end
 	x1 = clamp(x1, 0, 128) - 1
 	x2 = clamp(x2, 0, 128) + 1
 	y1 = clamp(y1, 0, 128) - 1
@@ -401,14 +403,16 @@ draw_hair=function(obj,facing)
 		playdate.graphics.setColor(playdate.graphics.kColorWhite)
 		playdate.graphics.setLineWidth(1)
 		playdate.graphics.setStrokeLocation(playdate.graphics.kStrokeOutside)
-		foreach(coords,function(c)
+		for i=1, #coords do
+			local c = coords[i]
 			playdate.graphics.drawCircleAtPoint(c.x - x1, c.y - y1, c.s)
-		end)
+		end
 		-- Draw fill of hair
 		playdate.graphics.setColor(hair_color)
-		foreach(coords,function(c)
+		for i=1, #coords do
+			local c = coords[i]
 			playdate.graphics.fillCircleAtPoint(c.x - x1, c.y - y1, c.s)
-		end)
+		end
 	playdate.graphics.popContext()
 	layers.hair:setImage(pdimg)
 end
@@ -1497,12 +1501,15 @@ function _update()
 	end
 
 	-- update each object
-	foreach(objects,function(obj)
-		obj.move(obj.spd.x,obj.spd.y)
-		if obj.type.update~=nil then
-			obj.type.update(obj)
+	for i=1, #objects do 
+		local obj = objects[i]
+		if obj then
+			obj.move(obj.spd.x,obj.spd.y)
+			if obj.type.update~=nil then
+				obj.type.update(obj)
+			end
 		end
-	end)
+	end
 
 	-- start game
 	if is_title() then
@@ -1558,14 +1565,15 @@ function _draw()
 		img:clear(playdate.graphics.kColorClear)
 		playdate.graphics.setColor(playdate.graphics.kColorWhite)
 		if not is_title() then
-			foreach(clouds, function(c)
+			for i=1, #clouds do
+				local c = clouds[i]
 				c.x += c.spd
 				rectfill(c.x,c.y,c.x+c.w,c.y+4+(1-c.w/64)*12,new_bg~=nil and 14 or 1)
 				if c.x > 128 then
 					c.x = -c.w
 					c.y=rnd(128-8)
 				end
-			end)
+			end
 		end
 	end)
 
@@ -1595,9 +1603,12 @@ function _draw()
 	-- draw objects
 	drawInLayer("objects", function(img)
 		img:clear(playdate.graphics.kColorClear)
-		foreach(objects, function(o)
-			draw_object(o)
-		end)
+		for i=1, #objects do
+			local o = objects[i]
+			if o then
+				draw_object(o)
+			end
+		end
 	end)
 
 	-- draw fg terrain
@@ -1609,7 +1620,8 @@ function _draw()
 	end
 
 	-- particles
-	foreach(particles, function(p)
+	for i=1, #particles do
+		local p = particles[i]
 		if room_just_changed then
 			p.spr:add()
 		end
@@ -1627,18 +1639,21 @@ function _draw()
 			p.x=-4
 			p.y=rnd(w)
 		end
-	end)
+	end
 
 	-- dead particles
 	drawInLayer("dead_particles", function(img)
 		img:clear(playdate.graphics.kColorClear)
-		foreach(dead_particles, function(p)
-			p.x += p.spd.x
-			p.y += p.spd.y
-			p.t -=1
-			if p.t <= 0 then del(dead_particles,p) end
-			rectfill(p.x-p.t/5,p.y-p.t/5,p.x+p.t/5,p.y+p.t/5,14+p.t%2)
-		end)
+		for i=1, #dead_particles do
+			local p = dead_particles[i]
+			if p then
+				p.x += p.spd.x
+				p.y += p.spd.y
+				p.t -=1
+				if p.t <= 0 then del(dead_particles,p) end
+				rectfill(p.x-p.t/5,p.y-p.t/5,p.x+p.t/5,p.y+p.t/5,14+p.t%2)
+			end
+		end
 	end)
 
 	-- credits
