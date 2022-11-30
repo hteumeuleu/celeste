@@ -26,6 +26,9 @@ local k_down=playdate.kButtonDown
 local k_jump=playdate.kButtonA
 local k_dash=playdate.kButtonB
 
+local level_index = 0
+local is_title = false
+
 -- entry point --
 -----------------
 
@@ -55,14 +58,6 @@ function begin_game()
 	start_game=false
 	music(0,0,7)
 	load_room(0,0)
-end
-
-function level_index()
-	return room.x%8+room.y*8
-end
-
-function is_title()
-	return level_index()==31
 end
 
 -- effects --
@@ -308,7 +303,7 @@ player =
 		end
 
 		 -- next level
-		if this.y<-4 and level_index()<30 then
+		if this.y<-4 and level_index<30 then
 			this.y = 0
 			this.x = 0
 			next_room()
@@ -733,7 +728,7 @@ fruit={
 			hit.djump=max_djump
 			sfx_timer=20
 			sfx(13)
-			got_fruit[1+level_index()] = true
+			got_fruit[1+level_index] = true
 			init_object(lifeup,this.x,this.y)
 			destroy_object(this)
 		end
@@ -792,7 +787,7 @@ fly_fruit={
 			hit.djump=max_djump
 			sfx_timer=20
 			sfx(13)
-			got_fruit[1+level_index()] = true
+			got_fruit[1+level_index] = true
 			init_object(lifeup,this.x,this.y)
 			destroy_object(this)
 		end
@@ -1240,10 +1235,10 @@ room_title = {
 				GFX.fillRect(0, 0, 80, 12)
 				if room.x==3 and room.y==1 then
 					_print("old site",24,4,7)
-				elseif level_index()==30 then
+				elseif level_index==30 then
 					_print("summit",28,4,7)
 				else
-					local level=(1+level_index())*100
+					local level=(1+level_index)*100
 					_print(level.." m",28+(level<1000 and 2 or 0),4,7)
 				end
 			GFX.popContext()
@@ -1266,7 +1261,7 @@ room_title = {
 
 function init_object(type,x,y)
 
-	if type.if_not_fruit~=nil and got_fruit[1+level_index()] then
+	if type.if_not_fruit~=nil and got_fruit[1+level_index] then
 		return
 	end
 	local obj = {}
@@ -1443,6 +1438,8 @@ function load_room(x,y)
 	--current room
 	room.x = x
 	room.y = y
+	level_index = room.x%8+room.y*8
+	is_title = level_index == 31
 
 	--remove existing objects
 	foreach(objects,destroy_object)
@@ -1475,7 +1472,7 @@ function load_room(x,y)
 		end
 	end
 
-	if not is_title() then
+	if not is_title then
 		init_object(room_title,0,0)
 	end
 end
@@ -1485,7 +1482,7 @@ end
 
 function _update()
 	frames=((frames+1)%30)
-	if frames==0 and level_index()<30 then
+	if frames==0 and level_index<30 then
 		seconds=((seconds+1)%60)
 		if seconds==0 then
 			minutes+=1
@@ -1536,7 +1533,7 @@ function _update()
 	end
 
 	-- start game
-	if is_title() then
+	if is_title then
 		if not start_game and (btn(k_jump) or btn(k_dash)) then
 			music(-1)
 			start_game_flash=50
@@ -1588,7 +1585,7 @@ function _draw()
 	drawInLayer("clouds", function(img)
 		img:clear(GFX.kColorClear)
 		GFX.setColor(GFX.kColorWhite)
-		if not is_title() then
+		if not is_title then
 			for i=1, #clouds do
 				local c = clouds[i]
 				c.x += c.spd
@@ -1619,7 +1616,7 @@ function _draw()
 	if room_just_changed then
 		drawInLayer("terrain", function(img)
 			img:clear(GFX.kColorClear)
-			local off=is_title() and -4 or 0
+			local off=is_title and -4 or 0
 			map(room.x*16,room.y * 16,off,0,16,16,1)
 		end)
 	end
@@ -1652,13 +1649,13 @@ function _draw()
 		p.x += p.spd
 		p.y += sin(p.off)
 		p.off+= min(0.05,p.spd/32)
-		if is_title() then
+		if is_title then
 			p.spr:moveTo(p.x,p.y)
 		else
 			p.spr:moveTo(p.x + kDrawOffsetX,p.y + kDrawOffsetY)
 		end
 		local w = 128
-		if is_title() then w = 200 end
+		if is_title then w = 200 end
 		if p.x>w+4 then
 			p.x=-4
 			p.y=rnd(w)
@@ -1682,7 +1679,7 @@ function _draw()
 
 	-- credits
 	if room_just_changed then
-		if is_title() then
+		if is_title then
 			drawInLayer("credits", function(img)
 				img:clear(GFX.kColorClear)
 				_print("a+b",58,80,5)
@@ -1696,7 +1693,7 @@ function _draw()
 		end
 	end
 
-	if level_index()==30 then
+	if level_index==30 then
 		drawInLayer("level30", function(img)
 			img:clear(GFX.kColorClear)
 			local p
