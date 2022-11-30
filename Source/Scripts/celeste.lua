@@ -689,6 +689,17 @@ smoke={
 		if this.spr>=32 then
 			destroy_object(this)
 		end
+	end,
+	draw=function(this)
+		local pdimg <const> = data.imagetables.tiles:getImage(flr(this.spr)+1)
+		if not this.pdspr then
+			this.pdspr = playdate.graphics.sprite.new()
+			this.pdspr:setCenter(0,0)
+			this.pdspr:setZIndex(20)
+			this.pdspr:add()
+		end
+		this.pdspr:setImage(pdimg, flip(this.flip.x, this.flip.y))
+		this.pdspr:moveTo(kDrawOffsetX + this.x, kDrawOffsetY + this.y)
 	end
 }
 
