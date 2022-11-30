@@ -427,9 +427,10 @@ draw_hair=function(obj,facing)
 	y2 = clamp(y2, 0, 128) + 1
 	local w <const> = x2 - x1
 	local h <const> = y2 - y1
-	layers.hair:setSize(w, h)
-	layers.hair:setCenter(0, 0)
-	layers.hair:moveTo(x1 + kDrawOffsetX, y1 + kDrawOffsetY)
+	local hairLayer = layers.hair
+	hairLayer:setSize(w, h)
+	hairLayer:setCenter(0, 0)
+	hairLayer:moveTo(x1 + kDrawOffsetX, y1 + kDrawOffsetY)
 	local pdimg <const> = GFX.image.new(w, h, GFX.kColorClear)
 	GFX.pushContext(pdimg)
 		-- Draw outline of hair
@@ -447,7 +448,7 @@ draw_hair=function(obj,facing)
 			GFX.fillCircleAtPoint(c.x - x1, c.y - y1, c.s)
 		end
 	GFX.popContext()
-	layers.hair:setImage(pdimg)
+	hairLayer:setImage(pdimg)
 end
 
 unset_hair_color=function()
