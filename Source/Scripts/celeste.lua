@@ -1,3 +1,5 @@
+local GFX = playdate.graphics
+
 -- globals --
 -------------
 
@@ -89,8 +91,8 @@ for i=0,24 do
 end
 
 for i, item in ipairs(particles) do
-	local img <const> = playdate.graphics.image.new(item.s + 1, item.s + 1, playdate.graphics.kColorWhite)
-	item.spr = playdate.graphics.sprite.new(img)
+	local img <const> = GFX.image.new(item.s + 1, item.s + 1, GFX.kColorWhite)
+	item.spr = GFX.sprite.new(img)
 	item.spr:setZIndex(30)
 end
 
@@ -329,7 +331,7 @@ player =
 		local pdimg <const> = data.imagetables.player:getImage(flr(this.spr))
 		pdimg:setInverted(this.djump == 0)
 		if not this.pdspr then
-			this.pdspr = playdate.graphics.sprite.new(pdimg)
+			this.pdspr = GFX.sprite.new(pdimg)
 			this.pdspr:setCenter(0,0)
 			this.pdspr:setZIndex(20)
 			this.pdspr:add()
@@ -359,9 +361,9 @@ end
 
 set_hair_color=function(djump)
 	if djump ~= 0 then
-		hair_color = playdate.graphics.kColorBlack
+		hair_color = GFX.kColorBlack
 	else
-		hair_color = playdate.graphics.kColorWhite
+		hair_color = GFX.kColorWhite
 	end
 
 end
@@ -397,28 +399,28 @@ draw_hair=function(obj,facing)
 	layers.hair:setSize(w, h)
 	layers.hair:setCenter(0, 0)
 	layers.hair:moveTo(x1 + kDrawOffsetX, y1 + kDrawOffsetY)
-	local pdimg <const> = playdate.graphics.image.new(w, h, playdate.graphics.kColorClear)
-	playdate.graphics.pushContext(pdimg)
+	local pdimg <const> = GFX.image.new(w, h, GFX.kColorClear)
+	GFX.pushContext(pdimg)
 		-- Draw outline of hair
-		playdate.graphics.setColor(playdate.graphics.kColorWhite)
-		playdate.graphics.setLineWidth(1)
-		playdate.graphics.setStrokeLocation(playdate.graphics.kStrokeOutside)
+		GFX.setColor(GFX.kColorWhite)
+		GFX.setLineWidth(1)
+		GFX.setStrokeLocation(GFX.kStrokeOutside)
 		for i=1, #coords do
 			local c = coords[i]
-			playdate.graphics.drawCircleAtPoint(c.x - x1, c.y - y1, c.s)
+			GFX.drawCircleAtPoint(c.x - x1, c.y - y1, c.s)
 		end
 		-- Draw fill of hair
-		playdate.graphics.setColor(hair_color)
+		GFX.setColor(hair_color)
 		for i=1, #coords do
 			local c = coords[i]
-			playdate.graphics.fillCircleAtPoint(c.x - x1, c.y - y1, c.s)
+			GFX.fillCircleAtPoint(c.x - x1, c.y - y1, c.s)
 		end
-	playdate.graphics.popContext()
+	GFX.popContext()
 	layers.hair:setImage(pdimg)
 end
 
 unset_hair_color=function()
-	hair_color = playdate.graphics.kColorBlack
+	hair_color = GFX.kColorBlack
 end
 
 player_spawn = {
@@ -471,7 +473,7 @@ player_spawn = {
 		local pdimg <const> = data.imagetables.player:getImage(flr(this.spr))
 		pdimg:setInverted(max_djump == 0)
 		if not this.pdspr then
-			this.pdspr = playdate.graphics.sprite.new(pdimg)
+			this.pdspr = GFX.sprite.new(pdimg)
 			this.pdspr:setCenter(0,0)
 			this.pdspr:setZIndex(20)
 		end
@@ -536,7 +538,7 @@ spring = {
 	draw=function(this)
 		local pdimg <const> = data.imagetables.spring:getImage(flr(this.spr - 17))
 		if not this.pdspr then
-			this.pdspr = playdate.graphics.sprite.new(pdimg)
+			this.pdspr = GFX.sprite.new(pdimg)
 			this.pdspr:setCenter(0,0)
 			this.pdspr:setZIndex(20)
 			this.pdspr:add()
@@ -583,18 +585,18 @@ balloon = {
 		if this.spr==22 then
 			-- Playdate sprite drawing
 			local function drawBalloon(img)
-				playdate.graphics.pushContext(img)
-					playdate.graphics.clear(playdate.graphics.kColorClear)
+				GFX.pushContext(img)
+					GFX.clear(GFX.kColorClear)
 					local pdtilestring = data.imagetables.balloon:getImage(flr(2+(this.offset*8)%3))
 					local pdtileballoon = data.imagetables.balloon:getImage(1)
 					pdtileballoon:draw(0,0)
 					pdtilestring:draw(0,8)
-				playdate.graphics.popContext()
+				GFX.popContext()
 			end
 			if not this.pdspr then
-				local pdimg <const> = playdate.graphics.image.new(10, 20)
+				local pdimg <const> = GFX.image.new(10, 20)
 				drawBalloon(pdimg)
-				this.pdspr = playdate.graphics.sprite.new(pdimg)
+				this.pdspr = GFX.sprite.new(pdimg)
 				this.pdspr:setCenter(0,0)
 				this.pdspr:setZIndex(20)
 			else
@@ -653,7 +655,7 @@ fall_floor = {
 		end
 		local pdimg <const> = data.imagetables.tiles:getImage(flr(spr_index))
 		if not this.pdspr then
-			this.pdspr = playdate.graphics.sprite.new(pdimg)
+			this.pdspr = GFX.sprite.new(pdimg)
 			this.pdspr:setCenter(0,0)
 			this.pdspr:setZIndex(20)
 			this.pdspr:add()
@@ -720,7 +722,7 @@ fruit={
 		-- Playdate sprite drawing
 		if not this.pdspr then
 			local pdimg <const> = data.imagetables.fruit:getImage(1)
-			this.pdspr = playdate.graphics.sprite.new(pdimg)
+			this.pdspr = GFX.sprite.new(pdimg)
 			this.pdspr:setCenter(0,0)
 			this.pdspr:setZIndex(20)
 			this.pdspr:add()
@@ -785,19 +787,19 @@ fly_fruit={
 		end
 		-- Playdate sprite drawing
 		local function drawFruit(img)
-			playdate.graphics.pushContext(img)
-				playdate.graphics.clear(playdate.graphics.kColorClear)
+			GFX.pushContext(img)
+				GFX.clear(GFX.kColorClear)
 				local pdtilewing = data.imagetables.fruit:getImage(flr(3+off))
 				local pdtilefruit = data.imagetables.fruit:getImage(2)
 				pdtilewing:draw(4,-1,flip(true, false))
 				pdtilewing:draw(16,-1)
 				pdtilefruit:draw(10,0)
-			playdate.graphics.popContext()
+			GFX.popContext()
 		end
 		if not this.pdspr then
-			local pdimg <const> = playdate.graphics.image.new(30, 10)
+			local pdimg <const> = GFX.image.new(30, 10)
 			drawFruit(pdimg)
-			this.pdspr = playdate.graphics.sprite.new(pdimg)
+			this.pdspr = GFX.sprite.new(pdimg)
 			this.pdspr:setCenter(0,0)
 			this.pdspr:setZIndex(20)
 			this.pdspr:add()
@@ -830,11 +832,11 @@ lifeup = {
 		this.flash+=0.5
 
 		if not this.pdspr then
-			local pdimg <const> = playdate.graphics.image.new(64, 24)
-			playdate.graphics.pushContext(pdimg)
+			local pdimg <const> = GFX.image.new(64, 24)
+			GFX.pushContext(pdimg)
 				_print("1000",0,0,7+this.flash%2)
-			playdate.graphics.popContext()
-			this.pdspr = playdate.graphics.sprite.new(pdimg)
+			GFX.popContext()
+			this.pdspr = GFX.sprite.new(pdimg)
 			this.pdspr:setCenter(0,0)
 			this.pdspr:setZIndex(20)
 			this.pdspr:add()
@@ -867,8 +869,8 @@ fake_wall = {
 	draw=function(this)
 		-- Playdate sprite drawing
 		if not this.pdspr then
-			local pdimg <const> = playdate.graphics.image.new(16, 16)
-			playdate.graphics.pushContext(pdimg)
+			local pdimg <const> = GFX.image.new(16, 16)
+			GFX.pushContext(pdimg)
 				local pdtile = data.imagetables.tiles:getImage(64 + 1)
 				pdtile:draw(0,0)
 				pdtile = data.imagetables.tiles:getImage(65 + 1)
@@ -877,8 +879,8 @@ fake_wall = {
 				pdtile:draw(0,8)
 				pdtile = data.imagetables.tiles:getImage(81 + 1)
 				pdtile:draw(8,8)
-			playdate.graphics.popContext()
-			this.pdspr = playdate.graphics.sprite.new(pdimg)
+			GFX.popContext()
+			this.pdspr = GFX.sprite.new(pdimg)
 			this.pdspr:setCenter(0,0)
 			this.pdspr:setZIndex(20)
 			this.pdspr:add()
@@ -908,7 +910,7 @@ key={
 	draw=function(this)
 		local pdimg <const> = data.imagetables.key:getImage(flr(this.spr) - 7)
 		if not this.pdspr then
-			this.pdspr = playdate.graphics.sprite.new(pdimg)
+			this.pdspr = GFX.sprite.new(pdimg)
 			this.pdspr:setCenter(0,0)
 			this.pdspr:setZIndex(20)
 			this.pdspr:add()
@@ -945,7 +947,7 @@ chest={
 	draw=function(this)
 		local pdimg <const> = data.imagetables.chest
 		if not this.pdspr then
-			this.pdspr = playdate.graphics.sprite.new(pdimg)
+			this.pdspr = GFX.sprite.new(pdimg)
 			this.pdspr:setCenter(0,0)
 			this.pdspr:setZIndex(20)
 			this.pdspr:add()
@@ -981,7 +983,7 @@ platform={
 	draw=function(this)
 		local pdimg <const> = data.imagetables.platform
 		if not this.pdspr then
-			this.pdspr = playdate.graphics.sprite.new(pdimg)
+			this.pdspr = GFX.sprite.new(pdimg)
 			this.pdspr:setCenter(0,0)
 			this.pdspr:setZIndex(20)
 			this.pdspr:add()
@@ -1005,13 +1007,13 @@ message={
 				end
 			end
 			this.off={x=2,y=2}
-			local pdimg <const> = playdate.graphics.image.new(115, 23)
+			local pdimg <const> = GFX.image.new(115, 23)
 			if not this.pdspr then
-				this.pdspr = playdate.graphics.sprite.new(pdimg)
+				this.pdspr = GFX.sprite.new(pdimg)
 				this.pdspr:setCenter(0,0)
 				this.pdspr:setZIndex(20)
 			end
-			playdate.graphics.pushContext(pdimg)
+			GFX.pushContext(pdimg)
 				for i=1,this.index do
 					if sub(this.text,i,i)~="#" then
 						rectfill(this.off.x-2,this.off.y-2,this.off.x+7,this.off.y+6,7)
@@ -1022,7 +1024,7 @@ message={
 						this.off.y+=7
 					end
 				end
-			playdate.graphics.popContext()
+			GFX.popContext()
 			this.pdspr:setImage(pdimg)
 			this.pdspr:moveTo(kDrawOffsetX + 6, kDrawOffsetY + 94)
 			this.pdspr:add()
@@ -1044,9 +1046,9 @@ big_chest={
 		this.hitbox.w=16
 	end,
 	draw=function(this)
-		local pdimg <const> = playdate.graphics.image.new(18, 16, playdate.graphics.kColorClear)
+		local pdimg <const> = GFX.image.new(18, 16, GFX.kColorClear)
 		if not this.pdspr then
-			this.pdspr = playdate.graphics.sprite.new(pdimg)
+			this.pdspr = GFX.sprite.new(pdimg)
 			this.pdspr:setCenter(0,0)
 			this.pdspr:setZIndex(20)
 		end
@@ -1064,10 +1066,10 @@ big_chest={
 				this.timer=60
 				this.particles={}
 			end
-			playdate.graphics.pushContext(pdimg)
+			GFX.pushContext(pdimg)
 				local pdtile = data.imagetables.big_chest:getImage(1)
 				pdtile:draw(0,0)
-			playdate.graphics.popContext()
+			GFX.popContext()
 		elseif this.state==1 then
 			this.timer-=1
 			shake=5
@@ -1094,10 +1096,10 @@ big_chest={
 			end)
 		end
 		if this.state~=0 then
-			playdate.graphics.pushContext(pdimg)
+			GFX.pushContext(pdimg)
 				local pdtile = data.imagetables.big_chest:getImage(2)
 				pdtile:draw(0,0)
-			playdate.graphics.popContext()
+			GFX.popContext()
 		end
 		this.pdspr:setImage(pdimg)
 		this.pdspr:moveTo(kDrawOffsetX + this.x-1, kDrawOffsetY + this.y)
@@ -1124,13 +1126,13 @@ orb={
 			max_djump=2
 			hit.djump=2
 		end
-		local pdimg <const> = playdate.graphics.image.new(8, 8, playdate.graphics.kColorClear)
+		local pdimg <const> = GFX.image.new(8, 8, GFX.kColorClear)
 		if not this.pdspr then
-			playdate.graphics.pushContext(pdimg)
+			GFX.pushContext(pdimg)
 				local pdtile = data.imagetables.tiles:getImage(103)
 				pdtile:draw(0,0)
-			playdate.graphics.popContext()
-			this.pdspr = playdate.graphics.sprite.new(pdimg)
+			GFX.popContext()
+			this.pdspr = GFX.sprite.new(pdimg)
 			this.pdspr:setCenter(0,0)
 			this.pdspr:setZIndex(20)
 			this.pdspr:add()
@@ -1167,17 +1169,17 @@ flag = {
 		end
 		if this.show then
 			if not layers.score then
-				local pdimg = playdate.graphics.image.new(64, 29)
-				playdate.graphics.pushContext(pdimg)
-					playdate.graphics.setColor(playdate.graphics.kColorBlack)
-					playdate.graphics.fillRect(0, 0, 64, 29)
+				local pdimg = GFX.image.new(64, 29)
+				GFX.pushContext(pdimg)
+					GFX.setColor(GFX.kColorBlack)
+					GFX.fillRect(0, 0, 64, 29)
 					local fruit = data.imagetables.fruit:getImage(1)
 					fruit:draw(22, 3)
 					_print("x"..this.score,32,7,7)
 					_print(get_time(),17,15)
 					_print("deaths:"..deaths,16,22,7)
-				playdate.graphics.popContext()
-				layers.score = playdate.graphics.sprite.new(pdimg)
+				GFX.popContext()
+				layers.score = GFX.sprite.new(pdimg)
 				layers.score:setCenter(0,0)
 				layers.score:setZIndex(20)
 				layers.score:moveTo(kDrawOffsetX + 32, 2)
@@ -1190,7 +1192,7 @@ flag = {
 		end
 		local pdimg <const> = data.imagetables.flag:getImage(flr(this.spr) - 117)
 		if not this.pdspr then
-			this.pdspr = playdate.graphics.sprite.new(pdimg)
+			this.pdspr = GFX.sprite.new(pdimg)
 			this.pdspr:setCenter(0,0)
 			this.pdspr:setZIndex(20)
 			this.pdspr:add()
@@ -1211,9 +1213,9 @@ room_title = {
 			destroy_object(this)
 			layers.time:remove()
 		elseif this.delay<0 then
-			local pdimg <const> = playdate.graphics.image.new(80, 12)
-			playdate.graphics.pushContext(pdimg)
-				playdate.graphics.fillRect(0, 0, 80, 12)
+			local pdimg <const> = GFX.image.new(80, 12)
+			GFX.pushContext(pdimg)
+				GFX.fillRect(0, 0, 80, 12)
 				if room.x==3 and room.y==1 then
 					_print("old site",24,4,7)
 				elseif level_index()==30 then
@@ -1222,9 +1224,9 @@ room_title = {
 					local level=(1+level_index())*100
 					_print(level.." m",28+(level<1000 and 2 or 0),4,7)
 				end
-			playdate.graphics.popContext()
+			GFX.popContext()
 			if not this.pdspr then
-				this.pdspr = playdate.graphics.sprite.new(pdimg)
+				this.pdspr = GFX.sprite.new(pdimg)
 				this.pdspr:setCenter(0,0)
 				this.pdspr:setZIndex(20)
 				this.pdspr:add()
@@ -1363,7 +1365,7 @@ function kill_player(obj)
 	shake=10
 	destroy_object(obj)
 	drawInLayer("hair", function(img)
-		img:clear(playdate.graphics.kColorClear)
+		img:clear(GFX.kColorClear)
 	end)
 	layers["hair"]:markDirty()
 	dead_particles={}
@@ -1427,7 +1429,7 @@ function load_room(x,y)
 	end
 
 	--remove sprites
-	playdate.graphics.sprite.removeAll()
+	GFX.sprite.removeAll()
 	for _, layer in ipairs(layers) do
 		layers[layer]:add()
 	end
@@ -1562,8 +1564,8 @@ function _draw()
 
 	-- clouds
 	drawInLayer("clouds", function(img)
-		img:clear(playdate.graphics.kColorClear)
-		playdate.graphics.setColor(playdate.graphics.kColorWhite)
+		img:clear(GFX.kColorClear)
+		GFX.setColor(GFX.kColorWhite)
 		if not is_title() then
 			for i=1, #clouds do
 				local c = clouds[i]
@@ -1580,13 +1582,13 @@ function _draw()
 	-- draw bg terrain
 	if room_just_changed then
 		drawInLayer("bg_terrain", function(img)
-			img:clear(playdate.graphics.kColorClear)
+			img:clear(GFX.kColorClear)
 			map(room.x * 16,room.y * 16,0,0,16,16,2)
 		end)
 		if layers.bg_terrain ~= nil then
 			local pdimg = layers.bg_terrain:getImage()
 			local alpha = 0.3
-			local ditherType = playdate.graphics.image.kDitherTypeDiagonalLine
+			local ditherType = GFX.image.kDitherTypeDiagonalLine
 			layers.bg_terrain:setImage(pdimg:fadedImage(alpha, ditherType))
 		end
 	end
@@ -1594,7 +1596,7 @@ function _draw()
 	-- draw terrain
 	if room_just_changed then
 		drawInLayer("terrain", function(img)
-			img:clear(playdate.graphics.kColorClear)
+			img:clear(GFX.kColorClear)
 			local off=is_title() and -4 or 0
 			map(room.x*16,room.y * 16,off,0,16,16,1)
 		end)
@@ -1602,7 +1604,7 @@ function _draw()
 
 	-- draw objects
 	drawInLayer("objects", function(img)
-		img:clear(playdate.graphics.kColorClear)
+		img:clear(GFX.kColorClear)
 		for i=1, #objects do
 			local o = objects[i]
 			if o then
@@ -1614,7 +1616,7 @@ function _draw()
 	-- draw fg terrain
 	if room_just_changed then
 		drawInLayer("fg_terrain", function(img)
-			img:clear(playdate.graphics.kColorClear)
+			img:clear(GFX.kColorClear)
 			map(room.x * 16,room.y * 16,0,0,16,16,3)
 		end)
 	end
@@ -1643,7 +1645,7 @@ function _draw()
 
 	-- dead particles
 	drawInLayer("dead_particles", function(img)
-		img:clear(playdate.graphics.kColorClear)
+		img:clear(GFX.kColorClear)
 		for i=1, #dead_particles do
 			local p = dead_particles[i]
 			if p then
@@ -1660,21 +1662,21 @@ function _draw()
 	if room_just_changed then
 		if is_title() then
 			drawInLayer("credits", function(img)
-				img:clear(playdate.graphics.kColorClear)
+				img:clear(GFX.kColorClear)
 				_print("a+b",58,80,5)
 				_print("matt thorson",42,96,5)
 				_print("noel berry",46,102,5)
 			end)
 		else
 			drawInLayer("credits", function(img)
-				img:clear(playdate.graphics.kColorClear)
+				img:clear(GFX.kColorClear)
 			end)
 		end
 	end
 
 	if level_index()==30 then
 		drawInLayer("level30", function(img)
-			img:clear(playdate.graphics.kColorClear)
+			img:clear(GFX.kColorClear)
 			local p
 			for i=1,count(objects) do
 				if objects[i].type==player then
@@ -1706,13 +1708,13 @@ end
 
 function draw_time(x,y)
 
-	local pdimg <const> = playdate.graphics.image.new(33, 7)
-	playdate.graphics.pushContext(pdimg)
-		playdate.graphics.fillRect(0, 0, 33, 7)
+	local pdimg <const> = GFX.image.new(33, 7)
+	GFX.pushContext(pdimg)
+		GFX.fillRect(0, 0, 33, 7)
 		_print(get_time(),1,1,7)
-	playdate.graphics.popContext()
+	GFX.popContext()
 	if not layers.time then
-		layers.time = playdate.graphics.sprite.new(pdimg)
+		layers.time = GFX.sprite.new(pdimg)
 		layers.time:setCenter(0,0)
 		layers.time:setZIndex(20)
 	end

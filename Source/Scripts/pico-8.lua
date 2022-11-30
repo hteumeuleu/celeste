@@ -1,9 +1,11 @@
+local GFX = playdate.graphics
+
 -- Global settings
 math.randomseed(playdate.getSecondsSinceEpoch())
-playdate.graphics.setFont(data.font)
-playdate.graphics.clear(playdate.graphics.kColorBlack)
-playdate.graphics.setBackgroundColor(playdate.graphics.kColorBlack)
-playdate.graphics.sprite.setBackgroundDrawingCallback(
+GFX.setFont(data.font)
+GFX.clear(GFX.kColorBlack)
+GFX.setBackgroundColor(GFX.kColorBlack)
+GFX.sprite.setBackgroundDrawingCallback(
 	function(x, y, width, height)
 	end
 )
@@ -39,8 +41,8 @@ layers = {
 }
 
 for i, layer in ipairs(layers) do
-	local image <const> = playdate.graphics.image.new(sceneWidth,sceneHeight, playdate.graphics.kColorClear)
-	layers[layer] = playdate.graphics.sprite.new(image)
+	local image <const> = GFX.image.new(sceneWidth,sceneHeight, GFX.kColorClear)
+	layers[layer] = GFX.sprite.new(image)
 	layers[layer]:setSize(sceneWidth, sceneHeight)
 	layers[layer]:moveTo(kDisplayOffsetX, kDisplayOffsetY)
 	layers[layer]:setZIndex(i)
@@ -51,9 +53,9 @@ function drawInLayer(layer, func)
 
 	if layers[layer] ~= nil and type(layers[layer]) == "table" then
 		local image <const> = layers[layer]:getImage()
-		playdate.graphics.pushContext(image)
+		GFX.pushContext(image)
 			func(image)
-		playdate.graphics.popContext()
+		GFX.popContext()
 	end
 
 end
@@ -90,13 +92,13 @@ layers.clouds:setVisible(false)
 -- Returns Playdate’s flip value from two booleans
 function flip(flip_x, flip_y)
 
-	local flip =  playdate.graphics.kImageUnflipped
+	local flip =  GFX.kImageUnflipped
 	if flip_x and flip_y then
-		 flip = playdate.graphics.kImageFlippedXY
+		 flip = GFX.kImageFlippedXY
 	elseif flip_x then
-		 flip = playdate.graphics.kImageFlippedX
+		 flip = GFX.kImageFlippedX
 	elseif flip_y then
-		 flip = playdate.graphics.kImageFlippedY
+		 flip = GFX.kImageFlippedY
 	end
 	return flip
 
@@ -179,11 +181,11 @@ function rectfill(x0, y0, x1, y1, col)
 	local width = math.max(x0, x1) - left + 1
 	local height = math.max(y0, y1) - top + 1
 	if col == nil then
-		playdate.graphics.setColor(playdate.graphics.kColorBlack)
+		GFX.setColor(GFX.kColorBlack)
 	elseif col == 7 then
-		playdate.graphics.setColor(playdate.graphics.kColorWhite)
+		GFX.setColor(GFX.kColorWhite)
 	end
-	playdate.graphics.fillRect(left, top, width, height)
+	GFX.fillRect(left, top, width, height)
 
 end
 
@@ -191,9 +193,9 @@ function circfill(x, y, r, col)
 
 	r = r or 4
 	if col == nil then
-		playdate.graphics.setBackgroundColor(playdate.graphics.kColorBlack)
+		GFX.setBackgroundColor(GFX.kColorBlack)
 	end
-	playdate.graphics.fillCircleAtPoint(x, y, r)
+	GFX.fillCircleAtPoint(x, y, r)
 
 end
 
@@ -226,13 +228,13 @@ function spr(n, x, y, w, h, flip_x, flip_y)
 	h = h or 1.0
 	flip_x = flip_x or false
 	flip_y = flip_y or false
-	local flip =  playdate.graphics.kImageUnflipped
+	local flip =  GFX.kImageUnflipped
 	if flip_x and flip_y then
-		 flip = playdate.graphics.kImageFlippedXY
+		 flip = GFX.kImageFlippedXY
 	elseif flip_x then
-		 flip = playdate.graphics.kImageFlippedX
+		 flip = GFX.kImageFlippedX
 	elseif flip_y then
-		 flip = playdate.graphics.kImageFlippedY
+		 flip = GFX.kImageFlippedY
 	end
 
 	local img = data.imagetables.tiles:getImage(n + 1)
@@ -328,12 +330,12 @@ function _print(text, x, y, color)
 	x = x or 0
 	y = y or 0
 	if color == 0 then
-		playdate.graphics.setImageDrawMode(playdate.graphics.kDrawModeFillBlack)
+		GFX.setImageDrawMode(GFX.kDrawModeFillBlack)
 	else
-		playdate.graphics.setImageDrawMode(playdate.graphics.kDrawModeFillWhite)
+		GFX.setImageDrawMode(GFX.kDrawModeFillWhite)
 	end
-	playdate.graphics.drawText(text, x, y)
-	playdate.graphics.setImageDrawMode(playdate.graphics.kDrawModeCopy)
+	GFX.drawText(text, x, y)
+	GFX.setImageDrawMode(GFX.kDrawModeCopy)
 
 end
 
@@ -358,10 +360,10 @@ function line(x0, y0, x1, y1, col)
 	line_last_x0 = x0
 	line_last_y0 = y0
 	if col == nil then
-		playdate.graphics.setColor(playdate.graphics.kColorBlack)
+		GFX.setColor(GFX.kColorBlack)
 	elseif col == 7 then
-		playdate.graphics.setColor(playdate.graphics.kColorWhite)
+		GFX.setColor(GFX.kColorWhite)
 	end
-	playdate.graphics.drawLine(x0, y0, x1, y1)
+	GFX.drawLine(x0, y0, x1, y1)
 
 end
