@@ -1682,7 +1682,7 @@ function _draw()
 			drawInLayer("credits", function(img)
 				img:clear(playdate.graphics.kColorClear)
 				_print("a+b",58,80,5)
-				_print("matt thorson",42,96,5)
+				_print("maddy thorson",40,96,5)
 				_print("noel berry",46,102,5)
 			end)
 		else
