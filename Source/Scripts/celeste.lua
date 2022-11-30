@@ -1610,11 +1610,8 @@ function _draw()
 	end
 
 	-- draw objects
-	drawInLayer("objects", function(img)
-		img:clear(playdate.graphics.kColorClear)
-		foreach(objects, function(o)
-			draw_object(o)
-		end)
+	foreach(objects, function(o)
+		draw_object(o)
 	end)
 
 	-- draw fg terrain

@@ -30,7 +30,6 @@ layers = {
 	"clouds",
 	"bg_terrain",
 	"terrain",
-	"objects",
 	"fg_terrain",
 	"hair",
 	"credits",
@@ -79,7 +78,6 @@ scale(2)
 -- layers.credits:setVisible(false)
 -- layers.particles:setVisible(false)
 -- layers.fg_terrain:setVisible(false)
-layers.objects:setVisible(false)
 -- layers.terrain:setVisible(false)
 -- layers.platforms_big_chest:setVisible(false)
 -- layers.bg_terrain:setVisible(false)
