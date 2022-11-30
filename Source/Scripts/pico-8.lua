@@ -104,7 +104,6 @@ function flip(flip_x, flip_y)
 
 end
 
->>>>>>> a700a8f (add local var for playdate.graphics)
 --
 -- PICO-8 functions
 --
