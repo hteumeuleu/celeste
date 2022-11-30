@@ -373,9 +373,13 @@ draw_hair=function(obj,facing)
 	local coords={}
 	for i=1, #obj.hair do
 		local h = obj.hair[i]
-		h.x+=(last.x-h.x)/1.5
-		h.y+=(last.y+0.5-h.y)/1.5
-		table.insert(coords, {x=h.x,y=h.y,s=h.size})
+		local x = h.x
+		local y = h.y
+		x+=(last.x-x)/1.5
+		y+=(last.y+0.5-y)/1.5
+		table.insert(coords, {x=x,y=y,s=h.size})
+		h.x = x
+		h.y = y
 		last=h
 	end
 	-- Playdate sprite drawing
@@ -385,10 +389,27 @@ draw_hair=function(obj,facing)
 	local y2 = 0
 	for i=1, #coords do
 		local c = coords[i]
-		x1 = math.min(x1, c.x - c.s)
-		x2 = math.max(x2, c.x + c.s)
-		y1 = math.min(y1, c.y - c.s)
-		y2 = math.max(y2, c.y + c.s)
+		local s = c.s
+
+		local newX1 = c.x - s
+		if newX1 < x1 then
+			x1 = newX1
+		end
+
+		local newX2 = c.x + s
+		if newX2 > x2 then
+			x2 = newX2
+		end
+
+		local newY1 = c.y - s
+		if newY1 < y1 then
+			y1 = newY1
+		end
+
+		local newY2 = c.y + s
+		if newY2 > y2 then
+			y2 = newY2
+		end
 	end
 	x1 = clamp(x1, 0, 128) - 1
 	x2 = clamp(x2, 0, 128) + 1
