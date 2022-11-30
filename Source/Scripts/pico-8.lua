@@ -50,9 +50,9 @@ for i, layer in ipairs(layers) do
 end
 
 function drawInLayer(layer, func)
-
-	if layers[layer] ~= nil and type(layers[layer]) == "table" then
-		local image <const> = layers[layer]:getImage()
+	local l = layers[layer]
+	if l ~= nil and type(l) == "table" then
+		local image <const> = l:getImage()
 		GFX.pushContext(image)
 			func(image)
 		GFX.popContext()
@@ -221,9 +221,9 @@ end
 function spr(n, x, y, w, h, flip_x, flip_y)
 
 	if n > #data.imagetables.tiles or n <= 0 then return end
-	n = flr(n) or 1
-	x = flr(x) or 0
-	y = flr(y) or 0
+	n = math.floor(n) or 1
+	x = math.floor(x) or 0
+	y = math.floor(y) or 0
 	w = w or 1.0
 	h = h or 1.0
 	flip_x = flip_x or false

@@ -384,18 +384,20 @@ set_hair_color=function(djump)
 end
 
 draw_hair=function(obj,facing)
-	local last={x=obj.x+4-facing*2,y=obj.y+(btn(k_down) and 4 or 3)}
+	local lastX = obj.x+4-facing*2
+	local lastY = obj.y+(btn(k_down) and 4 or 3)
 	local coords={}
 	for i=1, #obj.hair do
 		local h = obj.hair[i]
 		local x = h.x
 		local y = h.y
-		x+=(last.x-x)/1.5
-		y+=(last.y+0.5-y)/1.5
+		x+=(lastX-x)/1.5
+		y+=(lastY+0.5-y)/1.5
 		table.insert(coords, {x=x,y=y,s=h.size})
 		h.x = x
 		h.y = y
-		last=h
+		lastX = x
+		lastY = y
 	end
 	-- Playdate sprite drawing
 	local x1 = 128
@@ -686,7 +688,7 @@ fall_floor = {
 		-- invisible, waiting to reset
 		elseif this.state==2 then
 			this.delay-=1
-			if this.delay<=0 and not this.check(player,0,0) then
+			if this.delay<=0 and not this.collide(player,0,0) ~= nil then
 				psfx(7)
 				this.state=0
 				this.collideable=true
@@ -962,7 +964,7 @@ key={
 		if is==10 and is~=was then
 			this.flip.x=not this.flip.x
 		end
-		if this.check(player,0,0) then
+		if this.collide(player,0,0) ~= nil then
 			sfx(23)
 			sfx_timer=10
 			destroy_object(this)
@@ -1039,7 +1041,7 @@ platform={
 		elseif this.x>128 then
 			this.x=-16
 		end
-		if not this.check(player,0,0) then
+		if not this.collide(player,0,0) ~= nil then
 			local hit=this.collide(player,0,-1)
 			if hit~=nil then
 				hit.move_x(this.x-this.last,1)
@@ -1064,7 +1066,7 @@ message={
 	end,
 	draw=function(this)
 		this.text="-- celeste mountain --#this memorial to those# perished on the climb"
-		if this.check(player,4,0) then
+		if this.collide(player,4,0) ~= nil then
 			if this.index<#this.text then
 			 this.index+=0.5
 				if this.index>=this.last+1 then
@@ -1262,7 +1264,7 @@ flag = {
 				layers.score:moveTo(kDrawOffsetX + 32, 2)
 				layers.score:add()
 			end
-		elseif this.check(player,0,0) then
+		elseif this.collide(player,0,0) ~= nil then
 			sfx(55)
 			sfx_timer=30
 			this.show=true
@@ -1352,12 +1354,14 @@ function init_object(type,x,y)
 	obj.rem = {x=0,y=0}
 
 	obj.is_solid=function(ox,oy)
-		if oy>0 and not obj.check(platform,ox,0) and obj.check(platform,ox,oy) then
+		local collide = obj.collide
+		if oy>0 and collide(platform,ox,0) ~= nil and collide(platform,ox,oy) == nil then
 			return true
 		end
-		return solid_at(obj.x+obj.hitbox.x+ox,obj.y+obj.hitbox.y+oy,obj.hitbox.width,obj.hitbox.height)
-			or obj.check(fall_floor,ox,oy)
-			or obj.check(fake_wall,ox,oy)
+		local hitbox = obj.hitbox
+		return tile_flag_at(obj.x+hitbox.x+ox,obj.y+hitbox.y+oy,hitbox.width,hitbox.height,0)
+			or collide(fall_floor,ox,oy) ~= nil
+			or collide(fake_wall,ox,oy) ~= nil
 	end
 
 	obj.is_ice=function(ox,oy)
@@ -1377,16 +1381,12 @@ function init_object(type,x,y)
 		return nil
 	end
 
-	obj.check=function(type,ox,oy)
-		return obj.collide(type,ox,oy) ~= nil
-	end
-
 	obj.move=function(ox,oy)
 		local amount
 		-- [x] get move amount
 		if ox ~= 0 then
 			obj.rem.x += ox
-			amount = flr(obj.rem.x + 0.5)
+			amount = math.floor(obj.rem.x + 0.5)
 			obj.rem.x -= amount
 			obj.move_x(amount,0)
 		end
@@ -1394,7 +1394,7 @@ function init_object(type,x,y)
 		-- [y] get move amount
 		if oy ~= 0 then
 			obj.rem.y += oy
-			amount = flr(obj.rem.y + 0.5)
+			amount = math.floor(obj.rem.y + 0.5)
 			obj.rem.y -= amount
 			obj.move_y(amount)
 		end
@@ -1402,8 +1402,19 @@ function init_object(type,x,y)
 
 	obj.move_x=function(amount,start)
 		if obj.solids then
-			local step = sign(amount)
-			for i=start,abs(amount) do
+			local step = 0
+			if amount > 0 then
+				step = 1
+			elseif amount < 0 then
+				step = -1
+			end
+
+			local count = amount
+			if count < 0 then
+				count = count * -1
+			end
+
+			for i=start, count do
 				if not obj.is_solid(step,0) then
 					obj.x += step
 				else
@@ -1419,8 +1430,19 @@ function init_object(type,x,y)
 
 	obj.move_y=function(amount)
 		if obj.solids then
-			local step = sign(amount)
-			for i=0,abs(amount) do
+			local step = 0 
+			if amount > 0 then
+				step = 1
+			elseif amount < 0 then
+				step = -1
+			end
+
+			local count = amount
+			if count < 0 then
+				count = count * -1
+			end
+
+			for i=0, count do
 			 if not obj.is_solid(0,step) then
 					obj.y += step
 				else
@@ -1885,8 +1907,8 @@ end
 
 function appr(val,target,amount)
 	return val > target 
-		and max(val - amount, target) 
-		or min(val + amount, target)
+		and math.max(val - amount, target) 
+		or math.min(val + amount, target)
 end
 
 function sign(v)
@@ -1897,17 +1919,13 @@ function maybe()
 	return rnd(1)<0.5
 end
 
-function solid_at(x,y,w,h)
-	return tile_flag_at(x,y,w,h,0)
-end
-
 function ice_at(x,y,w,h)
 	return tile_flag_at(x,y,w,h,4)
 end
 
 function tile_flag_at(x,y,w,h,flag)
-	for i=max(0,flr(x/8)),min(15,(x+w-1)/8) do
-		for j=max(0,flr(y/8)),min(15,(y+h-1)/8) do
+	for i=math.max(0,math.floor(x/8)),math.min(15,(x+w-1)/8) do
+		for j=math.max(0,math.floor(y/8)),math.min(15,(y+h-1)/8) do
 			if fget(tile_at(i,j),flag) then
 				return true
 			end
@@ -1917,12 +1935,14 @@ function tile_flag_at(x,y,w,h,flag)
 end
 
 function tile_at(x,y)
-	return mget(room.x * 16 + x, room.y * 16 + y)
+	local celx = room.x * 16 + x
+	local cely = room.y * 16 + y
+	return data.map[celx + (cely * 128) + 1]
 end
 
 function spikes_at(x,y,w,h,xspd,yspd)
-	for i=max(0,flr(x/8)),min(15,(x+w-1)/8) do
-		for j=max(0,flr(y/8)),min(15,(y+h-1)/8) do
+	for i=math.max(0,math.floor(x/8)),math.min(15,(x+w-1)/8) do
+		for j=math.max(0,math.floor(y/8)),math.min(15,(y+h-1)/8) do
 			local tile=tile_at(i,j)
 			if tile==17 and ((y+h-1)%8>=6 or y+h==j*8+8) and yspd>=0 then
 				return true
