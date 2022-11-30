@@ -32,7 +32,6 @@ layers = {
 	"terrain",
 	"objects",
 	"fg_terrain",
-	"dead_particles",
 	"hair",
 	"credits",
 	"level30",
@@ -78,7 +77,6 @@ scale(2)
 
 -- layers.level30:setVisible(false)
 -- layers.credits:setVisible(false)
-layers.dead_particles:setVisible(false)
 -- layers.particles:setVisible(false)
 -- layers.fg_terrain:setVisible(false)
 layers.objects:setVisible(false)

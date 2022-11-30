@@ -1367,13 +1367,19 @@ function kill_player(obj)
 		local angle=(dir/8)
 		add(dead_particles,{
 			x=obj.x+4,
-			y=obj.y+4,
+			y=min(obj.y+4, 120),
 			t=10,
 			spd={
 				x=sin(angle)*3,
 				y=cos(angle)*3
 			}
 		})
+		for i, item in ipairs(dead_particles) do
+			local img <const> = playdate.graphics.image.new(item.t, item.t, playdate.graphics.kColorWhite)
+			item.spr = playdate.graphics.sprite.new(img)
+			item.spr:setZIndex(30)
+			item.spr:add()
+		end
 	end
 	if not room_just_changed then
 		restart_room()
@@ -1630,15 +1636,18 @@ function _draw()
 	end)
 
 	-- dead particles
-	drawInLayer("dead_particles", function(img)
-		img:clear(playdate.graphics.kColorClear)
-		foreach(dead_particles, function(p)
-			p.x += p.spd.x
-			p.y += p.spd.y
-			p.t -=1
-			if p.t <= 0 then del(dead_particles,p) end
-			rectfill(p.x-p.t/5,p.y-p.t/5,p.x+p.t/5,p.y+p.t/5,14+p.t%2)
-		end)
+	foreach(dead_particles, function(p)
+		p.x += p.spd.x
+		p.y += p.spd.y
+		p.t -=1
+		if p.t <= 0 then
+			p.spr:remove()
+			del(dead_particles,p)
+		else
+			local img <const> = playdate.graphics.image.new(flr(p.t/5) + 1, flr(p.t/5) + 1, playdate.graphics.kColorWhite)
+			p.spr:setImage(img)
+			p.spr:moveTo(p.x + kDrawOffsetX, p.y + kDrawOffsetY)
+		end
 	end)
 
 	-- credits
