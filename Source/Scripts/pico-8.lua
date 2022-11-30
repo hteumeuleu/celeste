@@ -1,3 +1,110 @@
+local GFX = playdate.graphics
+
+-- Global settings
+math.randomseed(playdate.getSecondsSinceEpoch())
+GFX.setFont(data.font)
+GFX.clear(GFX.kColorBlack)
+GFX.setBackgroundColor(GFX.kColorBlack)
+GFX.sprite.setBackgroundDrawingCallback(
+	function(x, y, width, height)
+	end
+)
+
+-- Options
+local menu = playdate.getSystemMenu()
+local checkmarkMenuItem, error = menu:addCheckmarkMenuItem("Assist", false, function(value)
+    print("Assist mode: ", value)
+    if value then
+    	max_djump=999
+    end
+end)
+
+-- Variables
+local kDisplayOffsetX = 200
+local kDisplayOffsetY = 120
+kDrawOffsetX = 0
+kDrawOffsetY = 0
+local sceneWidth = 128
+local sceneHeight = 128
+
+-- Scene layers
+layers = {
+	"clouds",
+	"bg_terrain",
+	"terrain",
+	"objects",
+	"fg_terrain",
+	"dead_particles",
+	"hair",
+	"credits",
+	"level30",
+}
+
+for i, layer in ipairs(layers) do
+	local image <const> = GFX.image.new(sceneWidth,sceneHeight, GFX.kColorClear)
+	layers[layer] = GFX.sprite.new(image)
+	layers[layer]:setSize(sceneWidth, sceneHeight)
+	layers[layer]:moveTo(kDisplayOffsetX, kDisplayOffsetY)
+	layers[layer]:setZIndex(i)
+	layers[layer]:add()
+end
+
+function drawInLayer(layer, func)
+
+	if layers[layer] ~= nil and type(layers[layer]) == "table" then
+		local image <const> = layers[layer]:getImage()
+		GFX.pushContext(image)
+			func(image)
+		GFX.popContext()
+	end
+
+end
+
+-- Screen scaling
+function scale(x)
+
+	playdate.display.setScale(x)
+	kDisplayOffsetX = playdate.display.getWidth() / 2
+	kDisplayOffsetY = playdate.display.getHeight() / 2
+	kDrawOffsetX = (playdate.display.getWidth() - sceneWidth) / 2
+	kDrawOffsetY = (playdate.display.getHeight() - sceneHeight) / 2
+
+	for i, layer in ipairs(layers) do
+		if layers[layer] ~= nil and type(layers[layer]) == "table" then
+			layers[layer]:moveTo(kDisplayOffsetX, kDisplayOffsetY)
+		end
+	end
+
+end
+scale(2)
+
+-- layers.level30:setVisible(false)
+-- layers.credits:setVisible(false)
+layers.dead_particles:setVisible(false)
+-- layers.particles:setVisible(false)
+-- layers.fg_terrain:setVisible(false)
+layers.objects:setVisible(false)
+-- layers.terrain:setVisible(false)
+-- layers.platforms_big_chest:setVisible(false)
+-- layers.bg_terrain:setVisible(false)
+layers.clouds:setVisible(false)
+
+-- Returns Playdate’s flip value from two booleans
+function flip(flip_x, flip_y)
+
+	local flip =  GFX.kImageUnflipped
+	if flip_x and flip_y then
+		 flip = GFX.kImageFlippedXY
+	elseif flip_x then
+		 flip = GFX.kImageFlippedX
+	elseif flip_y then
+		 flip = GFX.kImageFlippedY
+	end
+	return flip
+
+end
+
+>>>>>>> a700a8f (add local var for playdate.graphics)
 --
 -- PICO-8 functions
 --
@@ -75,11 +182,11 @@ function rectfill(x0, y0, x1, y1, col)
 	local width = math.max(x0, x1) - left + 1
 	local height = math.max(y0, y1) - top + 1
 	if col == nil then
-		playdate.graphics.setColor(playdate.graphics.kColorBlack)
+		GFX.setColor(GFX.kColorBlack)
 	elseif col == 7 then
-		playdate.graphics.setColor(playdate.graphics.kColorWhite)
+		GFX.setColor(GFX.kColorWhite)
 	end
-	playdate.graphics.fillRect(left, top, width, height)
+	GFX.fillRect(left, top, width, height)
 
 end
 
@@ -87,9 +194,9 @@ function circfill(x, y, r, col)
 
 	r = r or 4
 	if col == nil then
-		playdate.graphics.setBackgroundColor(playdate.graphics.kColorBlack)
+		GFX.setBackgroundColor(GFX.kColorBlack)
 	end
-	playdate.graphics.fillCircleAtPoint(x, y, r)
+	GFX.fillCircleAtPoint(x, y, r)
 
 end
 
@@ -122,13 +229,13 @@ function spr(n, x, y, w, h, flip_x, flip_y)
 	h = h or 1.0
 	flip_x = flip_x or false
 	flip_y = flip_y or false
-	local flip =  playdate.graphics.kImageUnflipped
+	local flip =  GFX.kImageUnflipped
 	if flip_x and flip_y then
-		 flip = playdate.graphics.kImageFlippedXY
+		 flip = GFX.kImageFlippedXY
 	elseif flip_x then
-		 flip = playdate.graphics.kImageFlippedX
+		 flip = GFX.kImageFlippedX
 	elseif flip_y then
-		 flip = playdate.graphics.kImageFlippedY
+		 flip = GFX.kImageFlippedY
 	end
 
 	local img = data.imagetables.tiles:getImage(n + 1)
@@ -239,12 +346,12 @@ function _print(text, x, y, color)
 	x = x or 0
 	y = y or 0
 	if color == 0 then
-		playdate.graphics.setImageDrawMode(playdate.graphics.kDrawModeFillBlack)
+		GFX.setImageDrawMode(GFX.kDrawModeFillBlack)
 	else
-		playdate.graphics.setImageDrawMode(playdate.graphics.kDrawModeFillWhite)
+		GFX.setImageDrawMode(GFX.kDrawModeFillWhite)
 	end
-	playdate.graphics.drawText(text, x, y)
-	playdate.graphics.setImageDrawMode(playdate.graphics.kDrawModeCopy)
+	GFX.drawText(text, x, y)
+	GFX.setImageDrawMode(GFX.kDrawModeCopy)
 
 end
 
@@ -269,10 +376,10 @@ function line(x0, y0, x1, y1, col)
 	line_last_x0 = x0
 	line_last_y0 = y0
 	if col == nil then
-		playdate.graphics.setColor(playdate.graphics.kColorBlack)
+		GFX.setColor(GFX.kColorBlack)
 	elseif col == 7 then
-		playdate.graphics.setColor(playdate.graphics.kColorWhite)
+		GFX.setColor(GFX.kColorWhite)
 	end
-	playdate.graphics.drawLine(x0, y0, x1, y1)
+	GFX.drawLine(x0, y0, x1, y1)
 
 end
