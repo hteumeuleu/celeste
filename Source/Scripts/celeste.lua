@@ -99,6 +99,7 @@ dead_particles = {}
 player =
 {
 	tile=2,
+	type_id = 0,
 	init=function(this)
 		this.p_jump=false
 		this.p_dash=false
@@ -463,6 +464,7 @@ unset_hair_color=function()
 end
 
 player_spawn = {
+	type_id = 1,
 	tile=1,
 	init=function(this)
 		sfx(4)
@@ -529,6 +531,7 @@ player_spawn = {
 add(types,player_spawn)
 
 spring = {
+	type_id = 2,
 	tile=18,
 	init=function(this)
 		this.hide_in=0
@@ -593,6 +596,7 @@ function break_spring(obj)
 end
 
 balloon = {
+	type_id = 3,
 	tile=22,
 	init=function(this)
 		this.offset=rnd(1)
@@ -661,6 +665,7 @@ balloon = {
 add(types,balloon)
 
 fall_floor = {
+	type_id = 4,
 	tile=23,
 	init=function(this)
 		this.state=0
@@ -729,6 +734,7 @@ function break_fall_floor(obj)
 end
 
 smoke={
+	type_id = 5,
 	init=function(this)
 		this.spr=29
 		this.spd.y=-0.1
@@ -759,6 +765,7 @@ smoke={
 }
 
 fruit={
+	type_id = 6,
 	tile=26,
 	if_not_fruit=true,
 	init=function(this)
@@ -797,6 +804,7 @@ fruit={
 add(types,fruit)
 
 fly_fruit={
+	type_id = 7,
 	tile=28,
 	if_not_fruit=true,
 	init=function(this)
@@ -877,6 +885,7 @@ fly_fruit={
 add(types,fly_fruit)
 
 lifeup = {
+	type_id = 8,
 	init=function(this)
 		this.spd.y=-0.25
 		this.duration=30
@@ -907,6 +916,7 @@ lifeup = {
 }
 
 fake_wall = {
+	type_id = 9,
 	tile=64,
 	if_not_fruit=true,
 	init=function(this)
@@ -955,6 +965,7 @@ fake_wall = {
 add(types,fake_wall)
 
 key={
+	type_id = 10,
 	tile=8,
 	if_not_fruit=true,
 	update=function(this)
@@ -986,6 +997,7 @@ key={
 add(types,key)
 
 chest={
+	type_id = 11,
 	tile=20,
 	if_not_fruit=true,
 	init=function(this)
@@ -1017,6 +1029,7 @@ chest={
 add(types,chest)
 
 platform={
+	type_id = 12,
 	init=function(this)
 		this.x-=4
 		this.solids=false
@@ -1055,6 +1068,7 @@ platform={
 }
 
 message={
+	type_id = 13,
 	tile=86,
 	last=0,
 	init=function(this)
@@ -1103,6 +1117,7 @@ message={
 add(types,message)
 
 big_chest={
+	type_id = 14,
 	tile=96,
 	init=function(this)
 		this.state=0
@@ -1188,6 +1203,7 @@ tree={
 add(types,tree)
 
 orb={
+	type_id = 15,
 	init=function(this)
 		this.spd.y=-4
 		this.solids=false
@@ -1225,6 +1241,7 @@ orb={
 }
 
 flag = {
+	type_id = 16,
 	tile=118,
 	init=function(this)
 		this.x+=5
@@ -1283,6 +1300,7 @@ flag = {
 add(types,flag)
 
 room_title = {
+	type_id = 17,
 	init=function(this)
 		this.delay=5
 	end,
@@ -1372,9 +1390,8 @@ function init_object(type,x,y)
 		local other
 		for i=1,#objects do
 			other=objects[i]
-			if other ~=nil and other.type == type and other ~= obj and other.collideable and
+			if other ~=nil and other.type.type_id == type.type_id and other ~= obj and other.collideable and
 				obj.hitbox:offsetBy(obj.x+ox,obj.y+oy):intersects(other.hitbox:offsetBy(other.x,other.y)) then
-				print(obj.hitbox:offsetBy(obj.x+ox,obj.y+oy), other.hitbox:offsetBy(other.x,other.y))
 				return other
 			end
 		end
