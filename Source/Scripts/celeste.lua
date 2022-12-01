@@ -113,7 +113,7 @@ player =
 		this.dash_effect_time=0
 		this.dash_target={x=0,y=0}
 		this.dash_accel={x=0,y=0}
-		this.hitbox = {x=1,y=3,w=6,h=5}
+		this.hitbox = {1,3,6,5}
 		this.spr_off=0
 		this.was_on_ground=false
 		create_hair(this)
@@ -124,7 +124,7 @@ player =
 		local input = btn(k_right) and 1 or (btn(k_left) and -1 or 0)
 
 		-- spikes collide
-		if spikes_at(this.x+this.hitbox.x,this.y+this.hitbox.y,this.hitbox.w,this.hitbox.h,this.spd.x,this.spd.y) then
+		if spikes_at(this.x+this.hitbox[1],this.y+this.hitbox[2],this.hitbox[3],this.hitbox[4],this.spd.x,this.spd.y) then
 			kill_player(this)
 		end
 
@@ -586,7 +586,7 @@ balloon = {
 		this.offset=rnd(1)
 		this.start=this.y
 		this.timer=0
-		this.hitbox={x=-1,y=-1,w=10,h=10}
+		this.hitbox={-1,-1,10,10}
 	end,
 	update=function(this)
 		if this.spr==22 then
@@ -882,7 +882,7 @@ fake_wall = {
 	tile=64,
 	if_not_fruit=true,
 	update=function(this)
-		this.hitbox={x=-1,y=-1,w=18,h=18}
+		this.hitbox={-1,-1,18,18}
 		local hit = this.collide(player,0,0)
 		if hit~=nil and hit.dash_effect_time>0 then
 			hit.spd.x=-sign(hit.spd.x)*1.5
@@ -897,7 +897,7 @@ fake_wall = {
 			init_object(smoke,this.x+8,this.y+8)
 			init_object(fruit,this.x+4,this.y+4)
 		end
-		this.hitbox={x=0,y=0,w=16,h=16}
+		this.hitbox={0, 0, 16, 16}
 	end,
 	draw=function(this)
 		-- Playdate sprite drawing
@@ -998,7 +998,7 @@ platform={
 	init=function(this)
 		this.x-=4
 		this.solids=false
-		this.hitbox.w=16
+		this.hitbox[4]=16
 		this.last=this.x
 	end,
 	update=function(this)
@@ -1081,7 +1081,7 @@ big_chest={
 	tile=96,
 	init=function(this)
 		this.state=0
-		this.hitbox.w=16
+		this.hitbox[4]=16
 	end,
 	draw=function(this)
 		local pdimg <const> = GFX.image.new(18, 16, GFX.kColorClear)
@@ -1298,7 +1298,7 @@ function init_object(type,x,y)
 
 	obj.x = x
 	obj.y = y
-	obj.hitbox = { x=0,y=0,w=8,h=8 }
+	obj.hitbox = { 0, 0, 8, 8 }
 
 	obj.spd = {x=0,y=0}
 	obj.rem = {x=0,y=0}
@@ -1311,25 +1311,41 @@ function init_object(type,x,y)
 		end
 
 		local hitbox = obj.hitbox
-		return tile_flag_at(obj.x+hitbox.x+ox,obj.y+hitbox.y+oy,hitbox.w,hitbox.h,0)
+		return tile_flag_at(obj.x+hitbox[1]+ox,obj.y+hitbox[2]+oy,hitbox[3],hitbox[4],0)
 			or collide(fall_floor,ox,oy) ~= nil
 			or collide(fake_wall,ox,oy) ~= nil
 	end
 
 	obj.is_ice=function(ox,oy)
-		return ice_at(obj.x+obj.hitbox.x+ox,obj.y+obj.hitbox.y+oy,obj.hitbox.w,obj.hitbox.h)
+		return ice_at(obj.x+obj.hitbox[1]+ox,obj.y+obj.hitbox[2]+oy,obj.hitbox[3],obj.hitbox[4])
 	end
 
 	obj.collide=function(type,ox,oy)
-		local other
-		for i=1,#objects[type.type_id] do
-			other=objects[type.type_id][i]
-			if other ~= nil and other ~= obj and other.collideable and
-				other.x+other.hitbox.x+other.hitbox.w > obj.x+obj.hitbox.x+ox and 
-				other.y+other.hitbox.y+other.hitbox.h > obj.y+obj.hitbox.y+oy and
-				other.x+other.hitbox.x < obj.x+obj.hitbox.x+obj.hitbox.w+ox and 
-				other.y+other.hitbox.y < obj.y+obj.hitbox.y+obj.hitbox.h+oy then
-				return other
+		local typeList = objects[type.type_id]
+		if #typeList == 0 then
+			return nil
+		end
+
+		local other, objX, objY, otherX, otherY, objHitbox, otherHitbox, objDX, objDY, otherDX, otherDY
+		for i=1,#typeList do
+			other=typeList[i]
+			if other ~= nil and other.collideable then
+				objX = obj.x
+				objY = obj.y
+				otherX = other.x
+				otherY = other.y
+				objHitbox = obj.hitbox
+				otherHitbox = other.hitbox
+				objDX = objX+objHitbox[1]+ox
+				objDY = objY+objHitbox[2]+oy
+				otherDX = otherX+otherHitbox[1]
+				otherDY = otherY+otherHitbox[2]
+				if otherDX+otherHitbox[3] > objDX and 
+					otherDY+otherHitbox[4] > objDY and
+					otherDX < objDX+objHitbox[3] and 
+					otherDY < objDY+objHitbox[4] then
+					return other
+				end	
 			end
 		end
 		return nil
