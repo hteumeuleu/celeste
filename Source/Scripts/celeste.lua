@@ -1391,12 +1391,31 @@ function init_object(type,x,y)
 	end
 
 	obj.collide=function(type,ox,oy)
-		local other
-		for i=1,#objects[type.type_id] do
-			other=objects[type.type_id][i]
-			if other ~= nil and other ~= obj and other.collideable and
-				obj.hitbox:offsetBy(obj.x+ox,obj.y+oy):intersects(other.hitbox:offsetBy(other.x,other.y)) then
-				return other
+		local typeList = objects[type.type_id]
+		if #typeList == 0 then
+			return nil
+		end
+
+		local other, objX, objY, otherX, otherY, objHitbox, otherHitbox, objDX, objDY, otherDX, otherDY
+		for i=1,#typeList do
+			other=typeList[i]
+			if other ~= nil and other.collideable then
+				objX = obj.x
+				objY = obj.y
+				otherX = other.x
+				otherY = other.y
+				objHitbox = obj.hitbox
+				otherHitbox = other.hitbox
+				objDX = objX+objHitbox.x+ox
+				objDY = objY+objHitbox.y+oy
+				otherDX = otherX+otherHitbox.x
+				otherDY = otherY+otherHitbox.x
+				if otherDX+otherHitbox.width > objDX and
+					otherDY+otherHitbox.height > objDY and
+					otherDX < objDX+objHitbox.width and
+					otherDY < objDY+objHitbox.height then
+					return other
+				end
 			end
 		end
 		return nil
