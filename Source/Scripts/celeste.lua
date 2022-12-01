@@ -29,6 +29,7 @@ local k_dash=playdate.kButtonB
 
 function _init()
 	title_screen()
+	begin_game()
 end
 
 function title_screen()
@@ -42,7 +43,7 @@ function title_screen()
 	start_game=false
 	start_game_flash=0
 	music(40,0,7)
-	load_room(7,3)
+	-- load_room(7,3)
 end
 
 function begin_game()
@@ -52,7 +53,7 @@ function begin_game()
 	music_timer=0
 	start_game=false
 	music(0,0,7)
-	load_room(0,0)
+	load_room(3,0)
 end
 
 function level_index()
@@ -120,6 +121,9 @@ player =
 		if (pause_player) then return end
 
 		local input = btn(k_right) and 1 or (btn(k_left) and -1 or 0)
+
+		local x_before <const> = this.x
+		local y_before <const> = this.y
 
 		-- spikes collide
 		if spikes_at(this.x+this.hitbox.x,this.y+this.hitbox.y,this.hitbox.w,this.hitbox.h,this.spd.x,this.spd.y) then
@@ -317,6 +321,15 @@ player =
 
 	end, --<end update loop
 
+	check=function(this)
+		if this.pdspr then
+			print("player.check")
+			local ax, ay, collisions, length = this.pdspr:checkCollisions(kDrawOffsetX+this.x,kDrawOffsetY+this.y)
+			print(length)
+			return length > 0
+		end
+	end,
+
 	draw=function(this)
 
 		-- clamp in screen
@@ -330,6 +343,8 @@ player =
 		pdimg:setInverted(this.djump == 0)
 		if not this.pdspr then
 			this.pdspr = playdate.graphics.sprite.new(pdimg)
+			this.pdspr:setCollideRect(this.hitbox.x+1, this.hitbox.y+1, this.hitbox.w, this.hitbox.h)
+			this.pdspr:setGroups({1})
 			this.pdspr:setCenter(0,0)
 			this.pdspr:setZIndex(20)
 			this.pdspr:add()
@@ -616,7 +631,7 @@ fall_floor = {
 	update=function(this)
 		-- idling
 		if this.state == 0 then
-			if this.check(player,0,-1) or this.check(player,-1,0) or this.check(player,1,0) then
+			if this.check(this,player,0,-1) or this.check(this,player,-1,0) or this.check(this,player,1,0) then
 				break_fall_floor(this)
 			end
 		-- shaking
@@ -630,12 +645,18 @@ fall_floor = {
 		-- invisible, waiting to reset
 		elseif this.state==2 then
 			this.delay-=1
-			if this.delay<=0 and not this.check(player,0,0) then
+			if this.delay<=0 and not this.check(this,player,0,0) then
 				psfx(7)
 				this.state=0
 				this.collideable=true
 				init_object(smoke,this.x,this.y)
 			end
+		end
+	end,
+	check=function(this,type,ox,oy)
+		if this.pdspr then
+			local ax, ay, collisions, length = this.pdspr:checkCollisions(kDrawOffsetX+this.x+ox,kDrawOffsetY+this.y+oy)
+			return length > 0
 		end
 	end,
 	draw=function(this)
@@ -650,6 +671,9 @@ fall_floor = {
 		local pdimg <const> = data.imagetables.tiles:getImage(flr(spr_index))
 		if not this.pdspr then
 			this.pdspr = playdate.graphics.sprite.new(pdimg)
+			this.pdspr:setCollideRect(this.hitbox.x, this.hitbox.y, this.hitbox.w, this.hitbox.h)
+			this.pdspr:setGroups({32})
+			this.pdspr:setCollidesWithGroups({1})
 			this.pdspr:setCenter(0,0)
 			this.pdspr:setZIndex(20)
 			this.pdspr:add()
@@ -770,7 +794,7 @@ fly_fruit={
 			this.spd.y=sin(this.step)*0.5
 		end
 		-- collect
-		local hit=this.collide(player,0,0)
+		local hit=this.collide(this,player,0,0)
 		if hit~=nil then
 			hit.djump=max_djump
 			sfx_timer=20
@@ -778,6 +802,15 @@ fly_fruit={
 			got_fruit[1+level_index()] = true
 			init_object(lifeup,this.x,this.y)
 			destroy_object(this)
+		end
+	end,
+	collide=function(this,type,ox,oy)
+		if this.pdspr then
+			-- print("fly_fruit.collide")
+			local ax, ay, collisions, length = this.pdspr:checkCollisions(kDrawOffsetX+this.x+ox,kDrawOffsetY+this.y+oy)
+			if length > 0 then
+				return type
+			end
 		end
 	end,
 	draw=function(this)
@@ -805,6 +838,8 @@ fly_fruit={
 			local pdimg <const> = playdate.graphics.image.new(30, 10)
 			drawFruit(pdimg)
 			this.pdspr = playdate.graphics.sprite.new(pdimg)
+			this.pdspr:setCollideRect(this.hitbox.x+11, this.hitbox.y+1, this.hitbox.w, this.hitbox.h)
+			this.pdspr:setCollidesWithGroups({1})
 			this.pdspr:setCenter(0,0)
 			this.pdspr:setZIndex(20)
 			this.pdspr:add()
@@ -1298,23 +1333,33 @@ function init_object(type,x,y)
 		return ice_at(obj.x+obj.hitbox.x+ox,obj.y+obj.hitbox.y+oy,obj.hitbox.w,obj.hitbox.h)
 	end
 
-	obj.collide=function(type,ox,oy)
-		local other
-		for i=1,count(objects) do
-			other=objects[i]
-			if other ~=nil and other.type == type and other ~= obj and other.collideable and
-				other.x+other.hitbox.x+other.hitbox.w > obj.x+obj.hitbox.x+ox and 
-				other.y+other.hitbox.y+other.hitbox.h > obj.y+obj.hitbox.y+oy and
-				other.x+other.hitbox.x < obj.x+obj.hitbox.x+obj.hitbox.w+ox and 
-				other.y+other.hitbox.y < obj.y+obj.hitbox.y+obj.hitbox.h+oy then
-				return other
+	if type.collide~=nil then
+		obj.collide = type.collide
+	else
+		obj.collide=function(type,ox,oy)
+			print("obj.collide", type)
+			local other
+			for i=1,count(objects) do
+				other=objects[i]
+				if other ~=nil and other.type == type and other ~= obj and other.collideable and
+					other.x+other.hitbox.x+other.hitbox.w > obj.x+obj.hitbox.x+ox and 
+					other.y+other.hitbox.y+other.hitbox.h > obj.y+obj.hitbox.y+oy and
+					other.x+other.hitbox.x < obj.x+obj.hitbox.x+obj.hitbox.w+ox and 
+					other.y+other.hitbox.y < obj.y+obj.hitbox.y+obj.hitbox.h+oy then
+					return other
+				end
 			end
+			return nil
 		end
-		return nil
 	end
 
-	obj.check=function(type,ox,oy)
-		return obj.collide(type,ox,oy) ~= nil
+
+	if type.check~=nil then
+		obj.check = type.check
+	else
+		obj.check=function(type,ox,oy)
+			return obj.collide(type,ox,oy) ~= nil
+		end
 	end
 
 	obj.move=function(ox,oy)
