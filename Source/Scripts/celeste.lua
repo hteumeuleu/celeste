@@ -5,6 +5,10 @@ local GFX = playdate.graphics
 
 local room = { x=0, y=0 }
 local objects = {}
+for i = 1, 18 do
+	objects[i] = {}
+end
+
 local types = {}
 local freeze=0
 local shake=0
@@ -99,7 +103,7 @@ dead_particles = {}
 player =
 {
 	tile=2,
-	type_id = 0,
+	type_id = 18,
 	init=function(this)
 		this.p_jump=false
 		this.p_dash=false
@@ -1388,9 +1392,9 @@ function init_object(type,x,y)
 
 	obj.collide=function(type,ox,oy)
 		local other
-		for i=1,#objects do
-			other=objects[i]
-			if other ~=nil and other.type.type_id == type.type_id and other ~= obj and other.collideable and
+		for i=1,#objects[type.type_id] do
+			other=objects[type.type_id][i]
+			if other ~= nil and other ~= obj and other.collideable and
 				obj.hitbox:offsetBy(obj.x+ox,obj.y+oy):intersects(other.hitbox:offsetBy(other.x,other.y)) then
 				return other
 			end
@@ -1473,7 +1477,8 @@ function init_object(type,x,y)
 		end
 	end
 
-	add(objects,obj)
+	table.insert(objects[type.type_id], obj)
+
 	if obj.type.init~=nil then
 		obj.type.init(obj)
 	end
@@ -1485,7 +1490,7 @@ function destroy_object(obj)
 	if obj.pdspr ~= nil then
 		obj.pdspr:remove()
 	end
-	del(objects,obj)
+	del(objects[obj.type.type_id],obj)
 end
 
 function kill_player(obj)
@@ -1567,9 +1572,13 @@ function load_room(x,y)
 	end
 
 	--remove existing objects
-	foreach(objects,destroy_object)
-	if #objects > 0 then
-		objects = {}
+	for i = 1, #objects do
+		for j = 1, #objects[i] do
+			if objects[i][j] then
+				destroy_object(objects[i][j])
+			end
+		end
+		objects[i] = {}
 	end
 
 	--remove sprites
@@ -1648,13 +1657,15 @@ function _update()
 
 	-- update each object
 	for i=1, #objects do
-		local obj = objects[i]
-		if obj then
-			if obj.spd.x ~= 0 or obj.spd.y ~= 0 then
-				obj.move(obj.spd.x,obj.spd.y)
-			end
-			if obj.type.update~=nil then
-				obj.type.update(obj)
+		for j=1, #objects[i] do
+			local obj = objects[i][j]
+			if obj then
+				if obj.spd.x ~= 0 or obj.spd.y ~= 0 then
+					obj.move(obj.spd.x,obj.spd.y)
+				end
+				if obj.type.update~=nil then
+					obj.type.update(obj)
+				end
 			end
 		end
 	end
@@ -1782,10 +1793,12 @@ function _draw()
 	-- draw objects
 	drawInLayer("objects", function(img)
 		img:clear(GFX.kColorClear)
-		for i=1, #objects do
-			local o = objects[i]
-			if o then
-				draw_object(o)
+		for i=1, #objects do 
+			for j=1, #objects[i] do 
+				local o = objects[i][j]
+				if o then
+					draw_object(o)
+				end
 			end
 		end
 	end)
@@ -1857,13 +1870,7 @@ function _draw()
 	if level_index==30 then
 		drawInLayer("level30", function(img)
 			img:clear(GFX.kColorClear)
-			local p
-			for i=1,#objects do
-				if objects[i].type==player then
-					p = objects[i]
-					break
-				end
-			end
+			local p = objects[player.type_id][1]
 			if p~=nil then
 				local diff=min(24,40-abs(p.x+4-64))
 				rectfill(0,0,diff,128,0)
