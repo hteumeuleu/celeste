@@ -255,20 +255,31 @@ end
 
 function map(celx, cely, sx, sy, celw, celh, mask)
 
-	mask = mask or 0x0
-    for cx=0,celw-1 do
-        for cy=0,celh-1 do
-        	local tile = mget(celx + cx, cely + cy)
-        	if tile <= #data.imagetables.tiles then
-				if (mask == 0) or (fget(tile, mask)) then
-					local img = data.imagetables.tiles:getImage(tile + 1)
-					local x = sx + (cx * 8)
-					local y = sy + (cy * 8)
-					img:draw(x, y)
-				end
-			end
-        end
-    end
+	local roomIndex = (celx/16) + (cely/16)*8 + 1
+	local tilemap = playdate.graphics.tilemap.new()
+	tilemap:setImageTable(data.imagetables.tiles)
+	tilemap:setTiles(data.rooms[roomIndex], 16)
+	local wallSprites = playdate.graphics.sprite.addWallSprites(tilemap, data.emptyIDs, kDrawOffsetX, kDrawOffsetY)
+	for _, s in ipairs(wallSprites) do
+		s:setGroups({2})
+	end
+	print(#wallSprites)
+	tilemap:draw(sx,sy)
+
+	-- mask = mask or 0x0
+    -- for cx=0,celw-1 do
+    --     for cy=0,celh-1 do
+    --     	local tile = mget(celx + cx, cely + cy)
+    --     	if tile <= #data.imagetables.tiles then
+	-- 			if (mask == 0) or (fget(tile, mask)) then
+	-- 				local img = data.imagetables.tiles:getImage(tile + 1)
+	-- 				local x = sx + (cx * 8)
+	-- 				local y = sy + (cy * 8)
+	-- 				img:draw(x, y)
+	-- 			end
+	-- 		end
+    --     end
+    -- end
 
 end
 

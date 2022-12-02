@@ -115,15 +115,13 @@ player =
 		this.hitbox = {x=1,y=3,w=6,h=5}
 		this.spr_off=0
 		this.was_on_ground=false
+		this.before = {x=0,y=0}
 		create_hair(this)
 	end,
 	update=function(this)
 		if (pause_player) then return end
 
 		local input = btn(k_right) and 1 or (btn(k_left) and -1 or 0)
-
-		local x_before <const> = this.x
-		local y_before <const> = this.y
 
 		-- spikes collide
 		if spikes_at(this.x+this.hitbox.x,this.y+this.hitbox.y,this.hitbox.w,this.hitbox.h,this.spd.x,this.spd.y) then
@@ -309,6 +307,13 @@ player =
 			this.spr=1+this.spr_off%4
 		end
 
+		-- collisions
+		if this.before.x ~= this.x or this.before.y ~= this.y then
+			this.check(this)
+			this.before.x = this.x
+			this.before.y = this.y
+		end
+
 		 -- next level
 		if this.y<-4 and level_index()<30 then
 			this.y = 0
@@ -321,11 +326,19 @@ player =
 
 	end, --<end update loop
 
+	collide=function(this)
+		print("player.collide")
+	end,
+
 	check=function(this)
 		if this.pdspr then
 			print("player.check")
 			local ax, ay, collisions, length = this.pdspr:checkCollisions(kDrawOffsetX+this.x,kDrawOffsetY+this.y)
-			print(length)
+			if length > 0 then
+				for _, col in ipairs(collisions) do
+					-- printTable("--", col.other)
+				end
+			end
 			return length > 0
 		end
 	end,
@@ -345,14 +358,16 @@ player =
 			this.pdspr = playdate.graphics.sprite.new(pdimg)
 			this.pdspr:setCollideRect(this.hitbox.x+1, this.hitbox.y+1, this.hitbox.w, this.hitbox.h)
 			this.pdspr:setGroups({1})
+			this.pdspr:setCollidesWithGroups({2})
 			this.pdspr:setCenter(0,0)
 			this.pdspr:setZIndex(20)
 			this.pdspr:add()
 		else
 			this.pdspr:setImage(pdimg, flip(this.flip.x,this.flip.y))
 		end
-		this.pdspr:moveTo(kDrawOffsetX + this.x - 1, kDrawOffsetY + this.y - 1)
-
+		local actualX, actualY, collisions, length = this.pdspr:moveWithCollisions(kDrawOffsetX + this.x - 1, kDrawOffsetY + this.y - 1)
+		this.x = actualX-kDrawOffsetX+1
+		this.y = actualY-kDrawOffsetY+1
 		set_hair_color(this.djump)
 		draw_hair(this,this.flip.x and -1 or 1)
 		unset_hair_color()
@@ -631,9 +646,9 @@ fall_floor = {
 	update=function(this)
 		-- idling
 		if this.state == 0 then
-			if this.check(this,player,0,-1) or this.check(this,player,-1,0) or this.check(this,player,1,0) then
-				break_fall_floor(this)
-			end
+			-- if this.check(this,player,0,-1) or this.check(this,player,-1,0) or this.check(this,player,1,0) then
+			-- 	break_fall_floor(this)
+			-- end
 		-- shaking
 		elseif this.state==1 then
 			this.delay-=1
@@ -645,15 +660,20 @@ fall_floor = {
 		-- invisible, waiting to reset
 		elseif this.state==2 then
 			this.delay-=1
-			if this.delay<=0 and not this.check(this,player,0,0) then
-				psfx(7)
-				this.state=0
-				this.collideable=true
-				init_object(smoke,this.x,this.y)
-			end
+			-- if this.delay<=0 and not this.check(this,player,0,0) then
+			-- 	psfx(7)
+			-- 	this.state=0
+			-- 	this.collideable=true
+			-- 	init_object(smoke,this.x,this.y)
+			-- end
 		end
 	end,
+	collide=function(this)
+		print("fall_floor.collide")
+		break_fall_floor(this)
+	end,
 	check=function(this,type,ox,oy)
+		print("fall_floor.check")
 		if this.pdspr then
 			local ax, ay, collisions, length = this.pdspr:checkCollisions(kDrawOffsetX+this.x+ox,kDrawOffsetY+this.y+oy)
 			return length > 0
@@ -672,7 +692,7 @@ fall_floor = {
 		if not this.pdspr then
 			this.pdspr = playdate.graphics.sprite.new(pdimg)
 			this.pdspr:setCollideRect(this.hitbox.x, this.hitbox.y, this.hitbox.w, this.hitbox.h)
-			this.pdspr:setGroups({32})
+			this.pdspr:setGroups({2})
 			this.pdspr:setCollidesWithGroups({1})
 			this.pdspr:setCenter(0,0)
 			this.pdspr:setZIndex(20)
@@ -1321,12 +1341,12 @@ function init_object(type,x,y)
 	obj.rem = {x=0,y=0}
 
 	obj.is_solid=function(ox,oy)
-		if oy>0 and not obj.check(platform,ox,0) and obj.check(platform,ox,oy) then
-			return true
-		end
-		return solid_at(obj.x+obj.hitbox.x+ox,obj.y+obj.hitbox.y+oy,obj.hitbox.w,obj.hitbox.h)
-			or obj.check(fall_floor,ox,oy)
-			or obj.check(fake_wall,ox,oy)
+		-- if oy>0 and not obj.check(platform,ox,0) and obj.check(platform,ox,oy) then
+		-- 	return true
+		-- end
+		-- return solid_at(obj.x+obj.hitbox.x+ox,obj.y+obj.hitbox.y+oy,obj.hitbox.w,obj.hitbox.h)
+		-- 	or obj.check(fall_floor,ox,oy)
+		-- 	or obj.check(fake_wall,ox,oy)
 	end
 
 	obj.is_ice=function(ox,oy)
