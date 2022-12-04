@@ -101,6 +101,7 @@ dead_particles = {}
 
 player =
 {
+	tile=2,
 	init=function(this)
 		this.p_jump=false
 		this.p_dash=false
@@ -114,6 +115,12 @@ player =
 		this.hitbox = {x=1,y=3,w=6,h=5}
 		this.spr_off=0
 		this.was_on_ground=false
+		if this.pdspr ~= nil then
+			this.pdspr.id = "player"
+			this.pdspr:setCollideRect(this.hitbox.x+1, this.hitbox.y+1, this.hitbox.w, this.hitbox.h)
+			this.pdspr:setZIndex(20)
+			this.pdspr:setGroups({1})
+		end
 		create_hair(this)
 	end,
 	update=function(this)
@@ -326,17 +333,12 @@ player =
 		end
 
 		-- Playdate sprite drawing
-		local pdimg <const> = data.imagetables.player:getImage(flr(this.spr))
-		pdimg:setInverted(this.djump == 0)
-		if not this.pdspr then
-			this.pdspr = playdate.graphics.sprite.new(pdimg)
-			this.pdspr:setCenter(0,0)
-			this.pdspr:setZIndex(20)
-			this.pdspr:add()
-		else
+		if this.pdspr ~= nil then
+			local pdimg <const> = data.imagetables.player:getImage(flr(this.spr))
+			pdimg:setInverted(this.djump == 0)
 			this.pdspr:setImage(pdimg, flip(this.flip.x,this.flip.y))
+			this.pdspr:moveTo(kDrawOffsetX + this.x - 1, kDrawOffsetY + this.y - 1)
 		end
-		this.pdspr:moveTo(kDrawOffsetX + this.x - 1, kDrawOffsetY + this.y - 1)
 
 		set_hair_color(this.djump)
 		draw_hair(this,this.flip.x and -1 or 1)
@@ -530,15 +532,11 @@ spring = {
 		end
 	end,
 	draw=function(this)
-		local pdimg <const> = data.imagetables.spring:getImage(flr(this.spr - 17))
-		if not this.pdspr then
-			this.pdspr = playdate.graphics.sprite.new(pdimg)
-			this.pdspr:setCenter(0,0)
-			this.pdspr:setZIndex(20)
-			this.pdspr:add()
+		if this.pdspr ~= nil then
+			local pdimg <const> = data.imagetables.tiles:getImage(flr(this.spr) + 1)
+			this.pdspr:setImage(pdimg)
+			this.pdspr:moveTo(kDrawOffsetX + this.x, kDrawOffsetY + this.y)
 		end
-		this.pdspr:setImage(pdimg)
-		this.pdspr:moveTo(kDrawOffsetX + this.x, kDrawOffsetY + this.y)
 	end
 }
 add(types,spring)
@@ -612,12 +610,21 @@ fall_floor = {
 	init=function(this)
 		this.state=0
 		this.solid=true
+		if this.pdspr ~= nil then
+			this.pdspr:setZIndex(20)
+			this.pdspr:setCollidesWithGroups({1})
+		end
 	end,
 	update=function(this)
 		-- idling
 		if this.state == 0 then
-			if this.check(player,0,-1) or this.check(player,-1,0) or this.check(player,1,0) then
-				break_fall_floor(this)
+			local spritesInRect = playdate.graphics.sprite.querySpritesInRect(kDrawOffsetX+this.x-1, kDrawOffsetY+this.y-1, 10, 2)
+			if #spritesInRect > 0 then
+				for _, s in ipairs(spritesInRect) do
+					if s.id == "player" then
+						break_fall_floor(this)
+					end
+				end
 			end
 		-- shaking
 		elseif this.state==1 then
@@ -626,6 +633,7 @@ fall_floor = {
 				this.state=2
 				this.delay=60--how long it hides for
 				this.collideable=false
+				this.pdspr:setCollisionsEnabled(false)
 			end
 		-- invisible, waiting to reset
 		elseif this.state==2 then
@@ -634,6 +642,7 @@ fall_floor = {
 				psfx(7)
 				this.state=0
 				this.collideable=true
+				this.pdspr:setCollisionsEnabled(true)
 				init_object(smoke,this.x,this.y)
 			end
 		end
@@ -647,15 +656,11 @@ fall_floor = {
 				spr_index = 24+(15-this.delay)/5
 			end
 		end
-		local pdimg <const> = data.imagetables.tiles:getImage(flr(spr_index))
-		if not this.pdspr then
-			this.pdspr = playdate.graphics.sprite.new(pdimg)
-			this.pdspr:setCenter(0,0)
-			this.pdspr:setZIndex(20)
-			this.pdspr:add()
+		if this.pdspr ~= nil then
+			local pdimg <const> = data.imagetables.tiles:getImage(flr(spr_index))
+			this.pdspr:setImage(pdimg)
+			this.pdspr:moveTo(kDrawOffsetX + this.x, kDrawOffsetY + this.y)
 		end
-		this.pdspr:setImage(pdimg)
-		this.pdspr:moveTo(kDrawOffsetX + this.x, kDrawOffsetY + this.y)
 	end
 }
 add(types,fall_floor)
@@ -709,6 +714,12 @@ fruit={
 	init=function(this)
 		this.start=this.y
 		this.off=0
+		if this.pdspr ~= nil then
+			local pdimg <const> = data.imagetables.fruit:getImage(1)
+			this.pdspr:setImage(pdimg)
+			this.pdspr:setZIndex(20)
+			this.pdspr:setCollideRect(this.hitbox.x+1,this.hitbox.y+1,this.hitbox.w,this.hitbox.h)
+		end
 	end,
 	update=function(this)
 		local hit=this.collide(player,0,0)
@@ -724,15 +735,9 @@ fruit={
 		this.y=this.start+sin(this.off/40)*2.5
 	end,
 	draw=function(this)
-		-- Playdate sprite drawing
-		if not this.pdspr then
-			local pdimg <const> = data.imagetables.fruit:getImage(1)
-			this.pdspr = playdate.graphics.sprite.new(pdimg)
-			this.pdspr:setCenter(0,0)
-			this.pdspr:setZIndex(20)
-			this.pdspr:add()
+		if this.pdspr ~= nil then
+			this.pdspr:moveTo(kDrawOffsetX + this.x - 1, kDrawOffsetY + this.y - 1)
 		end
-		this.pdspr:moveTo(kDrawOffsetX + this.x - 1, kDrawOffsetY + this.y - 1)
 	end
 }
 add(types,fruit)
@@ -746,6 +751,10 @@ fly_fruit={
 		this.step=0.5
 		this.solids=false
 		this.sfx_delay=8
+		if this.pdspr ~= nil then
+			this.pdspr:setZIndex(20)
+			this.pdspr:setCollideRect(this.hitbox.x+11, this.hitbox.y+1, this.hitbox.w, this.hitbox.h)
+		end
 	end,
 	update=function(this)
 		--fly away
@@ -790,8 +799,7 @@ fly_fruit={
 		else
 			off=(off+0.25)%3
 		end
-		-- Playdate sprite drawing
-		local function drawFruit(img)
+		local drawFruit=function(img)
 			playdate.graphics.pushContext(img)
 				playdate.graphics.clear(playdate.graphics.kColorClear)
 				local pdtilewing = data.imagetables.fruit:getImage(flr(3+off))
@@ -801,19 +809,12 @@ fly_fruit={
 				pdtilefruit:draw(10,0)
 			playdate.graphics.popContext()
 		end
-		if not this.pdspr then
+		if this.pdspr ~= nil then
 			local pdimg <const> = playdate.graphics.image.new(30, 10)
 			drawFruit(pdimg)
-			this.pdspr = playdate.graphics.sprite.new(pdimg)
-			this.pdspr:setCenter(0,0)
-			this.pdspr:setZIndex(20)
-			this.pdspr:add()
-		else
-			local pdimg <const> = this.pdspr:getImage()
-			drawFruit(pdimg)
 			this.pdspr:setImage(pdimg)
+			this.pdspr:moveTo(kDrawOffsetX + this.x - 11, kDrawOffsetY + this.y - 1)
 		end
-		this.pdspr:moveTo(kDrawOffsetX + this.x - 11, kDrawOffsetY + this.y - 1)
 	end
 }
 add(types,fly_fruit)
@@ -853,6 +854,25 @@ lifeup = {
 fake_wall = {
 	tile=64,
 	if_not_fruit=true,
+	init=function(this)
+		this.hitbox={x=0,y=0,w=16,h=16}
+		if this.pdspr ~= nil then
+			local pdimg <const> = playdate.graphics.image.new(16, 16)
+			playdate.graphics.pushContext(pdimg)
+				local pdtile = data.imagetables.tiles:getImage(64 + 1)
+				pdtile:draw(0,0)
+				pdtile = data.imagetables.tiles:getImage(65 + 1)
+				pdtile:draw(8,0)
+				pdtile = data.imagetables.tiles:getImage(80 + 1)
+				pdtile:draw(0,8)
+				pdtile = data.imagetables.tiles:getImage(81 + 1)
+				pdtile:draw(8,8)
+			playdate.graphics.popContext()
+			this.pdspr:setImage(pdimg)
+			this.pdspr:setZIndex(20)
+			this.pdspr:setCollideRect(this.hitbox.x, this.hitbox.y, this.hitbox.w, this.hitbox.h)
+		end
+	end,
 	update=function(this)
 		this.hitbox={x=-1,y=-1,w=18,h=18}
 		local hit = this.collide(player,0,0)
@@ -872,25 +892,9 @@ fake_wall = {
 		this.hitbox={x=0,y=0,w=16,h=16}
 	end,
 	draw=function(this)
-		-- Playdate sprite drawing
-		if not this.pdspr then
-			local pdimg <const> = playdate.graphics.image.new(16, 16)
-			playdate.graphics.pushContext(pdimg)
-				local pdtile = data.imagetables.tiles:getImage(64 + 1)
-				pdtile:draw(0,0)
-				pdtile = data.imagetables.tiles:getImage(65 + 1)
-				pdtile:draw(8,0)
-				pdtile = data.imagetables.tiles:getImage(80 + 1)
-				pdtile:draw(0,8)
-				pdtile = data.imagetables.tiles:getImage(81 + 1)
-				pdtile:draw(8,8)
-			playdate.graphics.popContext()
-			this.pdspr = playdate.graphics.sprite.new(pdimg)
-			this.pdspr:setCenter(0,0)
-			this.pdspr:setZIndex(20)
-			this.pdspr:add()
+		if this.pdspr ~= nil then
+			this.pdspr:moveTo(kDrawOffsetX + this.x, kDrawOffsetY + this.y)
 		end
-		this.pdspr:moveTo(kDrawOffsetX + this.x, kDrawOffsetY + this.y)
 	end
 }
 add(types,fake_wall)
@@ -1116,17 +1120,15 @@ add(types,big_chest)
 tree={
 	tile=44,
 	init=function(this)
-		print("tree!")
+		if this.pdspr ~= nil then
+			local pdimg <const> = data.imagetables.tree
+			this.pdspr:setImage(pdimg)
+			this.pdspr:setZIndex(20)
+			this.pdspr:clearCollideRect()
+			this.pdspr:moveTo(kDrawOffsetX + this.x-1, kDrawOffsetY + this.y -1)
+		end
 	end,
 	draw=function(this)
-		if not this.pdspr then
-			local pdimg <const> = data.imagetables.tree
-			this.pdspr = playdate.graphics.sprite.new(pdimg)
-			this.pdspr:setCenter(0,0)
-			this.pdspr:setZIndex(20)
-			this.pdspr:moveTo(kDrawOffsetX + this.x-1, kDrawOffsetY + this.y -1)
-			this.pdspr:add()
-		end
 	end,
 }
 add(types,tree)
@@ -1281,6 +1283,15 @@ function init_object(type,x,y)
 	obj.x = x
 	obj.y = y
 	obj.hitbox = { x=0,y=0,w=8,h=8 }
+
+	if obj.spr ~= nil then
+		local pdimg <const> = data.imagetables.tiles:getImage(math.floor(obj.spr) + 1)
+		obj.pdspr = playdate.graphics.sprite.new()
+		obj.pdspr:setCenter(0,0)
+		obj.pdspr:setImage(pdimg, flip(obj.flip.x,obj.flip.y))
+		obj.pdspr:setCollideRect(obj.hitbox.x, obj.hitbox.y, obj.hitbox.w, obj.hitbox.h)
+		obj.pdspr:add()
+	end
 
 	obj.spd = {x=0,y=0}
 	obj.rem = {x=0,y=0}
