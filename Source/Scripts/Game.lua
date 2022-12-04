@@ -1,173 +1,43 @@
-import "Scripts/data.lua"
-import "Scripts/globals.lua"
-import "Scripts/pico-8.lua"
-import "Scripts/celeste.lua"
-import "Scripts/Options"
-
-class("Game").extends()
-
-local data = g_data
+class('Game').extends()
 
 function Game:init()
 
 	Game.super.init(self)
-	self._init = _init
-	self._update = _update
-	self._draw = _draw
-	self:scale(2)
-	self:addMenuItems()
-	self:initOptions()
-	self:_init(self)
+	self.player = Player(20, 96)
+	-- map
+	local tilemap = playdate.graphics.tilemap.new()
+	tilemap:setImageTable(data.imagetables.tiles)
+	tilemap:setTiles(data.rooms.test, 25)
+	local wallSprites = playdate.graphics.sprite.addWallSprites(tilemap, data.emptyIDs, 0, -4)
+	for _, s in ipairs(wallSprites) do
+		s:setGroups({2})
+		s:setCenter({2})
+		s.is_solid = true
+		s.is_ground = true
+		s.is_ice = true
+		s.collisionResponse = function(other)
+			return playdate.graphics.sprite.kCollisionTypeSlide
+		end
+	end
+	playdate.graphics.sprite.setBackgroundDrawingCallback(
+		function(x, y, width, height)
+			tilemap:draw(0,-4)
+		end
+	)
+	-- return
 	return self
 
 end
 
 function Game:update()
 
-	if not self.isPaused then
-		self:_update()
-		self:_draw()
-	end
+	self.player:move(self.player.spd.x, self.player.spd.y)
+	-- self.player:update()
 
 end
 
-function Game:restart()
+function Game:draw()
 
-	self:_init(self)
-
-end
-
-function Game:pause()
-
-	self.isPaused = true
-
-end
-
-function Game:unpause()
-
-	self.isPaused = false
-
-end
-
-function Game:initOptions()
-
-	self.options = Options()
-
-	local myInputHandlers = {
-		AButtonUp = function()
-			self.options:doSelectionCallback()
-		end,
-		BButtonUp = function()
-			self:toggleOptions()
-		end,
-		upButtonDown = function()
-			self.options:up()
-		end,
-		downButtonDown = function()
-			self.options:down()
-		end,
-	}
-
-	self.options:setHideCallback(function()
-		self:unpause()
-		playdate.inputHandlers.pop()
-	end)
-	self.options:setShowCallback(function()
-		self:pause()
-		playdate.inputHandlers.push(myInputHandlers, true)
-	end)
-
-end
-
-function Game:toggleOptions()
-
-	if self.options:isVisible() then
-		self.options:hide()
-	else
-		self.options:show()
-	end
-
-end
-
--- scale()
---
-function Game:scale(n)
-
-	playdate.display.setScale(n)
-	local kDisplayOffsetX = playdate.display.getWidth() / 2
-	local kDisplayOffsetY = playdate.display.getHeight() / 2
-	kDrawOffsetX = (playdate.display.getWidth() - 128) / 2
-	kDrawOffsetY = (playdate.display.getHeight() - 128) / 2
-
-	if data.cache ~= nil then
-		data.cache:moveTo(kDisplayOffsetX, kDisplayOffsetY)
-	end
-	if self.options ~= nil then
-		self.options:moveTo(kDisplayOffsetX, kDisplayOffsetY)
-	end
-	for i, layer in ipairs(layers) do
-		if layers[layer] ~= nil and type(layers[layer]) == "table" then
-			layers[layer]:moveTo(kDisplayOffsetX, kDisplayOffsetY)
-		end
-	end
-
-end
-
-function Game:addMenuItems()
-
-	local menu = playdate.getSystemMenu()
-	menu:addCheckmarkMenuItem("Fullscreen", true, function(value)
-		if value then
-			self:scale(2)
-		else
-			self:scale(1)
-		end
-	end)
-	menu:addMenuItem("Assist Mode", function()
-		self:toggleOptions()
-	end)
-	menu:addMenuItem("Reset", function()
-		self:restart()
-	end)
-
-end
-
-function Game:usedAssistMode()
-
-	return self.options:usedAnOption()
-
-end
-
--- serialize()
---
-function Game:serialize()
-
-	return serialize() -- see celeste.lua
-
-end
-
--- hasSave()
---
-function Game:hasSave()
-
-	return playdate.datastore.read("game") ~= nil
-
-end
-
--- save()
---
-function Game:save()
-
-	local prettyPrint = false
-	if playdate.isSimulator then
-		prettyPrint = true
-	end
-	playdate.datastore.write(self:serialize(), "game", prettyPrint)
-
-end
-
--- load()
---
-function Game:load()
+	self.player:draw()
 
 end
