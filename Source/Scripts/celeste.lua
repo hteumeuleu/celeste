@@ -431,6 +431,10 @@ player_spawn = {
 		this.delay=0
 		this.solids=false
 		create_hair(this)
+		if this.pdspr ~= nil then
+			this.pdspr.id = "player_spawn"
+			this.pdspr:setZIndex(20)
+		end
 	end,
 	update=function(this)
 		-- jumping up
@@ -466,16 +470,12 @@ player_spawn = {
 		end
 	end,
 	draw=function(this)
-		local pdimg <const> = data.imagetables.player:getImage(flr(this.spr))
-		pdimg:setInverted(max_djump == 0)
-		if not this.pdspr then
-			this.pdspr = playdate.graphics.sprite.new(pdimg)
-			this.pdspr:setCenter(0,0)
-			this.pdspr:setZIndex(20)
+		if this.pdspr ~= nil then
+			local pdimg <const> = data.imagetables.player:getImage(flr(this.spr))
+			pdimg:setInverted(max_djump == 0)
+			this.pdspr:setImage(pdimg, flip(this.flip.x,this.flip.y))
+			this.pdspr:moveTo(kDrawOffsetX + this.x - 1, kDrawOffsetY + this.y - 1)
 		end
-		this.pdspr:add()
-		this.pdspr:setImage(pdimg, flip(this.flip.x,this.flip.y))
-		this.pdspr:moveTo(kDrawOffsetX + this.x - 1, kDrawOffsetY + this.y - 1)
 
 		set_hair_color(max_djump)
 		draw_hair(this,1)
