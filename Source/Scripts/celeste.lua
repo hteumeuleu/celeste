@@ -1083,7 +1083,7 @@ big_chest={
 			this.timer-=1
 			shake=5
 			flash_bg=true
-			if this.timer<=45 and count(this.particles)<50 then
+			if this.timer<=45 and #this.particles<50 then
 				add(this.particles,{
 					x=1+rnd(14),
 					y=0,
@@ -1176,7 +1176,7 @@ flag = {
 		this.x+=5
 		this.score=0
 		this.show=false
-		for i=1,count(got_fruit) do
+		for i=1,#got_fruit do
 			if got_fruit[i] then
 				this.score+=1
 			end
@@ -1311,7 +1311,7 @@ function init_object(type,x,y)
 
 	obj.collide=function(type,ox,oy)
 		local other
-		for i=1,count(objects) do
+		for i=1,#objects do
 			other=objects[i]
 			if other ~=nil and other.type == type and other ~= obj and other.collideable and
 				other.x+other.hitbox.x+other.hitbox.w > obj.x+obj.hitbox.x+ox and 
@@ -1707,7 +1707,7 @@ function _draw()
 		drawInLayer("level30", function(img)
 			img:clear(playdate.graphics.kColorClear)
 			local p
-			for i=1,count(objects) do
+			for i=1,#objects do
 				if objects[i].type==player then
 					p = objects[i]
 					break
