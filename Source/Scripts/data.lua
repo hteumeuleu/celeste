@@ -43,7 +43,7 @@ data.imagetables = {
 --
 data.sfx = {}
 for i=0, 64 do
-	local sample = playdate.sound.sample.new("Sounds/sfx" .. i .. ".wav")
+	local sample = "Sounds/sfx" .. i .. ".wav"
 	table.insert(data.sfx, sample)
 end
 

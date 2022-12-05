@@ -296,7 +296,7 @@ function sfx(n, channel, offset, length)
 		if fxPlayer:isPlaying() then
 			fxPlayer:stop()
 		end
-		fxPlayer:setSample(data.sfx[n + 1])
+		fxPlayer:setSample(playdate.sound.sample.new(data.sfx[n + 1]))
 	end
 
 	fxPlayer:play()
