@@ -116,7 +116,7 @@ player =
 		this.spr_off=0
 		this.was_on_ground=false
 		if this.pdspr ~= nil then
-			this.pdspr.id = "player"
+			this.pdspr.type = "player"
 			this.pdspr:setCollideRect(this.hitbox.x+1, this.hitbox.y+1, this.hitbox.w, this.hitbox.h)
 			this.pdspr:setZIndex(20)
 			this.pdspr:setGroups({1})
@@ -432,7 +432,7 @@ player_spawn = {
 		this.solids=false
 		create_hair(this)
 		if this.pdspr ~= nil then
-			this.pdspr.id = "player_spawn"
+			this.pdspr.type = "player_spawn"
 			this.pdspr:setZIndex(20)
 		end
 	end,
@@ -489,6 +489,9 @@ spring = {
 	init=function(this)
 		this.hide_in=0
 		this.hide_for=0
+		if this.pdspr ~= nil then
+			this.pdspr.type = "spring"
+		end
 	end,
 	update=function(this)
 		if this.hide_for>0 then
@@ -611,6 +614,7 @@ fall_floor = {
 		this.state=0
 		this.solid=true
 		if this.pdspr ~= nil then
+			this.pdspr.type = "fall_floor"
 			this.pdspr:setZIndex(20)
 			this.pdspr:setCollidesWithGroups({1})
 		end
@@ -618,13 +622,8 @@ fall_floor = {
 	update=function(this)
 		-- idling
 		if this.state == 0 then
-			local spritesInRect = playdate.graphics.sprite.querySpritesInRect(kDrawOffsetX+this.x-1, kDrawOffsetY+this.y-1, 10, 2)
-			if #spritesInRect > 0 then
-				for _, s in ipairs(spritesInRect) do
-					if s.id == "player" then
-						break_fall_floor(this)
-					end
-				end
+			if this.fast_check("player",0,-1) or this.fast_check("player",-1,0) or this.fast_check("player",1,0) then
+				break_fall_floor(this)
 			end
 		-- shaking
 		elseif this.state==1 then
@@ -638,7 +637,7 @@ fall_floor = {
 		-- invisible, waiting to reset
 		elseif this.state==2 then
 			this.delay-=1
-			if this.delay<=0 and not this.check(player,0,0) then
+			if this.delay<=0 and not this.fast_check("player",0,0) then
 				psfx(7)
 				this.state=0
 				this.collideable=true
@@ -671,7 +670,7 @@ function break_fall_floor(obj)
 		obj.state=1
 		obj.delay=15--how long until it falls
 		init_object(smoke,obj.x,obj.y)
-		local hit=obj.collide(spring,0,-1)
+		local hit=obj.fast_collide("spring",0,-1)
 		if hit~=nil then
 			break_spring(hit)
 		end
@@ -779,7 +778,7 @@ fly_fruit={
 			this.spd.y=sin(this.step)*0.5
 		end
 		-- collect
-		local hit=this.collide(player,0,0)
+		local hit=this.fast_collide("player",0,0)
 		if hit~=nil then
 			hit.djump=max_djump
 			sfx_timer=20
@@ -1328,6 +1327,22 @@ function init_object(type,x,y)
 		return obj.collide(type,ox,oy) ~= nil
 	end
 
+	obj.fast_collide=function(type,ox,oy)
+		local spritesInRect <const> = playdate.graphics.sprite.querySpritesInRect(kDrawOffsetX+obj.x+obj.hitbox.x+ox, kDrawOffsetY+obj.y+obj.hitbox.y+oy, obj.hitbox.w, obj.hitbox.y)
+		if #spritesInRect > 0 then
+			for _, other in ipairs(spritesInRect) do
+				if other ~= obj.pdspr and other.type == type and other:collisionsEnabled() and obj.pdspr:collisionsEnabled() then
+					return other
+				end
+			end
+		end
+		return nil
+	end
+
+	obj.fast_check=function(type,ox,oy)
+		return obj.fast_collide(type,ox,oy) ~= nil
+	end
+
 	obj.move=function(ox,oy)
 		local amount
 		-- [x] get move amount
@@ -1643,7 +1658,7 @@ function _draw()
 		tilemap:setTiles(data.rooms[roomIndex], 16)
 		local wallSprites <const> = playdate.graphics.sprite.addWallSprites(tilemap, data.emptyIDs, kDrawOffsetX, kDrawOffsetY)
 		for _, s in ipairs(wallSprites) do
-			s.id = "wall"
+			s.type = "wall"
 			s:setGroups({2})
 		end
 	end
