@@ -118,7 +118,7 @@ player =
 		if this.pdspr ~= nil then
 			this.pdspr.type = "player"
 			this.pdspr:setCollideRect(this.hitbox.x+1, this.hitbox.y+1, this.hitbox.w, this.hitbox.h)
-			this.pdspr:setCollidesWithGroups({2,3})
+			this.pdspr:setCollidesWithGroups({2,3,4})
 			this.pdspr:setZIndex(20)
 			this.pdspr:setGroups({1})
 			this.pdspr.collisionResponse=function(other)
@@ -129,6 +129,20 @@ player =
 	end,
 	update=function(this)
 		if (pause_player) then return end
+
+		-- collisions
+		local actualX, actualY, collisions, length = this.pdspr:checkCollisions(kDrawOffsetX+this.x, kDrawOffsetY+this.y)
+		if length > 0 then
+			for _, col in ipairs(collisions) do
+				if col.other.type == "fall_floor" then
+					break_fall_floor(col.other.obj)
+				elseif (col.other.type == "fruit" or col.other.type == "fly_fruit") and col.other.hit ~= nil then
+					col.other:hit(col.sprite.obj)
+				elseif col.other.type == "balloon" and col.other.hit ~= nil then
+					col.other:hit(col.sprite.obj)
+				end
+			end
+		end
 
 		local input = btn(k_right) and 1 or (btn(k_left) and -1 or 0)
 
@@ -560,19 +574,34 @@ balloon = {
 		this.start=this.y
 		this.timer=0
 		this.hitbox={x=-1,y=-1,w=10,h=10}
+		if this.pdspr ~= nil then
+			this.pdspr.type="balloon"
+			local pdimg <const> = playdate.graphics.image.new(10, 17, playdate.graphics.kColorClear)
+			playdate.graphics.pushContext(pdimg)
+				local pdtileballoon = data.imagetables.balloon:getImage(1)
+				local pdtilestring = data.imagetables.balloon:getImage(flr(2+(this.offset*8)%3))
+				pdtileballoon:draw(0,0)
+				pdtilestring:draw(0,8)
+			playdate.graphics.popContext()
+			this.pdspr:setImage(pdimg)
+			this.pdspr:setGroups({4})
+			this.pdspr:setZIndex(20)
+			this.pdspr:setCollideRect(this.hitbox.x+1, this.hitbox.y+1, this.hitbox.w, this.hitbox.h)
+			this.pdspr.hit=function(arg)
+				if arg~=nil and arg.djump~=nil and arg.djump<max_djump then
+					psfx(6)
+					init_object(smoke,this.x,this.y)
+					arg.djump=max_djump
+					this.spr=0
+					this.timer=60
+				end
+			end
+		end
 	end,
 	update=function(this)
 		if this.spr==22 then
 			this.offset+=0.01
 			this.y=this.start+sin(this.offset)*2
-			local hit = this.collide(player,0,0)
-			if hit~=nil and hit.djump<max_djump then
-				psfx(6)
-				init_object(smoke,this.x,this.y)
-				hit.djump=max_djump
-				this.spr=0
-				this.timer=60
-			end
 		elseif this.timer>0 then
 			this.timer-=1
 		else
@@ -583,7 +612,6 @@ balloon = {
 	end,
 	draw=function(this)
 		if this.spr==22 then
-			-- Playdate sprite drawing
 			local function drawBalloon(img)
 				playdate.graphics.pushContext(img)
 					playdate.graphics.clear(playdate.graphics.kColorClear)
@@ -593,18 +621,12 @@ balloon = {
 					pdtilestring:draw(0,8)
 				playdate.graphics.popContext()
 			end
-			if not this.pdspr then
-				local pdimg <const> = playdate.graphics.image.new(10, 20)
-				drawBalloon(pdimg)
-				this.pdspr = playdate.graphics.sprite.new(pdimg)
-				this.pdspr:setCenter(0,0)
-				this.pdspr:setZIndex(20)
-			else
+			if this.pdspr ~= nil then
 				local pdimg <const> = this.pdspr:getImage()
 				drawBalloon(pdimg)
 				this.pdspr:setImage(pdimg)
+				this.pdspr:add()
 			end
-			this.pdspr:add()
 			this.pdspr:moveTo(kDrawOffsetX + this.x - 1, kDrawOffsetY + this.y - 1)
 		else
 			this.pdspr:remove()
@@ -628,13 +650,8 @@ fall_floor = {
 		end
 	end,
 	update=function(this)
-		-- idling
-		if this.state == 0 then
-			if this.fast_check("player",0,-1) or this.fast_check("player",-1,0) or this.fast_check("player",1,0) then
-				break_fall_floor(this)
-			end
 		-- shaking
-		elseif this.state==1 then
+		if this.state==1 then
 			this.delay-=1
 			if this.delay<=0 then
 				this.state=2
@@ -645,7 +662,7 @@ fall_floor = {
 		-- invisible, waiting to reset
 		elseif this.state==2 then
 			this.delay-=1
-			if this.delay<=0 and not this.fast_check("player",0,0) then
+			if this.delay<=0 and not this.check("player",0,0) then
 				psfx(7)
 				this.state=0
 				this.collideable=true
@@ -678,7 +695,7 @@ function break_fall_floor(obj)
 		obj.state=1
 		obj.delay=15--how long until it falls
 		init_object(smoke,obj.x,obj.y)
-		local hit=obj.fast_collide("spring",0,-1)
+		local hit=obj.collide("spring",0,-1)
 		if hit~=nil then
 			break_spring(hit)
 		end
@@ -724,20 +741,24 @@ fruit={
 		if this.pdspr ~= nil then
 			local pdimg <const> = data.imagetables.fruit:getImage(1)
 			this.pdspr:setImage(pdimg)
+			this.pdspr.type="fruit"
+			this.pdspr:setGroups({4})
 			this.pdspr:setZIndex(20)
 			this.pdspr:setCollideRect(this.hitbox.x+1,this.hitbox.y+1,this.hitbox.w,this.hitbox.h)
+			this.pdspr.hit=function(player)
+				-- collect
+				if player~=nil then
+					player.djump=max_djump
+					sfx_timer=20
+					sfx(13)
+					got_fruit[1+level_index()] = true
+					init_object(lifeup,this.x,this.y)
+					destroy_object(this)
+				end
+			end
 		end
 	end,
 	update=function(this)
-		local hit=this.collide(player,0,0)
-		if hit~=nil then
-			hit.djump=max_djump
-			sfx_timer=20
-			sfx(13)
-			got_fruit[1+level_index()] = true
-			init_object(lifeup,this.x,this.y)
-			destroy_object(this)
-		end
 		this.off+=1
 		this.y=this.start+sin(this.off/40)*2.5
 	end,
@@ -759,8 +780,21 @@ fly_fruit={
 		this.solids=false
 		this.sfx_delay=8
 		if this.pdspr ~= nil then
+			this.pdspr.type="fly_fruit"
 			this.pdspr:setZIndex(20)
 			this.pdspr:setCollideRect(this.hitbox.x+11, this.hitbox.y+1, this.hitbox.w, this.hitbox.h)
+			this.pdspr:setGroups({4})
+			this.pdspr.hit=function(player)
+				-- collect
+				if player~=nil then
+					player.djump=max_djump
+					sfx_timer=20
+					sfx(13)
+					got_fruit[1+level_index()] = true
+					init_object(lifeup,this.x,this.y)
+					destroy_object(this)
+				end
+			end
 		end
 	end,
 	update=function(this)
@@ -784,16 +818,6 @@ fly_fruit={
 			end
 			this.step+=0.05
 			this.spd.y=sin(this.step)*0.5
-		end
-		-- collect
-		local hit=this.fast_collide("player",0,0)
-		if hit~=nil then
-			hit.djump=max_djump
-			sfx_timer=20
-			sfx(13)
-			got_fruit[1+level_index()] = true
-			init_object(lifeup,this.x,this.y)
-			destroy_object(this)
 		end
 	end,
 	draw=function(this)
@@ -1294,6 +1318,7 @@ function init_object(type,x,y)
 	if obj.spr ~= nil then
 		local pdimg <const> = data.imagetables.tiles:getImage(math.floor(obj.spr) + 1)
 		obj.pdspr = playdate.graphics.sprite.new()
+		obj.pdspr.obj = obj
 		obj.pdspr:setCenter(0,0)
 		obj.pdspr:setImage(pdimg, flip(obj.flip.x,obj.flip.y))
 		obj.pdspr:setCollideRect(obj.hitbox.x, obj.hitbox.y, obj.hitbox.w, obj.hitbox.h)
@@ -1333,22 +1358,6 @@ function init_object(type,x,y)
 
 	obj.check=function(type,ox,oy)
 		return obj.collide(type,ox,oy) ~= nil
-	end
-
-	obj.fast_collide=function(type,ox,oy)
-		local spritesInRect <const> = playdate.graphics.sprite.querySpritesInRect(kDrawOffsetX+obj.x+obj.hitbox.x+ox, kDrawOffsetY+obj.y+obj.hitbox.y+oy, obj.hitbox.w, obj.hitbox.y)
-		if #spritesInRect > 0 then
-			for _, other in ipairs(spritesInRect) do
-				if other ~= obj.pdspr and other.type == type and other:collisionsEnabled() and obj.pdspr:collisionsEnabled() then
-					return other
-				end
-			end
-		end
-		return nil
-	end
-
-	obj.fast_check=function(type,ox,oy)
-		return obj.fast_collide(type,ox,oy) ~= nil
 	end
 
 	obj.move=function(ox,oy)
@@ -1670,7 +1679,7 @@ function _draw()
 				s.type = "wall"
 				s:setGroups({2})
 				s.collisionResponse=function(other)
-					return playdate.graphics.sprite.kCollisionTypeSlide
+					return playdate.graphics.sprite.kCollisionTypeOverlap
 				end
 			end
 		end
