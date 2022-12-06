@@ -1652,14 +1652,16 @@ function _draw()
 			map(room.x*16,room.y * 16,off,0,16,16,1)
 		end)
 		-- Create wall sprites
-		local roomIndex <const> = room.x + (room.y)*8 + 1
-		local tilemap <const> = playdate.graphics.tilemap.new()
-		tilemap:setImageTable(data.imagetables.tiles)
-		tilemap:setTiles(data.rooms[roomIndex], 16)
-		local wallSprites <const> = playdate.graphics.sprite.addWallSprites(tilemap, data.emptyIDs, kDrawOffsetX, kDrawOffsetY)
-		for _, s in ipairs(wallSprites) do
-			s.type = "wall"
-			s:setGroups({2})
+		if not is_title() then
+			local roomIndex <const> = room.x + (room.y)*8 + 1
+			local tilemap <const> = playdate.graphics.tilemap.new()
+			tilemap:setImageTable(data.imagetables.tiles)
+			tilemap:setTiles(data.rooms[roomIndex], 16)
+			local wallSprites <const> = playdate.graphics.sprite.addWallSprites(tilemap, data.emptyIDs, kDrawOffsetX, kDrawOffsetY)
+			for _, s in ipairs(wallSprites) do
+				s.type = "wall"
+				s:setGroups({2})
+			end
 		end
 	end
 
