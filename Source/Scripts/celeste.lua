@@ -1271,14 +1271,16 @@ room_title = {
 		elseif this.delay<0 then
 			local pdimg <const> = playdate.graphics.image.new(80, 12)
 			playdate.graphics.pushContext(pdimg)
+				playdate.graphics.setColor(playdate.graphics.kColorWhite)
 				playdate.graphics.fillRect(0, 0, 80, 12)
+				playdate.graphics.drawRect(0, 0, 80, 12)
 				if room.x==3 and room.y==1 then
-					_print("old site",24,4,7)
+					_print("old site",24,4,0)
 				elseif level_index()==30 then
-					_print("summit",28,4,7)
+					_print("summit",28,4,0)
 				else
 					local level=(1+level_index())*100
-					_print(level.." m",28+(level<1000 and 2 or 0),4,7)
+					_print(level.." m",28+(level<1000 and 2 or 0),4,0)
 				end
 			playdate.graphics.popContext()
 			if not this.pdspr then
