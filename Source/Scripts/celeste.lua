@@ -118,8 +118,12 @@ player =
 		if this.pdspr ~= nil then
 			this.pdspr.type = "player"
 			this.pdspr:setCollideRect(this.hitbox.x+1, this.hitbox.y+1, this.hitbox.w, this.hitbox.h)
+			this.pdspr:setCollidesWithGroups({2,3})
 			this.pdspr:setZIndex(20)
 			this.pdspr:setGroups({1})
+			this.pdspr.collisionResponse=function(other)
+				return playdate.graphics.sprite.kCollisionTypeOverlap
+			end
 		end
 		create_hair(this)
 	end,
@@ -434,6 +438,7 @@ player_spawn = {
 		if this.pdspr ~= nil then
 			this.pdspr.type = "player_spawn"
 			this.pdspr:setZIndex(20)
+			this.pdspr:clearCollideRect()
 		end
 	end,
 	update=function(this)
@@ -616,7 +621,10 @@ fall_floor = {
 		if this.pdspr ~= nil then
 			this.pdspr.type = "fall_floor"
 			this.pdspr:setZIndex(20)
-			this.pdspr:setCollidesWithGroups({1})
+			this.pdspr:setGroups({3})
+			this.pdspr.collisionResponse=function(other)
+				return playdate.graphics.sprite.kCollisionTypeOverlap
+			end
 		end
 	end,
 	update=function(this)
@@ -1661,6 +1669,9 @@ function _draw()
 			for _, s in ipairs(wallSprites) do
 				s.type = "wall"
 				s:setGroups({2})
+				s.collisionResponse=function(other)
+					return playdate.graphics.sprite.kCollisionTypeSlide
+				end
 			end
 		end
 	end
