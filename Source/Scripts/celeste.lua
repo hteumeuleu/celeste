@@ -118,7 +118,7 @@ player =
 		if this.pdspr ~= nil then
 			this.pdspr.type = "player"
 			this.pdspr:setCollideRect(this.hitbox.x+1, this.hitbox.y+1, this.hitbox.w, this.hitbox.h)
-			this.pdspr:setCollidesWithGroups({2,3,4})
+			this.pdspr:setCollidesWithGroups({2,3,4,5,6})
 			this.pdspr:setZIndex(20)
 			this.pdspr:setGroups({1})
 			this.pdspr.collisionResponse=function(other)
@@ -131,10 +131,13 @@ player =
 		if (pause_player) then return end
 
 		-- collisions
-		local actualX, actualY, collisions, length = this.pdspr:checkCollisions(kDrawOffsetX+this.x, kDrawOffsetY+this.y)
+		local _, _, collisions_at_x_y, length = this.pdspr:checkCollisions(kDrawOffsetX+this.x, kDrawOffsetY+this.y)
 		if length > 0 then
-			for _, col in ipairs(collisions) do
-				if col.other.type == "fall_floor" then
+			for _, col in ipairs(collisions_at_x_y) do
+				if col.other.type == "spikes" then
+					-- spikes collide
+					kill_player(this)
+				elseif col.other.type == "fall_floor" then
 					break_fall_floor(col.other.obj)
 				elseif (col.other.type == "fruit" or col.other.type == "fly_fruit") and col.other.hit ~= nil then
 					col.other:hit(col.sprite.obj)
@@ -146,18 +149,26 @@ player =
 
 		local input = btn(k_right) and 1 or (btn(k_left) and -1 or 0)
 
-		-- spikes collide
-		if spikes_at(this.x+this.hitbox.x,this.y+this.hitbox.y,this.hitbox.w,this.hitbox.h,this.spd.x,this.spd.y) then
-			kill_player(this)
-		end
-
 		-- bottom death
 		if this.y>128 then
 			kill_player(this)
 		end
 
-		local on_ground=this.is_solid(0,1)
-		local on_ice=this.is_ice(0,1)
+		-- ground and ice collisions
+		local on_ground=false
+		local on_ice=false
+		local _, _, collisions_at_0_1, length = this.pdspr:checkCollisions(kDrawOffsetX+this.x+0, kDrawOffsetY+this.y+1)
+		if length > 0 then
+			for _, col in ipairs(collisions_at_0_1) do
+				if col.other.type == "solid" then
+					on_ground=true
+				elseif col.other.type == "ice" then
+					on_ice=true
+				end
+			end
+		end
+		-- local on_ground=this.is_solid(0,1)
+		-- local on_ice=this.is_ice(0,1)
 
 		-- smoke particles
 		if on_ground and not this.was_on_ground then
@@ -226,7 +237,17 @@ player =
 			end
 
 			-- wall slide
-			if input~=0 and this.is_solid(input,0) and not this.is_ice(input,0) then
+			local is_solid_at_input_0=false
+			local _, _, collisions_at_input_0, length = this.pdspr:checkCollisions(kDrawOffsetX+this.x+input, kDrawOffsetY+this.y+0)
+			if length > 0 then
+				for _, col in ipairs(collisions_at_input_0) do
+					if col.other.type == "solid" then
+						is_solid_at_input_0=true
+					end
+				end
+			end
+			-- if input~=0 and this.is_solid(input,0) and not this.is_ice(input,0) then
+			if input~=0 and is_solid_at_input_0 then
 				maxfall=0.4
 				if rnd(10)<2 then
 					init_object(smoke,this.x+input*6,this.y)
@@ -248,7 +269,24 @@ player =
 					init_object(smoke,this.x,this.y+4)
 				else
 					-- wall jump
-					local wall_dir=(this.is_solid(-3,0) and -1 or this.is_solid(3,0) and 1 or 0)
+					local wall_dir=0
+					local _, _, collisions_at_m3_0, length = this.pdspr:checkCollisions(kDrawOffsetX+this.x-3, kDrawOffsetY+this.y+0)
+					if length > 0 then
+						for _, col in ipairs(collisions_at_m3_0) do
+							if col.other.type == "solid" then
+								wall_dir=-1
+							end
+						end
+					end
+					local _, _, collisions_at_3_0, length = this.pdspr:checkCollisions(kDrawOffsetX+this.x+3, kDrawOffsetY+this.y+0)
+					if length > 0 then
+						for _, col in ipairs(collisions_at_3_0) do
+							if col.other.type == "solid" then
+								wall_dir=1
+							end
+						end
+					end
+					-- local wall_dir=(this.is_solid(-3,0) and -1 or this.is_solid(3,0) and 1 or 0)
 					if wall_dir~=0 then
 						psfx(2)
 						this.jbuffer=0
@@ -315,7 +353,7 @@ player =
 		-- animation
 		this.spr_off+=0.25
 		if not on_ground then
-			if this.is_solid(input,0) then
+			if is_solid_at_input_0 then
 				this.spr=5
 			else
 				this.spr=3
@@ -662,7 +700,7 @@ fall_floor = {
 		-- invisible, waiting to reset
 		elseif this.state==2 then
 			this.delay-=1
-			if this.delay<=0 and not this.check("player",0,0) then
+			if this.delay<=0 and not this.check(player,0,0) then
 				psfx(7)
 				this.state=0
 				this.collideable=true
@@ -1676,9 +1714,25 @@ function _draw()
 			local tilemap <const> = playdate.graphics.tilemap.new()
 			tilemap:setImageTable(data.imagetables.tiles)
 			tilemap:setTiles(data.rooms[roomIndex], 16)
-			local wallSprites <const> = playdate.graphics.sprite.addWallSprites(tilemap, data.emptyIDs, kDrawOffsetX, kDrawOffsetY)
-			for _, s in ipairs(wallSprites) do
-				s.type = "wall"
+			local iceWallSprites <const> = playdate.graphics.sprite.addWallSprites(tilemap, data.emptyIceIDs, kDrawOffsetX, kDrawOffsetY)
+			for _, s in ipairs(iceWallSprites) do
+				s.type = "ice"
+				s:setGroups({6})
+				s.collisionResponse=function(other)
+					return playdate.graphics.sprite.kCollisionTypeOverlap
+				end
+			end
+			local spikesWallSprites <const> = playdate.graphics.sprite.addWallSprites(tilemap, data.emptySpikesIDs, kDrawOffsetX, kDrawOffsetY)
+			for _, s in ipairs(spikesWallSprites) do
+				s.type = "spikes"
+				s:setGroups({5})
+				s.collisionResponse=function(other)
+					return playdate.graphics.sprite.kCollisionTypeOverlap
+				end
+			end
+			local solidWallSprites <const> = playdate.graphics.sprite.addWallSprites(tilemap, data.emptySolidIDs, kDrawOffsetX, kDrawOffsetY)
+			for _, s in ipairs(solidWallSprites) do
+				s.type = "solid"
 				s:setGroups({2})
 				s.collisionResponse=function(other)
 					return playdate.graphics.sprite.kCollisionTypeOverlap

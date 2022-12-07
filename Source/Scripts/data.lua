@@ -15,7 +15,21 @@ data.flags = {
 }
 
 data.emptyIDs = {}
+data.emptySpikesIDs = {}
+data.emptyIceIDs = {}
+data.emptySolidIDs = {}
+local ice_flag_index <const> = 4
+local solid_flag_index <const> = 0
 for i=1, #data.flags do
+	if not (i==18 or i==28 or i==44 or i==60) then
+		table.insert(data.emptySpikesIDs, i)
+	end
+	if (data.flags[i] & (1 << ice_flag_index)) == 0 then
+		table.insert(data.emptyIceIDs, i)
+	end
+	if (data.flags[i] & (1 << solid_flag_index)) == 0 then
+		table.insert(data.emptySolidIDs, i)
+	end
 	if data.flags[i] == 0 or data.flags[i] == 2 or data.flags[i] == 4 then
 		table.insert(data.emptyIDs, i)
 	end
