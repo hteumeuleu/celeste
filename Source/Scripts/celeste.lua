@@ -136,7 +136,9 @@ player =
 			for _, col in ipairs(collisions_at_x_y) do
 				if col.other.type == "spikes" then
 					-- spikes collide
-					kill_player(this)
+					if spikes_at(this.x+this.hitbox.x,this.y+this.hitbox.y,this.hitbox.w,this.hitbox.h,this.spd.x,this.spd.y) then
+						kill_player(this)
+					end
 				elseif col.other.type == "fall_floor" then
 					break_fall_floor(col.other.obj)
 				elseif (col.other.type == "fruit" or col.other.type == "fly_fruit") and col.other.hit ~= nil then
