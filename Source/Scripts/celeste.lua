@@ -160,15 +160,17 @@ player =
 		local _, _, collisions_at_0_1, length = this.pdspr:checkCollisions(kDrawOffsetX+this.x+0, kDrawOffsetY+this.y+1)
 		if length > 0 then
 			for _, col in ipairs(collisions_at_0_1) do
-				if col.other.type == "solid" then
-					on_ground=true
-				elseif col.other.type == "ice" then
-					on_ice=true
+				if col.spriteRect.y + col.spriteRect.height <= col.otherRect.y then
+					if col.other.type == "solid" then
+						on_ground=true
+						break
+					elseif col.other.type == "ice" then
+						on_ice=true
+						break
+					end
 				end
 			end
 		end
-		-- local on_ground=this.is_solid(0,1)
-		-- local on_ice=this.is_ice(0,1)
 
 		-- smoke particles
 		if on_ground and not this.was_on_ground then
