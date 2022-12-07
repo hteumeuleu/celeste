@@ -5,3 +5,4 @@ bundleID=com.hteumeuleu.celeste
 version=1.0.0-alpha
 buildNumber=1
 imagePath=SystemAssets
+launchSoundPath=Sounds/sfx38.wav
