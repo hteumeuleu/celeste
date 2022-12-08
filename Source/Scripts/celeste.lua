@@ -1619,12 +1619,14 @@ function _update()
 	end
 
 	-- update each object
-	foreach(objects,function(obj)
-		obj.move(obj.spd.x,obj.spd.y)
+	for _, obj in ipairs(objects) do
+		if obj.spd.x ~= 0 or obj.spd.y ~= 0 then
+			obj.move(obj.spd.x,obj.spd.y)
+		end
 		if obj.type.update~=nil then
 			obj.type.update(obj)
 		end
-	end)
+	end
 
 	-- start game
 	if is_title() then
