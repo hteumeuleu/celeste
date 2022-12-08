@@ -119,7 +119,7 @@ player =
 		this.was_on_ground=false
 		if this.pdspr ~= nil then
 			this.pdspr.type = "player"
-			this.pdspr:setCollideRect(this.hitbox.x+1, this.hitbox.y+1, this.hitbox.w, this.hitbox.h)
+			this.pdspr:setCollideRect(this.hitbox[1]+1, this.hitbox[2]+1, this.hitbox[3], this.hitbox[3])
 			this.pdspr:setCollidesWithGroups({2,3,4,5,6})
 			this.pdspr:setZIndex(20)
 			this.pdspr:setGroups({1})
@@ -138,7 +138,7 @@ player =
 			for _, col in ipairs(collisions_at_x_y) do
 				if col.other.type == "spikes" then
 					-- spikes collide
-					if spikes_at(this.x+this.hitbox.x,this.y+this.hitbox.y,this.hitbox.w,this.hitbox.h,this.spd.x,this.spd.y) then
+					if spikes_at(this.x+this.hitbox[1],this.y+this.hitbox[2],this.hitbox[3],this.hitbox[4],this.spd.x,this.spd.y) then
 						kill_player(this)
 					end
 				elseif col.other.type == "fall_floor" and col.spriteRect.y + col.spriteRect.height <= col.otherRect.y + col.otherRect.height then
@@ -660,7 +660,7 @@ balloon = {
 			this.pdspr:setImage(pdimg)
 			this.pdspr:setGroups({4})
 			this.pdspr:setZIndex(20)
-			this.pdspr:setCollideRect(this.hitbox.x+1, this.hitbox.y+1, this.hitbox.w, this.hitbox.h)
+			this.pdspr:setCollideRect(this.hitbox[1]+1, this.hitbox[2]+1, this.hitbox[3], this.hitbox[3])
 			this.pdspr.hit=function(arg)
 				if arg~=nil and arg.djump~=nil and arg.djump<max_djump then
 					psfx(6)
@@ -822,7 +822,7 @@ fruit={
 			this.pdspr.type="fruit"
 			this.pdspr:setGroups({4})
 			this.pdspr:setZIndex(20)
-			this.pdspr:setCollideRect(this.hitbox.x+1,this.hitbox.y+1,this.hitbox.w,this.hitbox.h)
+			this.pdspr:setCollideRect(this.hitbox[1]+1,this.hitbox[2]+1,this.hitbox[3],this.hitbox[4])
 			this.pdspr.hit=function(player)
 				-- collect
 				if player~=nil then
@@ -861,7 +861,7 @@ fly_fruit={
 		if this.pdspr ~= nil then
 			this.pdspr.type="fly_fruit"
 			this.pdspr:setZIndex(20)
-			this.pdspr:setCollideRect(this.hitbox.x+11, this.hitbox.y+1, this.hitbox.w, this.hitbox.h)
+			this.pdspr:setCollideRect(this.hitbox[1]+11, this.hitbox[2]+1, this.hitbox[3], this.hitbox[4])
 			this.pdspr:setGroups({4})
 			this.pdspr.hit=function(player)
 				-- collect
@@ -967,7 +967,7 @@ fake_wall = {
 	tile=64,
 	if_not_fruit=true,
 	init=function(this)
-		this.hitbox={x=0,y=0,w=16,h=16}
+		this.hitbox={0,0,16,16}
 		if this.pdspr ~= nil then
 			local pdimg <const> = playdate.graphics.image.new(16, 16)
 			playdate.graphics.pushContext(pdimg)
@@ -982,7 +982,7 @@ fake_wall = {
 			playdate.graphics.popContext()
 			this.pdspr:setImage(pdimg)
 			this.pdspr:setZIndex(20)
-			this.pdspr:setCollideRect(this.hitbox.x, this.hitbox.y, this.hitbox.w, this.hitbox.h)
+			this.pdspr:setCollideRect(this.hitbox[1], this.hitbox[2], this.hitbox[3], this.hitbox[4])
 		end
 	end,
 	update=function(this)
@@ -1412,7 +1412,7 @@ function init_object(type,x,y)
 		obj.pdspr.obj = obj
 		obj.pdspr:setCenter(0,0)
 		obj.pdspr:setImage(pdimg, flip(obj.flip.x,obj.flip.y))
-		obj.pdspr:setCollideRect(obj.hitbox.x, obj.hitbox.y, obj.hitbox.w, obj.hitbox.h)
+		obj.pdspr:setCollideRect(obj.hitbox[1], obj.hitbox[2], obj.hitbox[3], obj.hitbox[4])
 		obj.pdspr:add()
 	end
 
@@ -1441,10 +1441,10 @@ function init_object(type,x,y)
 		for i=1,#objects do
 			other=objects[i]
 			if other ~=nil and other.type == type and other ~= obj and other.collideable and
-				other.x+other.hitbox.x+other.hitbox.w > obj.x+obj.hitbox.x+ox and 
-				other.y+other.hitbox.y+other.hitbox.h > obj.y+obj.hitbox.y+oy and
-				other.x+other.hitbox.x < obj.x+obj.hitbox.x+obj.hitbox.w+ox and 
-				other.y+other.hitbox.y < obj.y+obj.hitbox.y+obj.hitbox.h+oy then
+				other.x+other.hitbox[1]+other.hitbox[3] > obj.x+obj.hitbox[1]+ox and 
+				other.y+other.hitbox[2]+other.hitbox[4] > obj.y+obj.hitbox[2]+oy and
+				other.x+other.hitbox[1] < obj.x+obj.hitbox[1]+obj.hitbox[3]+ox and 
+				other.y+other.hitbox[2] < obj.y+obj.hitbox[2]+obj.hitbox[4]+oy then
 				return other
 			end
 		end
@@ -1797,7 +1797,7 @@ function _draw()
 			map(room.x*16,room.y * 16,off,0,16,16,1)
 		end)
 		-- Create wall sprites
-		if not is_title() then
+		if not is_title then
 			local roomIndex <const> = room.x + (room.y)*8 + 1
 			local tilemap <const> = playdate.graphics.tilemap.new()
 			tilemap:setImageTable(data.imagetables.tiles)
