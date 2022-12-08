@@ -32,9 +32,7 @@ layers = {
 	"clouds",
 	"bg_terrain",
 	"terrain",
-	"objects",
 	"fg_terrain",
-	"dead_particles",
 	"hair",
 	"credits",
 	"level30",
@@ -80,10 +78,8 @@ scale(2)
 
 -- layers.level30:setVisible(false)
 -- layers.credits:setVisible(false)
-layers.dead_particles:setVisible(false)
 -- layers.particles:setVisible(false)
 -- layers.fg_terrain:setVisible(false)
-layers.objects:setVisible(false)
 -- layers.terrain:setVisible(false)
 -- layers.platforms_big_chest:setVisible(false)
 -- layers.bg_terrain:setVisible(false)
@@ -302,7 +298,7 @@ function sfx(n, channel, offset, length)
 		if fxPlayer:isPlaying() then
 			fxPlayer:stop()
 		end
-		fxPlayer:setSample(data.sfx[n + 1])
+		fxPlayer:setSample(playdate.sound.sample.new(data.sfx[n + 1]))
 	end
 
 	fxPlayer:play()
