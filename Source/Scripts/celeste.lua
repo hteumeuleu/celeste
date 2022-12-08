@@ -139,7 +139,7 @@ player =
 					if spikes_at(this.x+this.hitbox.x,this.y+this.hitbox.y,this.hitbox.w,this.hitbox.h,this.spd.x,this.spd.y) then
 						kill_player(this)
 					end
-				elseif col.other.type == "fall_floor" then
+				elseif col.other.type == "fall_floor" and col.spriteRect.y + col.spriteRect.height <= col.otherRect.y + col.otherRect.height then
 					break_fall_floor(col.other.obj)
 				elseif (col.other.type == "fruit" or col.other.type == "fly_fruit") and col.other.hit ~= nil then
 					col.other:hit(col.sprite.obj)
@@ -163,12 +163,11 @@ player =
 		if length > 0 then
 			for _, col in ipairs(collisions_at_0_1) do
 				if col.spriteRect.y + col.spriteRect.height <= col.otherRect.y then
-					if col.other.type == "solid" then
+					if col.other.class == "solid" then
 						on_ground=true
-						break
-					elseif col.other.type == "ice" then
+					end
+					if col.other.type == "ice" then
 						on_ice=true
-						break
 					end
 				end
 			end
@@ -245,7 +244,7 @@ player =
 			local _, _, collisions_at_input_0, length = this.pdspr:checkCollisions(kDrawOffsetX+this.x+input, kDrawOffsetY+this.y+0)
 			if length > 0 then
 				for _, col in ipairs(collisions_at_input_0) do
-					if col.other.type == "solid" then
+					if col.other.class == "solid" then
 						is_solid_at_input_0=true
 					end
 				end
@@ -277,7 +276,7 @@ player =
 					local _, _, collisions_at_m3_0, length = this.pdspr:checkCollisions(kDrawOffsetX+this.x-3, kDrawOffsetY+this.y+0)
 					if length > 0 then
 						for _, col in ipairs(collisions_at_m3_0) do
-							if col.other.type == "solid" then
+							if col.other.class == "solid" then
 								wall_dir=-1
 							end
 						end
@@ -285,7 +284,7 @@ player =
 					local _, _, collisions_at_3_0, length = this.pdspr:checkCollisions(kDrawOffsetX+this.x+3, kDrawOffsetY+this.y+0)
 					if length > 0 then
 						for _, col in ipairs(collisions_at_3_0) do
-							if col.other.type == "solid" then
+							if col.other.class == "solid" then
 								wall_dir=1
 							end
 						end
@@ -683,6 +682,7 @@ fall_floor = {
 		this.state=0
 		this.solid=true
 		if this.pdspr ~= nil then
+			this.pdspr.class = "solid"
 			this.pdspr.type = "fall_floor"
 			this.pdspr:setZIndex(20)
 			this.pdspr:setGroups({3})
@@ -1721,6 +1721,7 @@ function _draw()
 			local iceWallSprites <const> = playdate.graphics.sprite.addWallSprites(tilemap, data.emptyIceIDs, kDrawOffsetX, kDrawOffsetY)
 			for _, s in ipairs(iceWallSprites) do
 				s.type = "ice"
+				s.class = "solid"
 				s:setGroups({6})
 				s.collisionResponse=function(other)
 					return playdate.graphics.sprite.kCollisionTypeOverlap
@@ -1737,6 +1738,7 @@ function _draw()
 			local solidWallSprites <const> = playdate.graphics.sprite.addWallSprites(tilemap, data.emptySolidIDs, kDrawOffsetX, kDrawOffsetY)
 			for _, s in ipairs(solidWallSprites) do
 				s.type = "solid"
+				s.class = "solid"
 				s:setGroups({2})
 				s.collisionResponse=function(other)
 					return playdate.graphics.sprite.kCollisionTypeOverlap
