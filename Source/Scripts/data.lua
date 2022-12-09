@@ -50,6 +50,7 @@ data.imagetables = {
 	big_chest=playdate.graphics.imagetable.new("Assets/big_chest"),
 	flag=playdate.graphics.imagetable.new("Assets/flag"),
 	tree=playdate.graphics.image.new("Assets/tree"),
+	lifeup=playdate.graphics.image.new("Assets/lifeup"),
 }
 
 --

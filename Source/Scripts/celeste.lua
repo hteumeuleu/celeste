@@ -901,6 +901,10 @@ lifeup = {
 		this.y-=4
 		this.flash=0
 		this.solids=false
+		this.pdspr = playdate.graphics.sprite.new(data.imagetables.lifeup)
+		this.pdspr:setCenter(0,0)
+		this.pdspr:setZIndex(20)
+		this.pdspr:add()
 	end,
 	update=function(this)
 		this.duration-=1
@@ -910,17 +914,6 @@ lifeup = {
 	end,
 	draw=function(this)
 		this.flash+=0.5
-
-		if not this.pdspr then
-			local pdimg <const> = playdate.graphics.image.new(64, 24)
-			playdate.graphics.pushContext(pdimg)
-				_print("1000",0,0,7+this.flash%2)
-			playdate.graphics.popContext()
-			this.pdspr = playdate.graphics.sprite.new(pdimg)
-			this.pdspr:setCenter(0,0)
-			this.pdspr:setZIndex(20)
-			this.pdspr:add()
-		end
 		this.pdspr:moveTo(kDrawOffsetX + this.x-2, kDrawOffsetY + this.y)
 	end
 }
