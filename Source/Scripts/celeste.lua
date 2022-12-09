@@ -162,7 +162,8 @@ player =
 		local _, _, collisions_at_0_1, length = this.pdspr:checkCollisions(kDrawOffsetX+this.x+0, kDrawOffsetY+this.y+1)
 		if length > 0 then
 			for _, col in ipairs(collisions_at_0_1) do
-				if col.spriteRect.y + col.spriteRect.height <= col.otherRect.y then
+				local spriteRect = playdate.geometry.rect.new(math.floor(col.spriteRect.x), math.floor(col.spriteRect.y)+1, math.floor(col.spriteRect.width), math.floor(col.spriteRect.height))
+				if spriteRect:intersects(col.otherRect) then
 					if col.other.class == "solid" then
 						on_ground=true
 					end
@@ -1407,16 +1408,20 @@ function init_object(type,x,y)
 	obj.move=function(ox,oy)
 		local amount
 		-- [x] get move amount
-		obj.rem.x += ox
-		amount = flr(obj.rem.x + 0.5)
-		obj.rem.x -= amount
-		obj.move_x(amount,0)
+		if ox ~= 0 then
+			obj.rem.x += ox
+			amount = flr(obj.rem.x + 0.5)
+			obj.rem.x -= amount
+			obj.move_x(amount,0)
+		end
 
 		-- [y] get move amount
-		obj.rem.y += oy
-		amount = flr(obj.rem.y + 0.5)
-		obj.rem.y -= amount
-		obj.move_y(amount)
+		if oy ~= 0 then
+			obj.rem.y += oy
+			amount = flr(obj.rem.y + 0.5)
+			obj.rem.y -= amount
+			obj.move_y(amount)
+		end
 	end
 
 	obj.move_x=function(amount,start)
