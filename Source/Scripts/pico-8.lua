@@ -34,6 +34,7 @@ layers = {
 	"hair",
 	"credits",
 	"level30",
+	"cache"
 }
 
 for i, layer in ipairs(layers) do
@@ -44,6 +45,18 @@ for i, layer in ipairs(layers) do
 	layers[layer]:setZIndex(i)
 	layers[layer]:add()
 end
+
+local pdimg = playdate.graphics.image.new(400,240, playdate.graphics.kColorClear)
+playdate.graphics.pushContext(pdimg)
+	playdate.graphics.setColor(playdate.graphics.kColorBlack)
+	playdate.graphics.fillRect(0,0,400,56)
+	playdate.graphics.fillRect(0,56,136,128)
+	playdate.graphics.fillRect(264,56,136,128)
+	playdate.graphics.fillRect(0,184,400,240)
+playdate.graphics.popContext()
+layers.cache:setImage(pdimg)
+layers.cache:setZIndex(200)
+layers.cache:moveTo(200,120)
 
 function drawInLayer(layer, func)
 
