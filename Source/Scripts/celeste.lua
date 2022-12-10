@@ -1654,31 +1654,29 @@ function _draw()
 	if freeze>0 then return end
 
 	-- start game flash
-	-- if start_game then
-	-- 	local c=10
-	-- 	if start_game_flash>10 then
-	-- 		if frames%10<5 then
-	-- 			c=7
-	-- 		end
-	-- 	elseif start_game_flash>5 then
-	-- 		c=2
-	-- 	elseif start_game_flash>0 then
-	-- 		c=1
-	-- 	else
-	-- 		c=0
-	-- 	end
-	-- 	if c<10 then
-	-- 		pal(6,c)
-	-- 		pal(12,c)
-	-- 		pal(13,c)
-	-- 		pal(5,c)
-	-- 		pal(1,c)
-	-- 		pal(7,c)
-	-- 	end
-	-- end
-
-	-- clear screen
-	-- rectfill(0,0,128,128,0)
+	if is_title() then
+		if room_just_changed then
+			local titlespr = playdate.graphics.sprite.new(playdate.graphics.image.new("Assets/title"))
+			-- titlespr:setCenter(0,0)
+			titlespr:moveTo(100,44)
+			titlespr:setZIndex(20)
+			titlespr:add()
+			layers["title"] = titlespr
+		end
+	end
+	if start_game then
+		local m = playdate.graphics.kDrawModeCopy
+		if start_game_flash>10 then
+			if frames%10<5 then
+				m = playdate.graphics.kDrawModeInverted
+			end
+		elseif start_game_flash>5 then
+			m = playdate.graphics.kDrawModeInverted
+		elseif start_game_flash>0 then
+			m = playdate.graphics.kDrawModeInverted
+		end
+		layers["title"]:setImageDrawMode(m)
+	end
 
 	-- clouds
 	drawInLayer("clouds", function(img)
