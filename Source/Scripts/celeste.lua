@@ -914,6 +914,11 @@ lifeup = {
 	end,
 	draw=function(this)
 		this.flash+=0.5
+		if math.floor(this.flash) % 2 == 0 then
+			this.pdspr:setImageDrawMode(playdate.graphics.kDrawModeInverted)
+		else
+			this.pdspr:setImageDrawMode(playdate.graphics.kDrawModeCopy)
+		end
 		this.pdspr:moveTo(kDrawOffsetX + this.x-2, kDrawOffsetY + this.y)
 	end
 }
