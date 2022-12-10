@@ -55,7 +55,7 @@ playdate.graphics.pushContext(pdimg)
 	playdate.graphics.fillRect(0,184,400,240)
 playdate.graphics.popContext()
 layers.cache:setImage(pdimg)
-layers.cache:setZIndex(200)
+layers.cache:setZIndex(20)
 layers.cache:moveTo(200,120)
 
 function drawInLayer(layer, func)
