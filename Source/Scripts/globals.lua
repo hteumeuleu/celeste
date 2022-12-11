@@ -8,15 +8,6 @@ playdate.graphics.sprite.setBackgroundDrawingCallback(
 	end
 )
 
--- Options
-local menu = playdate.getSystemMenu()
-local checkmarkMenuItem, error = menu:addCheckmarkMenuItem("Assist", false, function(value)
-    print("Assist mode: ", value)
-    if value then
-    	max_djump=999
-    end
-end)
-
 -- Variables
 local kDisplayOffsetX = 200
 local kDisplayOffsetY = 120
