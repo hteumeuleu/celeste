@@ -5,18 +5,14 @@ import "CoreLibs/timer"
 import "CoreLibs/ui"
 import "CoreLibs/crank"
 
-import "Scripts/data.lua"
-import "Scripts/pico-8.lua"
-import "Scripts/celeste.lua"
-
-_init()
+import "Scripts/Game"
+local g = Game()
 
 function playdate.update()
 
 	playdate.timer.updateTimers()
 	playdate.graphics.sprite.update()
-	_update()
-	_draw()
+	g:update()
 	playdate.drawFPS(0, 0)
 
 end
