@@ -1717,7 +1717,7 @@ function _draw()
 		end)
 		-- Create wall sprites
 		if not is_title() then
-			local roomIndex <const> = room.x + (room.y)*8 + 1
+			local roomIndex <const> = level_index() + 1
 			local tilemap <const> = playdate.graphics.tilemap.new()
 			tilemap:setImageTable(data.imagetables.tiles)
 			tilemap:setTiles(data.rooms[roomIndex], 16)

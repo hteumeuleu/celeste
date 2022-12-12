@@ -158,12 +158,12 @@ data.map = {
 data.rooms = {}
 local x, y, i, room, rx, ry
 for room=0, 31 do
-	rx = room%8 * 16
+	rx = room%8
 	ry = math.floor(room/8)
 	local room = {}
 	for i=0, 255 do
-		x = i%16 + rx
-		y = math.floor(i/16)*128 + ry
+		x = i%16 + rx*16
+		y = math.floor(i/16)*16*8 + ry*16*16*8
 		local tile_index = data.map[x + y + 1] + 1
 		if data.flags[tile_index] == 4 then
 			tile_index = 0
