@@ -1856,6 +1856,8 @@ function draw_time(x,y)
 
 	local pdimg <const> = playdate.graphics.image.new(33, 7)
 	playdate.graphics.pushContext(pdimg)
+		playdate.graphics.setColor(playdate.graphics.kColorBlack)
+		playdate.graphics.setImageDrawMode(playdate.graphics.kDrawModeCopy)
 		playdate.graphics.fillRect(0, 0, 33, 7)
 		_print(get_time(),1,1,7)
 	playdate.graphics.popContext()
