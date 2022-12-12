@@ -1045,6 +1045,17 @@ platform={
 		this.solids=false
 		this.hitbox.w=16
 		this.last=this.x
+		if not this.pdspr then
+			local pdimg <const> = data.imagetables.platform
+			this.pdspr = playdate.graphics.sprite.new(pdimg)
+			this.pdspr:setCenter(0,0)
+			this.pdspr.type="platform"
+			this.pdspr.class="solid"
+			this.pdspr:setGroups({4})
+			this.pdspr:setZIndex(20)
+			this.pdspr:setCollideRect(this.hitbox.x+1, this.hitbox.y+1, this.hitbox.w, this.hitbox.h)
+			this.pdspr:add()
+		end
 	end,
 	update=function(this)
 		this.spd.x=this.dir*0.65
@@ -1062,14 +1073,6 @@ platform={
 		this.last=this.x
 	end,
 	draw=function(this)
-		local pdimg <const> = data.imagetables.platform
-		if not this.pdspr then
-			this.pdspr = playdate.graphics.sprite.new(pdimg)
-			this.pdspr:setCenter(0,0)
-			this.pdspr:setZIndex(20)
-			this.pdspr:add()
-		end
-		this.pdspr:setImage(pdimg)
 		this.pdspr:moveTo(kDrawOffsetX + this.x-1, kDrawOffsetY + this.y-2)
 	end
 }
