@@ -1172,7 +1172,7 @@ big_chest={
 			end
 			foreach(this.particles,function(p)
 				p.y+=p.spd
-				line(this.x+p.x,this.y+8-p.y,this.x+p.x,min(this.y+8-p.y+p.h,this.y+8),7)
+				line(kDrawOffsetX+this.x+p.x,kDrawOffsetY+this.y+8-p.y,kDrawOffsetX+this.x+p.x,kDrawOffsetY+min(this.y+8-p.y+p.h,this.y+8),7)
 			end)
 		end
 		if this.state~=0 then
@@ -1236,7 +1236,7 @@ orb={
 		this.pdspr:moveTo(kDrawOffsetX + this.x,kDrawOffsetY + this.y)
 		local off=frames/30
 		for i=0,7 do
-			circfill(this.x+4+cos(off+i/8)*8,this.y+4+sin(off+i/8)*8,1,7)
+			circfill(kDrawOffsetX+this.x+4+cos(off+i/8)*8,kDrawOffsetY+this.y+4+sin(off+i/8)*8,1,7)
 		end
 	end
 }
