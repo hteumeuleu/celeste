@@ -1006,12 +1006,14 @@ chest={
 	tile=20,
 	if_not_fruit=true,
 	init=function(this)
-		if this.x == 120 then
-			this.x = 116
-		end
-		this.x-=1
+		this.x-=5
 		this.start=this.x
 		this.timer=20
+		local pdimg <const> = data.imagetables.chest
+		this.pdspr = playdate.graphics.sprite.new(pdimg)
+		this.pdspr:setCenter(0,0)
+		this.pdspr:setZIndex(20)
+		this.pdspr:add()
 	end,
 	update=function(this)
 		if has_key then
@@ -1026,14 +1028,6 @@ chest={
 		end
 	end,
 	draw=function(this)
-		local pdimg <const> = data.imagetables.chest
-		if not this.pdspr then
-			this.pdspr = playdate.graphics.sprite.new(pdimg)
-			this.pdspr:setCenter(0,0)
-			this.pdspr:setZIndex(20)
-			this.pdspr:add()
-		end
-		this.pdspr:setImage(pdimg)
 		this.pdspr:moveTo(kDrawOffsetX + this.x, kDrawOffsetY + this.y)
 	end
 }
