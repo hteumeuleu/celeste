@@ -1540,6 +1540,12 @@ function load_room(x,y)
 	room.x = x
 	room.y = y
 
+	--level after orb
+	if level_index() > 21 and level_index() < 31 then
+		max_djump=2
+		player.djump=2
+	end
+
 	--remove existing objects
 	foreach(objects,destroy_object)
 	if #objects > 0 then
