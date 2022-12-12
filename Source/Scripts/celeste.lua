@@ -1080,6 +1080,13 @@ platform={
 message={
 	tile=86,
 	last=0,
+	init=function(this)
+		if not this.pdspr then
+			this.pdspr = playdate.graphics.sprite.new(pdimg)
+		end
+		this.pdspr:setCenter(0,0)
+		this.pdspr:setZIndex(20)
+	end,
 	draw=function(this)
 		this.text="-- celeste mountain --#this memorial to those# perished on the climb"
 		if this.check(player,4,0) then
@@ -1092,11 +1099,6 @@ message={
 			end
 			this.off={x=2,y=2}
 			local pdimg <const> = playdate.graphics.image.new(115, 23)
-			if not this.pdspr then
-				this.pdspr = playdate.graphics.sprite.new(pdimg)
-				this.pdspr:setCenter(0,0)
-				this.pdspr:setZIndex(20)
-			end
 			playdate.graphics.pushContext(pdimg)
 				for i=1,this.index do
 					if sub(this.text,i,i)~="#" then
