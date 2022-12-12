@@ -178,9 +178,24 @@ function pal(c0, c1, p)
 
 end
 
-function music()
+function music(n, fade_len, channel_mask)
 
-    -- TODO
+	fade_len = fade_len or 1000
+	channel_mask = channel_mask or 1
+
+	if data.music[n] ~= nil then
+		if musicPlayer == nil then
+			musicPlayer = playdate.sound.fileplayer.new(data.music[n])
+		else
+			if musicPlayer:isPlaying() then
+				musicPlayer:stop()
+			end
+			musicPlayer:load(data.music[n])
+		end
+		if musicPlayer ~= nil then
+			musicPlayer:play(0)
+		end
+	end
 
 end
 
@@ -191,17 +206,17 @@ function sfx(n, channel, offset, length)
 	length = length or 0
 
 	if fxPlayer == nil then
-		fxPlayer = playdate.sound.sampleplayer.new(data.sfx[n + 1])
+		fxPlayer = playdate.sound.sampleplayer.new(data.sfx[n])
+		fxPlayer:setVolume(0.125)
 	else
 		if fxPlayer:isPlaying() then
 			fxPlayer:stop()
 		end
-		fxPlayer:setSample(playdate.sound.sample.new(data.sfx[n + 1]))
+		fxPlayer:setSample(playdate.sound.sample.new(data.sfx[n]))
 	end
-
-	fxPlayer:play()
-
-    -- TODO
+	if fxPlayer ~= nil then
+		fxPlayer:play()
+	end
 
 end
 
