@@ -629,11 +629,11 @@ balloon = {
 			this.pdspr:setGroups({4})
 			this.pdspr:setZIndex(20)
 			this.pdspr:setCollideRect(this.hitbox.x+1, this.hitbox.y+1, this.hitbox.w, this.hitbox.h)
-			this.pdspr.hit=function(arg)
-				if arg~=nil and arg.djump~=nil and arg.djump<max_djump then
+			this.pdspr.hit=function(balloon, p)
+				if p~=nil and p.djump~=nil and p.djump<max_djump then
 					psfx(6)
 					init_object(smoke,this.x,this.y)
-					arg.djump=max_djump
+					p.djump=max_djump
 					this.spr=0
 					this.timer=60
 				end
