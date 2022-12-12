@@ -738,7 +738,7 @@ function break_fall_floor(obj)
 		obj.state=1
 		obj.delay=15--how long until it falls
 		init_object(smoke,obj.x,obj.y)
-		local hit=obj.collide("spring",0,-1)
+		local hit=obj.collide(spring,0,-1)
 		if hit~=nil then
 			break_spring(hit)
 		end
