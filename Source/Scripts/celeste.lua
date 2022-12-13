@@ -112,12 +112,12 @@ player =
 		this.dash_effect_time=0
 		this.dash_target={x=0,y=0}
 		this.dash_accel={x=0,y=0}
-		this.hitbox = {x=1,y=3,w=6,h=5}
+		this.hitbox = playdate.geometry.rect.new(1,3,6,5)
 		this.spr_off=0
 		this.was_on_ground=false
 		if this.pdspr ~= nil then
 			this.pdspr.type = "player"
-			this.pdspr:setCollideRect(this.hitbox.x+1, this.hitbox.y+1, this.hitbox.w, this.hitbox.h)
+			this.pdspr:setCollideRect(this.hitbox:offsetBy(1,1))
 			this.pdspr:setCollidesWithGroups({2,3,4,5,6})
 			this.pdspr:setZIndex(20)
 			this.pdspr:setGroups({1})
@@ -136,7 +136,7 @@ player =
 			for _, col in ipairs(collisions_at_x_y) do
 				if col.other.type == "spikes" then
 					-- spikes collide
-					if spikes_at(this.x+this.hitbox.x,this.y+this.hitbox.y,this.hitbox.w,this.hitbox.h,this.spd.x,this.spd.y) then
+					if spikes_at(this.x+this.hitbox.x,this.y+this.hitbox.y,this.hitbox.width,this.hitbox.height,this.spd.x,this.spd.y) then
 						kill_player(this)
 					end
 				elseif col.other.type == "fall_floor" and col.spriteRect.y + col.spriteRect.height <= col.otherRect.y + col.otherRect.height then
@@ -156,23 +156,8 @@ player =
 			kill_player(this)
 		end
 
-		-- ground and ice collisions
-		local on_ground=false
-		local on_ice=false
-		local _, _, collisions_at_0_1, length = this.pdspr:checkCollisions(kDrawOffsetX+this.x+0, kDrawOffsetY+this.y+1)
-		if length > 0 then
-			for _, col in ipairs(collisions_at_0_1) do
-				local spriteRect = playdate.geometry.rect.new(math.floor(col.spriteRect.x), math.floor(col.spriteRect.y)+1, math.floor(col.spriteRect.width), math.floor(col.spriteRect.height))
-				if spriteRect:intersects(col.otherRect) then
-					if col.other.class == "solid" then
-						on_ground=true
-					end
-					if col.other.type == "ice" then
-						on_ice=true
-					end
-				end
-			end
-		end
+        local on_ground=this.is_solid(0,1)
+        local on_ice=this.is_ice(0,1)
 
 		-- smoke particles
 		if on_ground and not this.was_on_ground then
@@ -241,17 +226,7 @@ player =
 			end
 
 			-- wall slide
-			local is_solid_at_input_0=false
-			local _, _, collisions_at_input_0, length = this.pdspr:checkCollisions(kDrawOffsetX+this.x+input, kDrawOffsetY+this.y+0)
-			if length > 0 then
-				for _, col in ipairs(collisions_at_input_0) do
-					if col.other.class == "solid" then
-						is_solid_at_input_0=true
-					end
-				end
-			end
-			-- if input~=0 and this.is_solid(input,0) and not this.is_ice(input,0) then
-			if input~=0 and is_solid_at_input_0 then
+			if input~=0 and this.is_solid(input,0) and not this.is_ice(input,0) then
 				maxfall=0.4
 				if rnd(10)<2 then
 					init_object(smoke,this.x+input*6,this.y)
@@ -273,24 +248,7 @@ player =
 					init_object(smoke,this.x,this.y+4)
 				else
 					-- wall jump
-					local wall_dir=0
-					local _, _, collisions_at_m3_0, length = this.pdspr:checkCollisions(kDrawOffsetX+this.x-3, kDrawOffsetY+this.y+0)
-					if length > 0 then
-						for _, col in ipairs(collisions_at_m3_0) do
-							if col.other.class == "solid" then
-								wall_dir=-1
-							end
-						end
-					end
-					local _, _, collisions_at_3_0, length = this.pdspr:checkCollisions(kDrawOffsetX+this.x+3, kDrawOffsetY+this.y+0)
-					if length > 0 then
-						for _, col in ipairs(collisions_at_3_0) do
-							if col.other.class == "solid" then
-								wall_dir=1
-							end
-						end
-					end
-					-- local wall_dir=(this.is_solid(-3,0) and -1 or this.is_solid(3,0) and 1 or 0)
+					local wall_dir=(this.is_solid(-3,0) and -1 or this.is_solid(3,0) and 1 or 0)
 					if wall_dir~=0 then
 						psfx(2)
 						this.jbuffer=0
@@ -357,7 +315,7 @@ player =
 		-- animation
 		this.spr_off+=0.25
 		if not on_ground then
-			if is_solid_at_input_0 then
+            if this.is_solid(input,0) then
 				this.spr=5
 			else
 				this.spr=3
@@ -615,7 +573,7 @@ balloon = {
 		this.offset=rnd(1)
 		this.start=this.y
 		this.timer=0
-		this.hitbox={x=-1,y=-1,w=10,h=10}
+		this.hitbox=playdate.geometry.rect.new(-1,-1,10,10)
 		if this.pdspr ~= nil then
 			this.pdspr.type="balloon"
 			local pdimg <const> = playdate.graphics.image.new(10, 17, playdate.graphics.kColorClear)
@@ -628,7 +586,7 @@ balloon = {
 			this.pdspr:setImage(pdimg)
 			this.pdspr:setGroups({4})
 			this.pdspr:setZIndex(20)
-			this.pdspr:setCollideRect(this.hitbox.x+1, this.hitbox.y+1, this.hitbox.w, this.hitbox.h)
+			this.pdspr:setCollideRect(this.hitbox:offsetBy(1,1))
 			this.pdspr.hit=function(balloon, p)
 				if p~=nil and p.djump~=nil and p.djump<max_djump then
 					psfx(6)
@@ -787,7 +745,7 @@ fruit={
 			this.pdspr.type="fruit"
 			this.pdspr:setGroups({4})
 			this.pdspr:setZIndex(20)
-			this.pdspr:setCollideRect(this.hitbox.x+1,this.hitbox.y+1,this.hitbox.w,this.hitbox.h)
+			this.pdspr:setCollideRect(this.hitbox:offsetBy(1,1))
 			this.pdspr.hit=function(player)
 				-- collect
 				if player~=nil then
@@ -825,7 +783,7 @@ fly_fruit={
 		if this.pdspr ~= nil then
 			this.pdspr.type="fly_fruit"
 			this.pdspr:setZIndex(20)
-			this.pdspr:setCollideRect(this.hitbox.x+11, this.hitbox.y+1, this.hitbox.w, this.hitbox.h)
+			this.pdspr:setCollideRect(this.hitbox:offsetBy(11,1))
 			this.pdspr:setGroups({4})
 			this.pdspr.hit=function(player)
 				-- collect
@@ -927,7 +885,7 @@ fake_wall = {
 	tile=64,
 	if_not_fruit=true,
 	init=function(this)
-		this.hitbox={x=0,y=0,w=16,h=16}
+		this.hitbox=playdate.geometry.rect.new(0,0,16,16)
 		if this.pdspr ~= nil then
 			local pdimg <const> = playdate.graphics.image.new(16, 16)
 			playdate.graphics.pushContext(pdimg)
@@ -942,11 +900,11 @@ fake_wall = {
 			playdate.graphics.popContext()
 			this.pdspr:setImage(pdimg)
 			this.pdspr:setZIndex(20)
-			this.pdspr:setCollideRect(this.hitbox.x, this.hitbox.y, this.hitbox.w, this.hitbox.h)
+			this.pdspr:setCollideRect(this.hitbox)
 		end
 	end,
 	update=function(this)
-		this.hitbox={x=-1,y=-1,w=18,h=18}
+		this.hitbox=playdate.geometry.rect.new(-1,-1,18,18)
 		local hit = this.collide(player,0,0)
 		if hit~=nil and hit.dash_effect_time>0 then
 			hit.spd.x=-sign(hit.spd.x)*1.5
@@ -961,7 +919,7 @@ fake_wall = {
 			init_object(smoke,this.x+8,this.y+8)
 			init_object(fruit,this.x+4,this.y+4)
 		end
-		this.hitbox={x=0,y=0,w=16,h=16}
+		this.hitbox=playdate.geometry.rect.new(0,0,16,16)
 	end,
 	draw=function(this)
 		if this.pdspr ~= nil then
@@ -1037,7 +995,7 @@ platform={
 	init=function(this)
 		this.x-=4
 		this.solids=false
-		this.hitbox.w=16
+		this.hitbox.width=16
 		this.last=this.x
 		if not this.pdspr then
 			local pdimg <const> = data.imagetables.platform
@@ -1047,7 +1005,7 @@ platform={
 			this.pdspr.class="solid"
 			this.pdspr:setGroups({4})
 			this.pdspr:setZIndex(20)
-			this.pdspr:setCollideRect(this.hitbox.x+1, this.hitbox.y+1, this.hitbox.w, this.hitbox.h)
+			this.pdspr:setCollideRect(this.hitbox)
 			this.pdspr:add()
 		end
 	end,
@@ -1123,7 +1081,7 @@ big_chest={
 	tile=96,
 	init=function(this)
 		this.state=0
-		this.hitbox.w=16
+		this.hitbox.width=16
 	end,
 	draw=function(this)
 		local pdimg <const> = playdate.graphics.image.new(18, 16, playdate.graphics.kColorClear)
@@ -1355,7 +1313,7 @@ function init_object(type,x,y)
 
 	obj.x = x
 	obj.y = y
-	obj.hitbox = { x=0,y=0,w=8,h=8 }
+	obj.hitbox = playdate.geometry.rect.new(0, 0, 8, 8)
 
 	if obj.spr ~= nil then
 		local pdimg <const> = data.imagetables.tiles:getImage(math.floor(obj.spr) + 1)
@@ -1363,7 +1321,7 @@ function init_object(type,x,y)
 		obj.pdspr.obj = obj
 		obj.pdspr:setCenter(0,0)
 		obj.pdspr:setImage(pdimg, flip(obj.flip.x,obj.flip.y))
-		obj.pdspr:setCollideRect(obj.hitbox.x, obj.hitbox.y, obj.hitbox.w, obj.hitbox.h)
+		obj.pdspr:setCollideRect(obj.hitbox)
 		obj.pdspr:add()
 	end
 
@@ -1374,13 +1332,13 @@ function init_object(type,x,y)
 		if oy>0 and not obj.check(platform,ox,0) and obj.check(platform,ox,oy) then
 			return true
 		end
-		return solid_at(obj.x+obj.hitbox.x+ox,obj.y+obj.hitbox.y+oy,obj.hitbox.w,obj.hitbox.h)
+		return solid_at(obj.x+obj.hitbox.x+ox,obj.y+obj.hitbox.y+oy,obj.hitbox.width,obj.hitbox.height)
 			or obj.check(fall_floor,ox,oy)
 			or obj.check(fake_wall,ox,oy)
 	end
 
 	obj.is_ice=function(ox,oy)
-		return ice_at(obj.x+obj.hitbox.x+ox,obj.y+obj.hitbox.y+oy,obj.hitbox.w,obj.hitbox.h)
+		return ice_at(obj.x+obj.hitbox.x+ox,obj.y+obj.hitbox.y+oy,obj.hitbox.width,obj.hitbox.height)
 	end
 
 	obj.collide=function(type,ox,oy)
@@ -1388,10 +1346,8 @@ function init_object(type,x,y)
 		for i=1,#objects do
 			other=objects[i]
 			if other ~=nil and other.type == type and other ~= obj and other.collideable and
-				other.x+other.hitbox.x+other.hitbox.w > obj.x+obj.hitbox.x+ox and 
-				other.y+other.hitbox.y+other.hitbox.h > obj.y+obj.hitbox.y+oy and
-				other.x+other.hitbox.x < obj.x+obj.hitbox.x+obj.hitbox.w+ox and 
-				other.y+other.hitbox.y < obj.y+obj.hitbox.y+obj.hitbox.h+oy then
+				obj.hitbox:offsetBy(obj.x+ox,obj.y+oy):intersects(other.hitbox:offsetBy(other.x,other.y)) then
+				print(obj.hitbox:offsetBy(obj.x+ox,obj.y+oy), other.hitbox:offsetBy(other.x,other.y))
 				return other
 			end
 		end
