@@ -29,6 +29,7 @@ local k_dash=playdate.kButtonB
 
 function _init()
 	title_screen()
+	begin_game()
 end
 
 function title_screen()
@@ -52,7 +53,7 @@ function begin_game()
 	music_timer=0
 	start_game=false
 	music(0,0,7)
-	load_room(0,0)
+	load_room(3,0)
 end
 
 function level_index()
@@ -156,7 +157,7 @@ player =
 			kill_player(this)
 		end
 
-        local on_ground=this.is_solid(0,1)
+        local on_ground=is_solid_fast(this,0,1)
         local on_ice=this.is_ice(0,1)
 
 		-- smoke particles
@@ -1298,6 +1299,45 @@ room_title = {
 -- object functions --
 -----------------------
 
+
+function is_solid_fast(obj,ox,oy)
+	local _, _, collisions_at_ox_oy, length = obj.pdspr:checkCollisions(kDrawOffsetX+obj.x+ox, kDrawOffsetY+obj.y+oy)
+	if length > 0 then
+		for i, col in ipairs(collisions_at_ox_oy) do
+			print("#is_solid_fast", i)
+			print("-- ",ox,oy, col.sprite.type, col.spriteRect, col.other.class, col.otherRect, col.spriteRect:intersects(col.otherRect))
+			print("-- col.other.class", col.other.class)
+			print("-- col.other.type", col.other.type)
+			if col.spriteRect:offsetBy(ox,oy):intersects(col.otherRect) then
+				-- if oy>0 and col.other.type == "platform" then
+				-- 	return true -- todo: add `not obj.check(platform,ox,0)` condition
+				-- end
+				if col.other.class == "solid" or col.other.type == "fall_floor" or col.other.type == "fake_wall" then
+					print("-- return true")
+					return true
+				end
+			end
+		end
+	end
+	return false
+end
+
+function collide_fast(obj,type,ox,oy)
+	local other
+	for i=1,#objects do
+		other=objects[i]
+		if other ~=nil and other.type == type and other ~= obj and other.collideable and
+			obj.hitbox:offsetBy(obj.x+ox,obj.y+oy):intersects(other.hitbox:offsetBy(other.x,other.y)) then
+			return other
+		end
+	end
+	return nil
+end
+
+function check_fast(obj,type,ox,oy)
+	return obj.collide(type,ox,oy) ~= nil
+end
+
 function init_object(type,x,y)
 
 	if type.if_not_fruit~=nil and got_fruit[1+level_index()] then
@@ -1347,7 +1387,6 @@ function init_object(type,x,y)
 			other=objects[i]
 			if other ~=nil and other.type == type and other ~= obj and other.collideable and
 				obj.hitbox:offsetBy(obj.x+ox,obj.y+oy):intersects(other.hitbox:offsetBy(other.x,other.y)) then
-				print(obj.hitbox:offsetBy(obj.x+ox,obj.y+oy), other.hitbox:offsetBy(other.x,other.y))
 				return other
 			end
 		end
