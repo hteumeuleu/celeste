@@ -1815,17 +1815,14 @@ function _draw()
 	end
 
 	-- draw objects
-	drawInLayer("objects", function(img)
-		img:clear(GFX.kColorClear)
-		for i=1, #objects do 
-			for j=1, #objects[i] do 
-				local o = objects[i][j]
-				if o then
-					draw_object(o)
-				end
+	for i=1, #objects do
+		for j=1, #objects[i] do
+			local o = objects[i][j]
+			if o then
+				draw_object(o)
 			end
 		end
-	end)
+	end
 
 	-- draw fg terrain
 	if room_just_changed then
