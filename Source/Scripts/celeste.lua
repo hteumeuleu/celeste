@@ -1191,6 +1191,7 @@ big_chest={
 add(types,big_chest)
 
 tree={
+	type_id = 15,
 	tile=44,
 	init=function(this)
 		if this.pdspr ~= nil then
