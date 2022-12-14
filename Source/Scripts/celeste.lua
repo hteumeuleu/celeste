@@ -1378,7 +1378,7 @@ function init_object(type,x,y)
 
 	obj.is_solid=function(ox,oy)
 		local collide = obj.collide
-		if oy>0 and collide(platform,ox,0) ~= nil and collide(platform,ox,oy) == nil then
+		if oy>0 and not (collide(platform,ox,0) ~= nil) and collide(platform,ox,oy) ~= nil then
 			return true
 		end
 		local hitbox = obj.hitbox
