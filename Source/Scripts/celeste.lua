@@ -1126,6 +1126,10 @@ big_chest={
 	init=function(this)
 		this.state=0
 		this.hitbox.width=16
+		this.hitbox.height=16
+		if this.pdspr ~= nil then
+			this.pdspr:setCollideRect(this.hitbox:offsetBy(1,1))
+		end
 	end,
 	draw=function(this)
 		local pdimg <const> = GFX.image.new(18, 16, GFX.kColorClear)
