@@ -1,3 +1,5 @@
+local GFX = playdate.graphics
+
 --
 -- PICO-8 functions
 --
@@ -75,11 +77,11 @@ function rectfill(x0, y0, x1, y1, col)
 	local width = math.max(x0, x1) - left + 1
 	local height = math.max(y0, y1) - top + 1
 	if col == nil then
-		playdate.graphics.setColor(playdate.graphics.kColorBlack)
+		GFX.setColor(GFX.kColorBlack)
 	elseif col == 7 then
-		playdate.graphics.setColor(playdate.graphics.kColorWhite)
+		GFX.setColor(GFX.kColorWhite)
 	end
-	playdate.graphics.fillRect(left, top, width, height)
+	GFX.fillRect(left, top, width, height)
 
 end
 
@@ -87,9 +89,9 @@ function circfill(x, y, r, col)
 
 	r = r or 4
 	if col == nil then
-		playdate.graphics.setBackgroundColor(playdate.graphics.kColorBlack)
+		GFX.setBackgroundColor(GFX.kColorBlack)
 	end
-	playdate.graphics.fillCircleAtPoint(x, y, r)
+	GFX.fillCircleAtPoint(x, y, r)
 
 end
 
@@ -115,20 +117,20 @@ end
 function spr(n, x, y, w, h, flip_x, flip_y)
 
 	if n > #data.imagetables.tiles or n <= 0 then return end
-	n = flr(n) or 1
-	x = flr(x) or 0
-	y = flr(y) or 0
+	n = math.floor(n) or 1
+	x = math.floor(x) or 0
+	y = math.floor(y) or 0
 	w = w or 1.0
 	h = h or 1.0
 	flip_x = flip_x or false
 	flip_y = flip_y or false
-	local flip =  playdate.graphics.kImageUnflipped
+	local flip =  GFX.kImageUnflipped
 	if flip_x and flip_y then
-		 flip = playdate.graphics.kImageFlippedXY
+		 flip = GFX.kImageFlippedXY
 	elseif flip_x then
-		 flip = playdate.graphics.kImageFlippedX
+		 flip = GFX.kImageFlippedX
 	elseif flip_y then
-		 flip = playdate.graphics.kImageFlippedY
+		 flip = GFX.kImageFlippedY
 	end
 
 	local img = data.imagetables.tiles:getImage(n + 1)
@@ -239,12 +241,12 @@ function _print(text, x, y, color)
 	x = x or 0
 	y = y or 0
 	if color == 0 then
-		playdate.graphics.setImageDrawMode(playdate.graphics.kDrawModeFillBlack)
+		GFX.setImageDrawMode(GFX.kDrawModeFillBlack)
 	else
-		playdate.graphics.setImageDrawMode(playdate.graphics.kDrawModeFillWhite)
+		GFX.setImageDrawMode(GFX.kDrawModeFillWhite)
 	end
-	playdate.graphics.drawText(text, x, y)
-	playdate.graphics.setImageDrawMode(playdate.graphics.kDrawModeCopy)
+	GFX.drawText(text, x, y)
+	GFX.setImageDrawMode(GFX.kDrawModeCopy)
 
 end
 
@@ -269,10 +271,10 @@ function line(x0, y0, x1, y1, col)
 	line_last_x0 = x0
 	line_last_y0 = y0
 	if col == nil then
-		playdate.graphics.setColor(playdate.graphics.kColorBlack)
+		GFX.setColor(GFX.kColorBlack)
 	elseif col == 7 then
-		playdate.graphics.setColor(playdate.graphics.kColorWhite)
+		GFX.setColor(GFX.kColorWhite)
 	end
-	playdate.graphics.drawLine(x0, y0, x1, y1)
+	GFX.drawLine(x0, y0, x1, y1)
 
 end

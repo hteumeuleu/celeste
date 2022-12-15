@@ -1,8 +1,14 @@
+local GFX = playdate.graphics
+
 -- globals --
 -------------
 
 local room = { x=0, y=0 }
 local objects = {}
+for i = 1, 18 do
+	objects[i] = {}
+end
+
 local types = {}
 local freeze=0
 local shake=0
@@ -23,6 +29,9 @@ local k_up=playdate.kButtonUp
 local k_down=playdate.kButtonDown
 local k_jump=playdate.kButtonA
 local k_dash=playdate.kButtonB
+
+local level_index = 0
+local is_title = false
 
 -- entry point --
 -----------------
@@ -55,14 +64,6 @@ function begin_game()
 	load_room(0,0)
 end
 
-function level_index()
-	return room.x%8+room.y*8
-end
-
-function is_title()
-	return level_index()==31
-end
-
 -- effects --
 -------------
 
@@ -89,8 +90,8 @@ for i=0,24 do
 end
 
 for i, item in ipairs(particles) do
-	local img <const> = playdate.graphics.image.new(item.s + 1, item.s + 1, playdate.graphics.kColorWhite)
-	item.spr = playdate.graphics.sprite.new(img)
+	local img <const> = GFX.image.new(item.s + 1, item.s + 1, GFX.kColorWhite)
+	item.spr = GFX.sprite.new(img)
 	item.spr:setZIndex(30)
 end
 
@@ -102,6 +103,7 @@ dead_particles = {}
 player =
 {
 	tile=2,
+	type_id = 18,
 	init=function(this)
 		this.p_jump=false
 		this.p_dash=false
@@ -122,7 +124,7 @@ player =
 			this.pdspr:setZIndex(20)
 			this.pdspr:setGroups({1})
 			this.pdspr.collisionResponse=function(other)
-				return playdate.graphics.sprite.kCollisionTypeOverlap
+				return GFX.sprite.kCollisionTypeOverlap
 			end
 		end
 		create_hair(this)
@@ -331,7 +333,7 @@ player =
 		end
 
 		 -- next level
-		if this.y<-4 and level_index()<30 then
+		if this.y<-4 and level_index<30 then
 			this.y = 0
 			this.x = 0
 			next_room()
@@ -379,65 +381,94 @@ end
 
 set_hair_color=function(djump)
 	if djump ~= 0 then
-		hair_color = playdate.graphics.kColorBlack
+		hair_color = GFX.kColorBlack
 	else
-		hair_color = playdate.graphics.kColorWhite
+		hair_color = GFX.kColorWhite
 	end
 
 end
 
 draw_hair=function(obj,facing)
-	local last={x=obj.x+4-facing*2,y=obj.y+(btn(k_down) and 4 or 3)}
+	local lastX = obj.x+4-facing*2
+	local lastY = obj.y+(btn(k_down) and 4 or 3)
 	local coords={}
-	foreach(obj.hair,function(h)
-		h.x+=(last.x-h.x)/1.5
-		h.y+=(last.y+0.5-h.y)/1.5
-		add(coords,{x=h.x,y=h.y,s=h.size})
-		last=h
-	end)
+	for i=1, #obj.hair do
+		local h = obj.hair[i]
+		local x = h.x
+		local y = h.y
+		x+=(lastX-x)/1.5
+		y+=(lastY+0.5-y)/1.5
+		table.insert(coords, {x=x,y=y,s=h.size})
+		h.x = x
+		h.y = y
+		lastX = x
+		lastY = y
+	end
 	-- Playdate sprite drawing
 	local x1 = 128
 	local x2 = 0
 	local y1 = 128
 	local y2 = 0
-	foreach(coords,function(c)
-		x1 = math.min(x1, c.x - c.s)
-		x2 = math.max(x2, c.x + c.s)
-		y1 = math.min(y1, c.y - c.s)
-		y2 = math.max(y2, c.y + c.s)
-	end)
+	for i=1, #coords do
+		local c = coords[i]
+		local s = c.s
+
+		local newX1 = c.x - s
+		if newX1 < x1 then
+			x1 = newX1
+		end
+
+		local newX2 = c.x + s
+		if newX2 > x2 then
+			x2 = newX2
+		end
+
+		local newY1 = c.y - s
+		if newY1 < y1 then
+			y1 = newY1
+		end
+
+		local newY2 = c.y + s
+		if newY2 > y2 then
+			y2 = newY2
+		end
+	end
 	x1 = clamp(x1, 0, 128) - 1
 	x2 = clamp(x2, 0, 128) + 1
 	y1 = clamp(y1, 0, 128) - 1
 	y2 = clamp(y2, 0, 128) + 1
 	local w <const> = x2 - x1
 	local h <const> = y2 - y1
-	layers.hair:setSize(w, h)
-	layers.hair:setCenter(0, 0)
-	layers.hair:moveTo(x1 + kDrawOffsetX, y1 + kDrawOffsetY)
-	local pdimg <const> = playdate.graphics.image.new(w, h, playdate.graphics.kColorClear)
-	playdate.graphics.pushContext(pdimg)
+	local hairLayer = layers.hair
+	hairLayer:setSize(w, h)
+	hairLayer:setCenter(0, 0)
+	hairLayer:moveTo(x1 + kDrawOffsetX, y1 + kDrawOffsetY)
+	local pdimg <const> = GFX.image.new(w, h, GFX.kColorClear)
+	GFX.pushContext(pdimg)
 		-- Draw outline of hair
-		playdate.graphics.setColor(playdate.graphics.kColorWhite)
-		playdate.graphics.setLineWidth(1)
-		playdate.graphics.setStrokeLocation(playdate.graphics.kStrokeOutside)
-		foreach(coords,function(c)
-			playdate.graphics.drawCircleAtPoint(c.x - x1, c.y - y1, c.s)
-		end)
+		GFX.setColor(GFX.kColorWhite)
+		GFX.setLineWidth(1)
+		GFX.setStrokeLocation(GFX.kStrokeOutside)
+		for i=1, #coords do
+			local c = coords[i]
+			GFX.drawCircleAtPoint(c.x - x1, c.y - y1, c.s)
+		end
 		-- Draw fill of hair
-		playdate.graphics.setColor(hair_color)
-		foreach(coords,function(c)
-			playdate.graphics.fillCircleAtPoint(c.x - x1, c.y - y1, c.s)
-		end)
-	playdate.graphics.popContext()
-	layers.hair:setImage(pdimg)
+		GFX.setColor(hair_color)
+		for i=1, #coords do
+			local c = coords[i]
+			GFX.fillCircleAtPoint(c.x - x1, c.y - y1, c.s)
+		end
+	GFX.popContext()
+	hairLayer:setImage(pdimg)
 end
 
 unset_hair_color=function()
-	hair_color = playdate.graphics.kColorBlack
+	hair_color = GFX.kColorBlack
 end
 
 player_spawn = {
+	type_id = 1,
 	tile=1,
 	init=function(this)
 		sfx(4)
@@ -504,6 +535,7 @@ player_spawn = {
 add(types,player_spawn)
 
 spring = {
+	type_id = 2,
 	tile=18,
 	init=function(this)
 		this.hide_in=0
@@ -568,6 +600,7 @@ function break_spring(obj)
 end
 
 balloon = {
+	type_id = 3,
 	tile=22,
 	init=function(this)
 		this.offset=rnd(1)
@@ -576,13 +609,13 @@ balloon = {
 		this.hitbox=playdate.geometry.rect.new(-1,-1,10,10)
 		if this.pdspr ~= nil then
 			this.pdspr.type="balloon"
-			local pdimg <const> = playdate.graphics.image.new(10, 17, playdate.graphics.kColorClear)
-			playdate.graphics.pushContext(pdimg)
+			local pdimg <const> = GFX.image.new(10, 17, GFX.kColorClear)
+			GFX.pushContext(pdimg)
 				local pdtileballoon = data.imagetables.balloon:getImage(1)
 				local pdtilestring = data.imagetables.balloon:getImage(flr(2+(this.offset*8)%3))
 				pdtileballoon:draw(0,0)
 				pdtilestring:draw(0,8)
-			playdate.graphics.popContext()
+			GFX.popContext()
 			this.pdspr:setImage(pdimg)
 			this.pdspr:setGroups({4})
 			this.pdspr:setZIndex(20)
@@ -613,13 +646,13 @@ balloon = {
 	draw=function(this)
 		if this.spr==22 then
 			local function drawBalloon(img)
-				playdate.graphics.pushContext(img)
-					playdate.graphics.clear(playdate.graphics.kColorClear)
+				GFX.pushContext(img)
+					GFX.clear(GFX.kColorClear)
 					local pdtilestring = data.imagetables.balloon:getImage(flr(2+(this.offset*8)%3))
 					local pdtileballoon = data.imagetables.balloon:getImage(1)
 					pdtileballoon:draw(0,0)
 					pdtilestring:draw(0,8)
-				playdate.graphics.popContext()
+				GFX.popContext()
 			end
 			if this.pdspr ~= nil then
 				local pdimg <const> = this.pdspr:getImage()
@@ -636,6 +669,7 @@ balloon = {
 add(types,balloon)
 
 fall_floor = {
+	type_id = 4,
 	tile=23,
 	init=function(this)
 		this.state=0
@@ -646,7 +680,7 @@ fall_floor = {
 			this.pdspr:setZIndex(20)
 			this.pdspr:setGroups({3})
 			this.pdspr.collisionResponse=function(other)
-				return playdate.graphics.sprite.kCollisionTypeOverlap
+				return GFX.sprite.kCollisionTypeOverlap
 			end
 		end
 	end,
@@ -663,7 +697,7 @@ fall_floor = {
 		-- invisible, waiting to reset
 		elseif this.state==2 then
 			this.delay-=1
-			if this.delay<=0 and not this.check(player,0,0) then
+			if this.delay<=0 and not this.collide(player,0,0) ~= nil then
 				psfx(7)
 				this.state=0
 				this.collideable=true
@@ -704,6 +738,7 @@ function break_fall_floor(obj)
 end
 
 smoke={
+	type_id = 5,
 	init=function(this)
 		this.spr=29
 		this.spd.y=-0.1
@@ -723,7 +758,7 @@ smoke={
 	draw=function(this)
 		local pdimg <const> = data.imagetables.tiles:getImage(flr(this.spr)+1)
 		if not this.pdspr then
-			this.pdspr = playdate.graphics.sprite.new()
+			this.pdspr = GFX.sprite.new()
 			this.pdspr:setCenter(0,0)
 			this.pdspr:setZIndex(20)
 			this.pdspr:add()
@@ -734,6 +769,7 @@ smoke={
 }
 
 fruit={
+	type_id = 6,
 	tile=26,
 	if_not_fruit=true,
 	init=function(this)
@@ -752,7 +788,7 @@ fruit={
 					player.djump=max_djump
 					sfx_timer=20
 					sfx(13)
-					got_fruit[1+level_index()] = true
+					got_fruit[1+level_index] = true
 					init_object(lifeup,this.x,this.y)
 					destroy_object(this)
 				end
@@ -772,6 +808,7 @@ fruit={
 add(types,fruit)
 
 fly_fruit={
+	type_id = 7,
 	tile=28,
 	if_not_fruit=true,
 	init=function(this)
@@ -791,7 +828,7 @@ fly_fruit={
 					player.djump=max_djump
 					sfx_timer=20
 					sfx(13)
-					got_fruit[1+level_index()] = true
+					got_fruit[1+level_index] = true
 					init_object(lifeup,this.x,this.y)
 					destroy_object(this)
 				end
@@ -832,17 +869,17 @@ fly_fruit={
 			off=(off+0.25)%3
 		end
 		local drawFruit=function(img)
-			playdate.graphics.pushContext(img)
-				playdate.graphics.clear(playdate.graphics.kColorClear)
+			GFX.pushContext(img)
+				GFX.clear(GFX.kColorClear)
 				local pdtilewing = data.imagetables.fruit:getImage(flr(3+off))
 				local pdtilefruit = data.imagetables.fruit:getImage(2)
 				pdtilewing:draw(4,-1,flip(true, false))
 				pdtilewing:draw(16,-1)
 				pdtilefruit:draw(10,0)
-			playdate.graphics.popContext()
+			GFX.popContext()
 		end
 		if this.pdspr ~= nil then
-			local pdimg <const> = playdate.graphics.image.new(30, 10)
+			local pdimg <const> = GFX.image.new(30, 10)
 			drawFruit(pdimg)
 			this.pdspr:setImage(pdimg)
 			this.pdspr:moveTo(kDrawOffsetX + this.x - 11, kDrawOffsetY + this.y - 1)
@@ -852,6 +889,7 @@ fly_fruit={
 add(types,fly_fruit)
 
 lifeup = {
+	type_id = 8,
 	init=function(this)
 		this.spd.y=-0.25
 		this.duration=30
@@ -859,7 +897,7 @@ lifeup = {
 		this.y-=4
 		this.flash=0
 		this.solids=false
-		this.pdspr = playdate.graphics.sprite.new(data.imagetables.lifeup)
+		this.pdspr = GFX.sprite.new(data.imagetables.lifeup)
 		this.pdspr:setCenter(0,0)
 		this.pdspr:setZIndex(20)
 		this.pdspr:add()
@@ -873,22 +911,23 @@ lifeup = {
 	draw=function(this)
 		this.flash+=0.5
 		if math.floor(this.flash) % 2 == 0 then
-			this.pdspr:setImageDrawMode(playdate.graphics.kDrawModeInverted)
+			this.pdspr:setImageDrawMode(GFX.kDrawModeInverted)
 		else
-			this.pdspr:setImageDrawMode(playdate.graphics.kDrawModeCopy)
+			this.pdspr:setImageDrawMode(GFX.kDrawModeCopy)
 		end
 		this.pdspr:moveTo(kDrawOffsetX + this.x-2, kDrawOffsetY + this.y)
 	end
 }
 
 fake_wall = {
+	type_id = 9,
 	tile=64,
 	if_not_fruit=true,
 	init=function(this)
 		this.hitbox=playdate.geometry.rect.new(0,0,16,16)
 		if this.pdspr ~= nil then
-			local pdimg <const> = playdate.graphics.image.new(16, 16)
-			playdate.graphics.pushContext(pdimg)
+			local pdimg <const> = GFX.image.new(16, 16)
+			GFX.pushContext(pdimg)
 				local pdtile = data.imagetables.tiles:getImage(64 + 1)
 				pdtile:draw(0,0)
 				pdtile = data.imagetables.tiles:getImage(65 + 1)
@@ -897,7 +936,7 @@ fake_wall = {
 				pdtile:draw(0,8)
 				pdtile = data.imagetables.tiles:getImage(81 + 1)
 				pdtile:draw(8,8)
-			playdate.graphics.popContext()
+			GFX.popContext()
 			this.pdspr:setImage(pdimg)
 			this.pdspr:setZIndex(20)
 			this.pdspr:setCollideRect(this.hitbox)
@@ -930,6 +969,7 @@ fake_wall = {
 add(types,fake_wall)
 
 key={
+	type_id = 10,
 	tile=8,
 	if_not_fruit=true,
 	update=function(this)
@@ -939,7 +979,7 @@ key={
 		if is==10 and is~=was then
 			this.flip.x=not this.flip.x
 		end
-		if this.check(player,0,0) then
+		if this.collide(player,0,0) ~= nil then
 			sfx(23)
 			sfx_timer=10
 			destroy_object(this)
@@ -949,7 +989,7 @@ key={
 	draw=function(this)
 		local pdimg <const> = data.imagetables.key:getImage(flr(this.spr) - 7)
 		if not this.pdspr then
-			this.pdspr = playdate.graphics.sprite.new(pdimg)
+			this.pdspr = GFX.sprite.new(pdimg)
 			this.pdspr:setCenter(0,0)
 			this.pdspr:setZIndex(20)
 			this.pdspr:add()
@@ -961,6 +1001,7 @@ key={
 add(types,key)
 
 chest={
+	type_id = 11,
 	tile=20,
 	if_not_fruit=true,
 	init=function(this)
@@ -968,7 +1009,7 @@ chest={
 		this.start=this.x
 		this.timer=20
 		local pdimg <const> = data.imagetables.chest
-		this.pdspr = playdate.graphics.sprite.new(pdimg)
+		this.pdspr = GFX.sprite.new(pdimg)
 		this.pdspr:setCenter(0,0)
 		this.pdspr:setZIndex(20)
 		this.pdspr:add()
@@ -992,6 +1033,7 @@ chest={
 add(types,chest)
 
 platform={
+	type_id = 12,
 	init=function(this)
 		this.x-=4
 		this.solids=false
@@ -999,7 +1041,7 @@ platform={
 		this.last=this.x
 		if not this.pdspr then
 			local pdimg <const> = data.imagetables.platform
-			this.pdspr = playdate.graphics.sprite.new(pdimg)
+			this.pdspr = GFX.sprite.new(pdimg)
 			this.pdspr:setCenter(0,0)
 			this.pdspr.type="platform"
 			this.pdspr.class="solid"
@@ -1016,7 +1058,7 @@ platform={
 		elseif this.x>128 then
 			this.x=-16
 		end
-		if not this.check(player,0,0) then
+		if not this.collide(player,0,0) ~= nil then
 			local hit=this.collide(player,0,-1)
 			if hit~=nil then
 				hit.move_x(this.x-this.last,1)
@@ -1030,18 +1072,19 @@ platform={
 }
 
 message={
+	type_id = 13,
 	tile=86,
 	last=0,
 	init=function(this)
 		if not this.pdspr then
-			this.pdspr = playdate.graphics.sprite.new(pdimg)
+			this.pdspr = GFX.sprite.new(pdimg)
 		end
 		this.pdspr:setCenter(0,0)
 		this.pdspr:setZIndex(20)
 	end,
 	draw=function(this)
 		this.text="-- celeste mountain --#this memorial to those# perished on the climb"
-		if this.check(player,4,0) then
+		if this.collide(player,4,0) ~= nil then
 			if this.index<#this.text then
 			 this.index+=0.5
 				if this.index>=this.last+1 then
@@ -1050,8 +1093,8 @@ message={
 				end
 			end
 			this.off={x=2,y=2}
-			local pdimg <const> = playdate.graphics.image.new(115, 23)
-			playdate.graphics.pushContext(pdimg)
+			local pdimg <const> = GFX.image.new(115, 23)
+			GFX.pushContext(pdimg)
 				for i=1,this.index do
 					if sub(this.text,i,i)~="#" then
 						rectfill(this.off.x-2,this.off.y-2,this.off.x+7,this.off.y+6,7)
@@ -1062,7 +1105,7 @@ message={
 						this.off.y+=7
 					end
 				end
-			playdate.graphics.popContext()
+			GFX.popContext()
 			this.pdspr:setImage(pdimg)
 			this.pdspr:moveTo(kDrawOffsetX + 6, kDrawOffsetY + 94)
 			this.pdspr:add()
@@ -1078,15 +1121,20 @@ message={
 add(types,message)
 
 big_chest={
+	type_id = 14,
 	tile=96,
 	init=function(this)
 		this.state=0
 		this.hitbox.width=16
+		this.hitbox.height=16
+		if this.pdspr ~= nil then
+			this.pdspr:setCollideRect(this.hitbox:offsetBy(1,1))
+		end
 	end,
 	draw=function(this)
-		local pdimg <const> = playdate.graphics.image.new(18, 16, playdate.graphics.kColorClear)
+		local pdimg <const> = GFX.image.new(18, 16, GFX.kColorClear)
 		if not this.pdspr then
-			this.pdspr = playdate.graphics.sprite.new(pdimg)
+			this.pdspr = GFX.sprite.new(pdimg)
 			this.pdspr:setCenter(0,0)
 			this.pdspr:setZIndex(20)
 		end
@@ -1104,10 +1152,10 @@ big_chest={
 				this.timer=60
 				this.particles={}
 			end
-			playdate.graphics.pushContext(pdimg)
+			GFX.pushContext(pdimg)
 				local pdtile = data.imagetables.big_chest:getImage(1)
 				pdtile:draw(0,0)
-			playdate.graphics.popContext()
+			GFX.popContext()
 		elseif this.state==1 then
 			this.timer-=1
 			shake=5
@@ -1134,10 +1182,10 @@ big_chest={
 			end)
 		end
 		if this.state~=0 then
-			playdate.graphics.pushContext(pdimg)
+			GFX.pushContext(pdimg)
 				local pdtile = data.imagetables.big_chest:getImage(2)
 				pdtile:draw(0,0)
-			playdate.graphics.popContext()
+			GFX.popContext()
 		end
 		this.pdspr:setImage(pdimg)
 		this.pdspr:moveTo(kDrawOffsetX + this.x-1, kDrawOffsetY + this.y)
@@ -1147,6 +1195,7 @@ big_chest={
 add(types,big_chest)
 
 tree={
+	type_id = 15,
 	tile=44,
 	init=function(this)
 		if this.pdspr ~= nil then
@@ -1163,6 +1212,7 @@ tree={
 add(types,tree)
 
 orb={
+	type_id = 15,
 	init=function(this)
 		this.spd.y=-4
 		this.solids=false
@@ -1180,13 +1230,13 @@ orb={
 			max_djump=2
 			hit.djump=2
 		end
-		local pdimg <const> = playdate.graphics.image.new(8, 8, playdate.graphics.kColorClear)
+		local pdimg <const> = GFX.image.new(8, 8, GFX.kColorClear)
 		if not this.pdspr then
-			playdate.graphics.pushContext(pdimg)
+			GFX.pushContext(pdimg)
 				local pdtile = data.imagetables.tiles:getImage(103)
 				pdtile:draw(0,0)
-			playdate.graphics.popContext()
-			this.pdspr = playdate.graphics.sprite.new(pdimg)
+			GFX.popContext()
+			this.pdspr = GFX.sprite.new(pdimg)
 			this.pdspr:setCenter(0,0)
 			this.pdspr:setZIndex(20)
 			this.pdspr:add()
@@ -1200,6 +1250,7 @@ orb={
 }
 
 flag = {
+	type_id = 16,
 	tile=118,
 	init=function(this)
 		this.x+=5
@@ -1223,30 +1274,30 @@ flag = {
 		end
 		if this.show then
 			if not layers.score then
-				local pdimg = playdate.graphics.image.new(64, 29)
-				playdate.graphics.pushContext(pdimg)
-					playdate.graphics.setColor(playdate.graphics.kColorBlack)
-					playdate.graphics.fillRect(0, 0, 64, 29)
+				local pdimg = GFX.image.new(64, 29)
+				GFX.pushContext(pdimg)
+					GFX.setColor(GFX.kColorBlack)
+					GFX.fillRect(0, 0, 64, 29)
 					local fruit = data.imagetables.fruit:getImage(1)
 					fruit:draw(22, 3)
 					_print("x"..this.score,32,7,7)
 					_print(get_time(),17,15)
 					_print("deaths:"..deaths,16,22,7)
-				playdate.graphics.popContext()
-				layers.score = playdate.graphics.sprite.new(pdimg)
+				GFX.popContext()
+				layers.score = GFX.sprite.new(pdimg)
 				layers.score:setCenter(0,0)
 				layers.score:setZIndex(20)
 				layers.score:moveTo(kDrawOffsetX + 32, 2)
 				layers.score:add()
 			end
-		elseif this.check(player,0,0) then
+		elseif this.collide(player,0,0) ~= nil then
 			sfx(55)
 			sfx_timer=30
 			this.show=true
 		end
 		local pdimg <const> = data.imagetables.flag:getImage(flr(this.spr) - 117)
 		if not this.pdspr then
-			this.pdspr = playdate.graphics.sprite.new(pdimg)
+			this.pdspr = GFX.sprite.new(pdimg)
 			this.pdspr:setCenter(0,0)
 			this.pdspr:setZIndex(20)
 			this.pdspr:add()
@@ -1258,6 +1309,7 @@ flag = {
 add(types,flag)
 
 room_title = {
+	type_id = 17,
 	init=function(this)
 		this.delay=5
 	end,
@@ -1267,22 +1319,22 @@ room_title = {
 			destroy_object(this)
 			layers.time:remove()
 		elseif this.delay<0 then
-			local pdimg <const> = playdate.graphics.image.new(80, 12)
-			playdate.graphics.pushContext(pdimg)
-				playdate.graphics.setColor(playdate.graphics.kColorWhite)
-				playdate.graphics.fillRect(0, 0, 80, 12)
-				playdate.graphics.drawRect(0, 0, 80, 12)
+			local pdimg <const> = GFX.image.new(80, 12)
+			GFX.pushContext(pdimg)
+				GFX.setColor(GFX.kColorWhite)
+				GFX.fillRect(0, 0, 80, 12)
+				GFX.drawRect(0, 0, 80, 12)
 				if room.x==3 and room.y==1 then
 					_print("old site",24,4,0)
-				elseif level_index()==30 then
+				elseif level_index==30 then
 					_print("summit",28,4,0)
 				else
-					local level=(1+level_index())*100
+					local level=(1+level_index)*100
 					_print(level.." m",28+(level<1000 and 2 or 0),4,0)
 				end
-			playdate.graphics.popContext()
+			GFX.popContext()
 			if not this.pdspr then
-				this.pdspr = playdate.graphics.sprite.new(pdimg)
+				this.pdspr = GFX.sprite.new(pdimg)
 				this.pdspr:setCenter(0,0)
 				this.pdspr:setZIndex(20)
 				this.pdspr:add()
@@ -1300,7 +1352,7 @@ room_title = {
 
 function init_object(type,x,y)
 
-	if type.if_not_fruit~=nil and got_fruit[1+level_index()] then
+	if type.if_not_fruit~=nil and got_fruit[1+level_index] then
 		return
 	end
 	local obj = {}
@@ -1317,7 +1369,7 @@ function init_object(type,x,y)
 
 	if obj.spr ~= nil then
 		local pdimg <const> = data.imagetables.tiles:getImage(math.floor(obj.spr) + 1)
-		obj.pdspr = playdate.graphics.sprite.new()
+		obj.pdspr = GFX.sprite.new()
 		obj.pdspr.obj = obj
 		obj.pdspr:setCenter(0,0)
 		obj.pdspr:setImage(pdimg, flip(obj.flip.x,obj.flip.y))
@@ -1329,12 +1381,14 @@ function init_object(type,x,y)
 	obj.rem = {x=0,y=0}
 
 	obj.is_solid=function(ox,oy)
-		if oy>0 and not obj.check(platform,ox,0) and obj.check(platform,ox,oy) then
+		local collide = obj.collide
+		if oy>0 and not (collide(platform,ox,0) ~= nil) and collide(platform,ox,oy) ~= nil then
 			return true
 		end
-		return solid_at(obj.x+obj.hitbox.x+ox,obj.y+obj.hitbox.y+oy,obj.hitbox.width,obj.hitbox.height)
-			or obj.check(fall_floor,ox,oy)
-			or obj.check(fake_wall,ox,oy)
+		local hitbox = obj.hitbox
+		return tile_flag_at(obj.x+hitbox.x+ox,obj.y+hitbox.y+oy,hitbox.width,hitbox.height,0)
+			or collide(fall_floor,ox,oy) ~= nil
+			or collide(fake_wall,ox,oy) ~= nil
 	end
 
 	obj.is_ice=function(ox,oy)
@@ -1342,20 +1396,18 @@ function init_object(type,x,y)
 	end
 
 	obj.collide=function(type,ox,oy)
-		local other
-		for i=1,#objects do
-			other=objects[i]
-			if other ~=nil and other.type == type and other ~= obj and other.collideable and
-				obj.hitbox:offsetBy(obj.x+ox,obj.y+oy):intersects(other.hitbox:offsetBy(other.x,other.y)) then
-				print(obj.hitbox:offsetBy(obj.x+ox,obj.y+oy), other.hitbox:offsetBy(other.x,other.y))
+		local typeList = objects[type.type_id]
+		if #typeList == 0 then
+			return nil
+		end
+
+		for i=1,#typeList do
+			local other=typeList[i]
+			if other ~= nil and other.collideable and obj.hitbox:offsetBy(obj.x+ox,obj.y+oy):intersects(other.hitbox:offsetBy(other.x,other.y)) then
 				return other
 			end
 		end
 		return nil
-	end
-
-	obj.check=function(type,ox,oy)
-		return obj.collide(type,ox,oy) ~= nil
 	end
 
 	obj.move=function(ox,oy)
@@ -1363,7 +1415,7 @@ function init_object(type,x,y)
 		-- [x] get move amount
 		if ox ~= 0 then
 			obj.rem.x += ox
-			amount = flr(obj.rem.x + 0.5)
+			amount = math.floor(obj.rem.x + 0.5)
 			obj.rem.x -= amount
 			obj.move_x(amount,0)
 		end
@@ -1371,7 +1423,7 @@ function init_object(type,x,y)
 		-- [y] get move amount
 		if oy ~= 0 then
 			obj.rem.y += oy
-			amount = flr(obj.rem.y + 0.5)
+			amount = math.floor(obj.rem.y + 0.5)
 			obj.rem.y -= amount
 			obj.move_y(amount)
 		end
@@ -1379,8 +1431,19 @@ function init_object(type,x,y)
 
 	obj.move_x=function(amount,start)
 		if obj.solids then
-			local step = sign(amount)
-			for i=start,abs(amount) do
+			local step = 0
+			if amount > 0 then
+				step = 1
+			elseif amount < 0 then
+				step = -1
+			end
+
+			local count = amount
+			if count < 0 then
+				count = count * -1
+			end
+
+			for i=start, count do
 				if not obj.is_solid(step,0) then
 					obj.x += step
 				else
@@ -1396,8 +1459,19 @@ function init_object(type,x,y)
 
 	obj.move_y=function(amount)
 		if obj.solids then
-			local step = sign(amount)
-			for i=0,abs(amount) do
+			local step = 0 
+			if amount > 0 then
+				step = 1
+			elseif amount < 0 then
+				step = -1
+			end
+
+			local count = amount
+			if count < 0 then
+				count = count * -1
+			end
+
+			for i=0, count do
 			 if not obj.is_solid(0,step) then
 					obj.y += step
 				else
@@ -1411,7 +1485,8 @@ function init_object(type,x,y)
 		end
 	end
 
-	add(objects,obj)
+	table.insert(objects[type.type_id], obj)
+
 	if obj.type.init~=nil then
 		obj.type.init(obj)
 	end
@@ -1423,7 +1498,7 @@ function destroy_object(obj)
 	if obj.pdspr ~= nil then
 		obj.pdspr:remove()
 	end
-	del(objects,obj)
+	del(objects[obj.type.type_id],obj)
 end
 
 function kill_player(obj)
@@ -1433,7 +1508,7 @@ function kill_player(obj)
 	shake=10
 	destroy_object(obj)
 	drawInLayer("hair", function(img)
-		img:clear(playdate.graphics.kColorClear)
+		img:clear(GFX.kColorClear)
 	end)
 	layers["hair"]:markDirty()
 	dead_particles={}
@@ -1449,8 +1524,8 @@ function kill_player(obj)
 			}
 		})
 		for i, item in ipairs(dead_particles) do
-			local img <const> = playdate.graphics.image.new(item.t, item.t, playdate.graphics.kColorWhite)
-			item.spr = playdate.graphics.sprite.new(img)
+			local img <const> = GFX.image.new(item.t, item.t, GFX.kColorWhite)
+			item.spr = GFX.sprite.new(img)
 			item.spr:setZIndex(30)
 			item.spr:add()
 		end
@@ -1495,21 +1570,27 @@ function load_room(x,y)
 	--current room
 	room.x = x
 	room.y = y
+	level_index = room.x%8+room.y*8
+	is_title = level_index == 31
 
 	--level after orb
-	if level_index() > 21 and level_index() < 31 then
+	if level_index > 21 and level_index < 31 then
 		max_djump=2
 		player.djump=2
 	end
 
 	--remove existing objects
-	foreach(objects,destroy_object)
-	if #objects > 0 then
-		objects = {}
+	for i = 1, #objects do
+		for j = 1, #objects[i] do
+			if objects[i][j] then
+				destroy_object(objects[i][j])
+			end
+		end
+		objects[i] = {}
 	end
 
 	--remove sprites
-	playdate.graphics.sprite.removeAll()
+	GFX.sprite.removeAll()
 	for _, layer in ipairs(layers) do
 		layers[layer]:add()
 	end
@@ -1533,7 +1614,7 @@ function load_room(x,y)
 		end
 	end
 
-	if not is_title() then
+	if not is_title then
 		init_object(room_title,0,0)
 	end
 end
@@ -1543,7 +1624,7 @@ end
 
 function _update()
 	frames=((frames+1)%30)
-	if frames==0 and level_index()<30 then
+	if frames==0 and level_index<30 then
 		seconds=((seconds+1)%60)
 		if seconds==0 then
 			minutes+=1
@@ -1583,17 +1664,22 @@ function _update()
 	end
 
 	-- update each object
-	for _, obj in ipairs(objects) do
-		if obj.spd.x ~= 0 or obj.spd.y ~= 0 then
-			obj.move(obj.spd.x,obj.spd.y)
-		end
-		if obj.type.update~=nil then
-			obj.type.update(obj)
+	for i=1, #objects do
+		for j=1, #objects[i] do
+			local obj = objects[i][j]
+			if obj then
+				if obj.spd.x ~= 0 or obj.spd.y ~= 0 then
+					obj.move(obj.spd.x,obj.spd.y)
+				end
+				if obj.type.update~=nil then
+					obj.type.update(obj)
+				end
+			end
 		end
 	end
 
 	-- start game
-	if is_title() then
+	if is_title then
 		if not start_game and (btn(k_jump) or btn(k_dash)) then
 			music(-1)
 			start_game_flash=50
@@ -1615,9 +1701,9 @@ function _draw()
 	if freeze>0 then return end
 
 	-- start game flash
-	if is_title() then
+	if is_title then
 		if room_just_changed then
-			local titlespr = playdate.graphics.sprite.new(playdate.graphics.image.new("Assets/title"))
+			local titlespr = GFX.sprite.new(GFX.image.new("Assets/title"))
 			-- titlespr:setCenter(0,0)
 			titlespr:moveTo(100,44)
 			titlespr:setZIndex(20)
@@ -1626,45 +1712,46 @@ function _draw()
 		end
 	end
 	if start_game then
-		local m = playdate.graphics.kDrawModeCopy
+		local m = GFX.kDrawModeCopy
 		if start_game_flash>10 then
 			if frames%10<5 then
-				m = playdate.graphics.kDrawModeInverted
+				m = GFX.kDrawModeInverted
 			end
 		elseif start_game_flash>5 then
-			m = playdate.graphics.kDrawModeInverted
+			m = GFX.kDrawModeInverted
 		elseif start_game_flash>0 then
-			m = playdate.graphics.kDrawModeInverted
+			m = GFX.kDrawModeInverted
 		end
 		layers["title"]:setImageDrawMode(m)
 	end
 
 	-- clouds
 	drawInLayer("clouds", function(img)
-		img:clear(playdate.graphics.kColorClear)
-		playdate.graphics.setColor(playdate.graphics.kColorWhite)
-		if not is_title() then
-			foreach(clouds, function(c)
+		img:clear(GFX.kColorClear)
+		GFX.setColor(GFX.kColorWhite)
+		if not is_title then
+			for i=1, #clouds do
+				local c = clouds[i]
 				c.x += c.spd
 				rectfill(c.x,c.y,c.x+c.w,c.y+4+(1-c.w/64)*12,new_bg~=nil and 14 or 1)
 				if c.x > 128 then
 					c.x = -c.w
 					c.y=rnd(128-8)
 				end
-			end)
+			end
 		end
 	end)
 
 	-- draw bg terrain
 	if room_just_changed then
 		drawInLayer("bg_terrain", function(img)
-			img:clear(playdate.graphics.kColorClear)
+			img:clear(GFX.kColorClear)
 			map(room.x * 16,room.y * 16,0,0,16,16,2)
 		end)
 		if layers.bg_terrain ~= nil then
 			local pdimg = layers.bg_terrain:getImage()
 			local alpha = 0.3
-			local ditherType = playdate.graphics.image.kDitherTypeDiagonalLine
+			local ditherType = GFX.image.kDitherTypeDiagonalLine
 			layers.bg_terrain:setImage(pdimg:fadedImage(alpha, ditherType))
 		end
 	end
@@ -1672,120 +1759,123 @@ function _draw()
 	-- draw terrain
 	if room_just_changed then
 		drawInLayer("terrain", function(img)
-			img:clear(playdate.graphics.kColorClear)
-			local off=is_title() and -4 or 0
+			img:clear(GFX.kColorClear)
+			local off=is_title and -4 or 0
 			map(room.x*16,room.y * 16,off,0,16,16,1)
 		end)
 		-- Create wall sprites
-		if not is_title() then
-			local roomIndex <const> = level_index() + 1
-			local tilemap <const> = playdate.graphics.tilemap.new()
+		if not is_title then
+			local roomIndex <const> = level_index + 1
+			local tilemap <const> = GFX.tilemap.new()
 			tilemap:setImageTable(data.imagetables.tiles)
 			tilemap:setTiles(data.rooms[roomIndex], 16)
-			local iceWallSprites <const> = playdate.graphics.sprite.addWallSprites(tilemap, data.emptyIceIDs, kDrawOffsetX, kDrawOffsetY)
+			local iceWallSprites <const> = GFX.sprite.addWallSprites(tilemap, data.emptyIceIDs, kDrawOffsetX, kDrawOffsetY)
 			for _, s in ipairs(iceWallSprites) do
 				s.type = "ice"
 				s.class = "solid"
 				s:setGroups({6})
 				s.collisionResponse=function(other)
-					return playdate.graphics.sprite.kCollisionTypeOverlap
+					return GFX.sprite.kCollisionTypeOverlap
 				end
 			end
-			local spikesWallSprites <const> = playdate.graphics.sprite.addWallSprites(tilemap, data.emptySpikesIDs, kDrawOffsetX, kDrawOffsetY)
+			local spikesWallSprites <const> = GFX.sprite.addWallSprites(tilemap, data.emptySpikesIDs, kDrawOffsetX, kDrawOffsetY)
 			for _, s in ipairs(spikesWallSprites) do
 				s.type = "spikes"
 				s:setGroups({5})
 				s.collisionResponse=function(other)
-					return playdate.graphics.sprite.kCollisionTypeOverlap
+					return GFX.sprite.kCollisionTypeOverlap
 				end
 			end
-			local solidWallSprites <const> = playdate.graphics.sprite.addWallSprites(tilemap, data.emptySolidIDs, kDrawOffsetX, kDrawOffsetY)
+			local solidWallSprites <const> = GFX.sprite.addWallSprites(tilemap, data.emptySolidIDs, kDrawOffsetX, kDrawOffsetY)
 			for _, s in ipairs(solidWallSprites) do
 				s.type = "solid"
 				s.class = "solid"
 				s:setGroups({2})
 				s.collisionResponse=function(other)
-					return playdate.graphics.sprite.kCollisionTypeOverlap
+					return GFX.sprite.kCollisionTypeOverlap
 				end
 			end
 		end
 	end
 
 	-- draw objects
-	foreach(objects, function(o)
-		draw_object(o)
-	end)
+	for i=1, #objects do
+		for j=1, #objects[i] do
+			local o = objects[i][j]
+			if o then
+				draw_object(o)
+			end
+		end
+	end
 
 	-- draw fg terrain
 	if room_just_changed then
 		drawInLayer("fg_terrain", function(img)
-			img:clear(playdate.graphics.kColorClear)
+			img:clear(GFX.kColorClear)
 			map(room.x * 16,room.y * 16,0,0,16,16,3)
 		end)
 	end
 
 	-- particles
-	foreach(particles, function(p)
+	for i=1, #particles do
+		local p = particles[i]
 		if room_just_changed then
 			p.spr:add()
 		end
 		p.x += p.spd
 		p.y += sin(p.off)
 		p.off+= min(0.05,p.spd/32)
-		if is_title() then
+		if is_title then
 			p.spr:moveTo(p.x,p.y)
 		else
 			p.spr:moveTo(p.x + kDrawOffsetX,p.y + kDrawOffsetY)
 		end
 		local w = 128
-		if is_title() then w = 200 end
+		if is_title then w = 200 end
 		if p.x>w+4 then
 			p.x=-4
 			p.y=rnd(w)
 		end
-	end)
+	end
 
 	-- dead particles
-	foreach(dead_particles, function(p)
-		p.x += p.spd.x
-		p.y += p.spd.y
-		p.t -=1
-		if p.t <= 0 then
-			p.spr:remove()
-			del(dead_particles,p)
-		else
-			local img <const> = playdate.graphics.image.new(flr(p.t/5) + 1, flr(p.t/5) + 1, playdate.graphics.kColorWhite)
-			p.spr:setImage(img)
-			p.spr:moveTo(p.x + kDrawOffsetX, p.y + kDrawOffsetY)
+	for i=1, #dead_particles do
+		local p = dead_particles[i]
+		if p then
+			p.x += p.spd.x
+			p.y += p.spd.y
+			p.t -=1
+			if p.t <= 0 then
+				p.spr:remove()
+				del(dead_particles,p)
+			else
+				local img <const> = GFX.image.new(flr(p.t/5) + 1, flr(p.t/5) + 1, GFX.kColorWhite)
+				p.spr:setImage(img)
+				p.spr:moveTo(p.x + kDrawOffsetX, p.y + kDrawOffsetY)
+			end
 		end
-	end)
+	end
 
 	-- credits
 	if room_just_changed then
-		if is_title() then
+		if is_title then
 			drawInLayer("credits", function(img)
-				img:clear(playdate.graphics.kColorClear)
+				img:clear(GFX.kColorClear)
 				_print("a+b",58,80,5)
 				_print("maddy thorson",40,96,5)
 				_print("noel berry",46,102,5)
 			end)
 		else
 			drawInLayer("credits", function(img)
-				img:clear(playdate.graphics.kColorClear)
+				img:clear(GFX.kColorClear)
 			end)
 		end
 	end
 
-	if level_index()==30 then
+	if level_index==30 then
 		drawInLayer("level30", function(img)
-			img:clear(playdate.graphics.kColorClear)
-			local p
-			for i=1,#objects do
-				if objects[i].type==player then
-					p = objects[i]
-					break
-				end
-			end
+			img:clear(GFX.kColorClear)
+			local p = objects[player.type_id][1]
 			if p~=nil then
 				local diff=min(24,40-abs(p.x+4-64))
 				rectfill(0,0,diff,128,0)
@@ -1810,15 +1900,15 @@ end
 
 function draw_time(x,y)
 
-	local pdimg <const> = playdate.graphics.image.new(33, 7)
-	playdate.graphics.pushContext(pdimg)
-		playdate.graphics.setColor(playdate.graphics.kColorBlack)
-		playdate.graphics.setImageDrawMode(playdate.graphics.kDrawModeCopy)
-		playdate.graphics.fillRect(0, 0, 33, 7)
+	local pdimg <const> = GFX.image.new(33, 7)
+	GFX.pushContext(pdimg)
+		GFX.setColor(GFX.kColorBlack)
+		GFX.setImageDrawMode(GFX.kDrawModeCopy)
+		GFX.fillRect(0, 0, 33, 7)
 		_print(get_time(),1,1,7)
-	playdate.graphics.popContext()
+	GFX.popContext()
 	if not layers.time then
-		layers.time = playdate.graphics.sprite.new(pdimg)
+		layers.time = GFX.sprite.new(pdimg)
 		layers.time:setCenter(0,0)
 		layers.time:setZIndex(20)
 	end
@@ -1846,8 +1936,8 @@ end
 
 function appr(val,target,amount)
 	return val > target 
-		and max(val - amount, target) 
-		or min(val + amount, target)
+		and math.max(val - amount, target) 
+		or math.min(val + amount, target)
 end
 
 function sign(v)
@@ -1858,17 +1948,13 @@ function maybe()
 	return rnd(1)<0.5
 end
 
-function solid_at(x,y,w,h)
-	return tile_flag_at(x,y,w,h,0)
-end
-
 function ice_at(x,y,w,h)
 	return tile_flag_at(x,y,w,h,4)
 end
 
 function tile_flag_at(x,y,w,h,flag)
-	for i=max(0,flr(x/8)),min(15,(x+w-1)/8) do
-		for j=max(0,flr(y/8)),min(15,(y+h-1)/8) do
+	for i=math.max(0,math.floor(x/8)),math.min(15,(x+w-1)/8) do
+		for j=math.max(0,math.floor(y/8)),math.min(15,(y+h-1)/8) do
 			if fget(tile_at(i,j),flag) then
 				return true
 			end
@@ -1878,12 +1964,14 @@ function tile_flag_at(x,y,w,h,flag)
 end
 
 function tile_at(x,y)
-	return mget(room.x * 16 + x, room.y * 16 + y)
+	local celx = room.x * 16 + x
+	local cely = room.y * 16 + y
+	return data.map[celx + (cely * 128) + 1]
 end
 
 function spikes_at(x,y,w,h,xspd,yspd)
-	for i=max(0,flr(x/8)),min(15,(x+w-1)/8) do
-		for j=max(0,flr(y/8)),min(15,(y+h-1)/8) do
+	for i=math.max(0,math.floor(x/8)),math.min(15,(x+w-1)/8) do
+		for j=math.max(0,math.floor(y/8)),math.min(15,(y+h-1)/8) do
 			local tile=tile_at(i,j)
 			if tile==17 and ((y+h-1)%8>=6 or y+h==j*8+8) and yspd>=0 then
 				return true
