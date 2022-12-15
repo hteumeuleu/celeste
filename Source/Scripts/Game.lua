@@ -1,7 +1,7 @@
-import "data.lua"
-import "globals.lua"
-import "pico-8.lua"
-import "celeste.lua"
+import "Scripts/data.lua"
+import "Scripts/globals.lua"
+import "Scripts/pico-8.lua"
+import "Scripts/celeste.lua"
 
 class("Game").extends()
 
