@@ -1076,45 +1076,48 @@ message={
 	tile=86,
 	last=0,
 	init=function(this)
-		if not this.pdspr then
-			this.pdspr = GFX.sprite.new(pdimg)
-		end
+		this.text="-- celeste mountain --#this memorial to those# perished on the climb"
+		this.index=0
+		this.last=0
+		this.off={x=2,y=2}
+		local pdimg <const> = GFX.image.new(115, 23, playdate.graphics.kColorClear)
+		this.pdspr:setImage(pdimg)
 		this.pdspr:setCenter(0,0)
 		this.pdspr:setZIndex(20)
+		this.pdspr:moveTo(kDrawOffsetX + 6, kDrawOffsetY + 94)
+		this.pdspr:clearCollideRect()
+		this.pdspr:remove()
+		this.wasDrawn=false
 	end,
 	draw=function(this)
-		this.text="-- celeste mountain --#this memorial to those# perished on the climb"
 		if this.collide(player,4,0) ~= nil then
 			if this.index<#this.text then
-			 this.index+=0.5
+				this.index+=0.5
 				if this.index>=this.last+1 then
 					this.last+=1
 					sfx(35)
+					local pdimg <const> = this.pdspr:getImage()
+					GFX.pushContext(pdimg)
+						local i = this.index
+						if sub(this.text,i,i)~="#" then
+							rectfill(this.off.x-2,this.off.y-2,this.off.x+7,this.off.y+6,7)
+							_print(sub(this.text,i,i),this.off.x,this.off.y,0)
+							this.off.x+=5
+						else
+							this.off.x=2
+							this.off.y+=7
+						end
+					GFX.popContext()
+					this.pdspr:setImage(pdimg)
+					this.pdspr:add()
+					this.wasDrawn=true
 				end
 			end
-			this.off={x=2,y=2}
-			local pdimg <const> = GFX.image.new(115, 23)
-			GFX.pushContext(pdimg)
-				for i=1,this.index do
-					if sub(this.text,i,i)~="#" then
-						rectfill(this.off.x-2,this.off.y-2,this.off.x+7,this.off.y+6,7)
-						_print(sub(this.text,i,i),this.off.x,this.off.y,0)
-						this.off.x+=5
-					else
-						this.off.x=2
-						this.off.y+=7
-					end
-				end
-			GFX.popContext()
-			this.pdspr:setImage(pdimg)
-			this.pdspr:moveTo(kDrawOffsetX + 6, kDrawOffsetY + 94)
-			this.pdspr:add()
 		else
-			if this.pdspr ~= nil then
+			if this.wasDrawn then
 				this.pdspr:remove()
+				this.type.init(this)
 			end
-			this.index=0
-			this.last=0
 		end
 	end
 }
