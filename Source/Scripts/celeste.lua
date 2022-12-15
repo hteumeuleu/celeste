@@ -953,6 +953,8 @@ fake_wall = {
 			this.pdspr:setImage(pdimg)
 			this.pdspr:setZIndex(20)
 			this.pdspr:setCollideRect(this.hitbox)
+			this.pdspr.class="solid"
+			this.pdspr.class_id=-1
 		end
 	end,
 	update=function(this)
