@@ -1876,14 +1876,6 @@ function _draw()
 		end
 	end
 
-	-- draw fg terrain
-	-- if room_just_changed then
-	-- 	drawInLayer("fg_terrain", function(img)
-	-- 		img:clear(GFX.kColorClear)
-	-- 		map(room.x * 16,room.y * 16,0,0,16,16,3)
-	-- 	end)
-	-- end
-
 	-- particles
 	for i=1, #particles do
 		local p = particles[i]

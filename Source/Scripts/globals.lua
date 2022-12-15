@@ -21,7 +21,6 @@ layers = {
 	"clouds",
 	"bg_terrain",
 	"terrain",
-	"fg_terrain",
 	"hair",
 	"credits",
 	"level30",
@@ -81,11 +80,10 @@ scale(2)
 -- layers.level30:setVisible(false)
 -- layers.credits:setVisible(false)
 -- layers.particles:setVisible(false)
--- layers.fg_terrain:setVisible(false)
 -- layers.terrain:setVisible(false)
 -- layers.platforms_big_chest:setVisible(false)
 -- layers.bg_terrain:setVisible(false)
-layers.clouds:setVisible(false)
+-- layers.clouds:setVisible(false)
 
 -- Returns Playdate’s flip value from two booleans
 function flip(flip_x, flip_y)
