@@ -1780,6 +1780,12 @@ function _draw()
 			end
 		end
 	end)
+	if layers.clouds ~= nil then
+		local pdimg = layers.clouds:getImage()
+		local alpha = 0.4
+		local ditherType = GFX.image.kDitherTypeHorizontalLine
+		layers.clouds:setImage(pdimg:fadedImage(alpha, ditherType))
+	end
 
 	-- draw bg terrain
 	if room_just_changed then
