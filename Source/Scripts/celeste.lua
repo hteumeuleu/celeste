@@ -58,14 +58,16 @@ function title_screen()
 	load_room(7,3)
 end
 
-function begin_game()
+function begin_game(x,y)
+	x = x or 0
+	y = y or 0
 	frames=0
 	seconds=0
 	minutes=0
 	music_timer=0
 	start_game=false
 	music(0,0,7)
-	load_room(3,1)
+	load_room(x,y)
 end
 
 -- effects --
