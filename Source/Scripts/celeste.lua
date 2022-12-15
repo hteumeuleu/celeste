@@ -70,8 +70,12 @@ end
 -- effects --
 -------------
 
+local max_clouds = 8
+if playdate.isSimulator then
+	max_clouds = 16
+end
 clouds = {}
-for i=0,16 do
+for i=0,max_clouds do
 	add(clouds,{
 		x=rnd(128),
 		y=rnd(128),
@@ -80,8 +84,12 @@ for i=0,16 do
 	})
 end
 
+local max_particles = 12
+if playdate.isSimulator then
+	max_particles = 24
+end
 particles = {}
-for i=0,24 do
+for i=0,max_particles do
 	add(particles,{
 		x=rnd(128),
 		y=rnd(128),
