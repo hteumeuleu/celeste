@@ -1054,19 +1054,20 @@ platform={
 	init=function(this)
 		this.x-=4
 		this.solids=false
-		this.hitbox.width=16
+		this.hitbox=playdate.geometry.rect.new(1, 1, 16, 8)
 		this.last=this.x
 		if not this.pdspr then
 			local pdimg <const> = data.imagetables.platform
 			this.pdspr = GFX.sprite.new(pdimg)
 			this.pdspr:setCenter(0,0)
-			this.pdspr.type="platform"
-			this.pdspr.class="solid"
-			this.pdspr.class_id=-1
 			this.pdspr:setGroups({4})
 			this.pdspr:setZIndex(20)
 			this.pdspr:setCollideRect(this.hitbox)
+			this.pdspr.collisionResponse=function(other)
+				return GFX.sprite.kCollisionTypeOverlap
+			end
 			this.pdspr:add()
+			this.pdspr.obj = this.type
 		end
 	end,
 	update=function(this)
@@ -1402,44 +1403,19 @@ function init_object(type,x,y)
 	obj.rem = {x=0,y=0}
 
 	obj.is_solid=function(ox,oy)
-		local spritesInRect_ox_oy <const> = GFX.sprite.querySpritesInRect(obj.hitbox:offsetBy(kDrawOffsetX+obj.x+ox, kDrawOffsetY+obj.y+oy))
-		local collidePlatformAt_ox_oy = false
-		local collideFallFloorAt_ox_oy = false
-		local collideFakeWallAt_ox_oy = false
-		local solidAt_ox_oy = false
-		for i=1, #spritesInRect_ox_oy do
-			if spritesInRect_ox_oy[i].obj.type_id == 12 then
-				collidePlatformAt_ox_oy = true
-			elseif spritesInRect_ox_oy[i].obj.type_id == 4 then
-				collideFallFloorAt_ox_oy = true
-			elseif spritesInRect_ox_oy[i].obj.type_id == 9 then
-				collideFakeWallAt_ox_oy = true
-			end
-			if spritesInRect_ox_oy[i].class_id == -1 then
-				solidAt_ox_oy = true
-			end
-		end
-		if oy > 0 and collidePlatformAt_ox_oy then
-			local spritesInRect_ox_0 <const> = GFX.sprite.querySpritesInRect(obj.hitbox:offsetBy(kDrawOffsetX+ox, kDrawOffsetY))
-			local collidePlatformAt_ox_0 = false
-			for i=1, #spritesInRect_ox_0 do
-				if spritesInRect_ox_0[i].obj.type_id == 12 then
-					collidePlatformAt_ox_0 = true
-					break
-				end
-			end
-			if not collidePlatformAt_ox_0 then
-				return true
-			end
-		end
-		return solidAt_ox_oy or collideFallFloorAt_ox_oy or collideFakeWallAt_ox_oy
+        if oy>0 and not (obj.collide(platform,ox,0) ~= nil) and (obj.collide(platform,ox,oy) ~= nil) then
+            return true
+        end
+        return solid_at(obj.x+obj.hitbox.x+ox,obj.y+obj.hitbox.y+oy,obj.hitbox.w,obj.hitbox.h)
+				or (obj.collide(fall_floor,ox,oy) ~= nil)
+				or (obj.collide(fake_wall,ox,oy) ~= nil)
 	end
 
 	obj.is_ice=function(ox,oy)
 		local spritesInRect_ox_oy <const> = GFX.sprite.querySpritesInRect(obj.hitbox:offsetBy(kDrawOffsetX+obj.x+ox, kDrawOffsetY+obj.y+oy))
 		local iceAt_ox_oy = false
 		for i=1, #spritesInRect_ox_oy do
-			if spritesInRect_ox_oy[i].obj.type_id == -2 then
+			if spritesInRect_ox_oy[i].obj and spritesInRect_ox_oy[i].obj.type_id == -2 then
 				iceAt_ox_oy = true
 				break
 			end
@@ -2014,6 +1990,10 @@ end
 
 function ice_at(x,y,w,h)
 	return tile_flag_at(x,y,w,h,4)
+end
+
+function solid_at(x,y,w,h)
+	return tile_flag_at(x,y,w,h,0)
 end
 
 function tile_flag_at(x,y,w,h,flag)
