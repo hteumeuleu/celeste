@@ -41,6 +41,7 @@ local is_title = false
 
 function _init()
 	title_screen()
+	begin_game()
 end
 
 function title_screen()
@@ -64,7 +65,7 @@ function begin_game()
 	music_timer=0
 	start_game=false
 	music(0,0,7)
-	load_room(0,0)
+	load_room(3,1)
 end
 
 -- effects --
@@ -1805,7 +1806,13 @@ function _draw()
 			local pdimg = layers.bg_terrain:getImage()
 			local alpha = 0.3
 			local ditherType = GFX.image.kDitherTypeDiagonalLine
-			layers.bg_terrain:setImage(pdimg:fadedImage(alpha, ditherType))
+			local newpdimg = pdimg:copy()
+			GFX.pushContext(newpdimg)
+				GFX.clear(playdate.graphics.kColorClear)
+				pdimg:invertedImage():draw(0, 0)
+				pdimg:drawFaded(0, 0, alpha, ditherType)
+			GFX.popContext()
+			layers.bg_terrain:setImage(newpdimg)
 		end
 	end
 
@@ -1870,12 +1877,12 @@ function _draw()
 	end
 
 	-- draw fg terrain
-	if room_just_changed then
-		drawInLayer("fg_terrain", function(img)
-			img:clear(GFX.kColorClear)
-			map(room.x * 16,room.y * 16,0,0,16,16,3)
-		end)
-	end
+	-- if room_just_changed then
+	-- 	drawInLayer("fg_terrain", function(img)
+	-- 		img:clear(GFX.kColorClear)
+	-- 		map(room.x * 16,room.y * 16,0,0,16,16,3)
+	-- 	end)
+	-- end
 
 	-- particles
 	for i=1, #particles do
