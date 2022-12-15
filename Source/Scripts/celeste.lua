@@ -1401,26 +1401,10 @@ function init_object(type,x,y)
 			return nil
 		end
 
-		local other, objX, objY, otherX, otherY, objHitbox, otherHitbox, objDX, objDY, otherDX, otherDY
 		for i=1,#typeList do
-			other=typeList[i]
-			if other ~= nil and other.collideable then
-				objX = obj.x
-				objY = obj.y
-				otherX = other.x
-				otherY = other.y
-				objHitbox = obj.hitbox
-				otherHitbox = other.hitbox
-				objDX = objX+objHitbox.x+ox
-				objDY = objY+objHitbox.y+oy
-				otherDX = otherX+otherHitbox.x
-				otherDY = otherY+otherHitbox.x
-				if otherDX+otherHitbox.width > objDX and
-					otherDY+otherHitbox.height > objDY and
-					otherDX < objDX+objHitbox.width and
-					otherDY < objDY+objHitbox.height then
-					return other
-				end
+			local other=typeList[i]
+			if other ~= nil and other.collideable and obj.hitbox:offsetBy(obj.x+ox,obj.y+oy):intersects(other.hitbox:offsetBy(other.x,other.y)) then
+				return other
 			end
 		end
 		return nil
