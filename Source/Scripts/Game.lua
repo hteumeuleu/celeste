@@ -9,21 +9,24 @@ function Game:init()
 
     Game.super.init(self)
     self:addMenuItems()
-    _init()
+    self._init = _init
+    self._update = _update
+    self._draw = _draw
+    self:_init()
     return self
 
 end
 
 function Game:update()
 
-    _update()
-    _draw()
+    self:_update()
+    self:_draw()
 
 end
 
 function Game:restart()
 
-    _init()
+    self:_init()
 
 end
 
