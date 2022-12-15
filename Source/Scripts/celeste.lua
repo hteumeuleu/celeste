@@ -676,6 +676,7 @@ fall_floor = {
 		this.solid=true
 		if this.pdspr ~= nil then
 			this.pdspr.class = "solid"
+			this.pdspr.class_id = -1
 			this.pdspr.type = "fall_floor"
 			this.pdspr:setZIndex(20)
 			this.pdspr:setGroups({3})
@@ -1045,6 +1046,7 @@ platform={
 			this.pdspr:setCenter(0,0)
 			this.pdspr.type="platform"
 			this.pdspr.class="solid"
+			this.pdspr.class_id=-1
 			this.pdspr:setGroups({4})
 			this.pdspr:setZIndex(20)
 			this.pdspr:setCollideRect(this.hitbox)
@@ -1384,18 +1386,49 @@ function init_object(type,x,y)
 	obj.rem = {x=0,y=0}
 
 	obj.is_solid=function(ox,oy)
-		local collide = obj.collide
-		if oy>0 and not (collide(platform,ox,0) ~= nil) and collide(platform,ox,oy) ~= nil then
-			return true
+		local spritesInRect_ox_oy <const> = GFX.sprite.querySpritesInRect(obj.hitbox:offsetBy(kDrawOffsetX+obj.x+ox, kDrawOffsetY+obj.y+oy))
+		local collidePlatformAt_ox_oy = false
+		local collideFallFloorAt_ox_oy = false
+		local collideFakeWallAt_ox_oy = false
+		local solidAt_ox_oy = false
+		for i=1, #spritesInRect_ox_oy do
+			if spritesInRect_ox_oy[i].obj.type_id == 12 then
+				collidePlatformAt_ox_oy = true
+			elseif spritesInRect_ox_oy[i].obj.type_id == 4 then
+				collideFallFloorAt_ox_oy = true
+			elseif spritesInRect_ox_oy[i].obj.type_id == 9 then
+				collideFakeWallAt_ox_oy = true
+			end
+			if spritesInRect_ox_oy[i].class_id == -1 then
+				solidAt_ox_oy = true
+			end
 		end
-		local hitbox = obj.hitbox
-		return tile_flag_at(obj.x+hitbox.x+ox,obj.y+hitbox.y+oy,hitbox.width,hitbox.height,0)
-			or collide(fall_floor,ox,oy) ~= nil
-			or collide(fake_wall,ox,oy) ~= nil
+		if oy > 0 and collidePlatformAt_ox_oy then
+			local spritesInRect_ox_0 <const> = GFX.sprite.querySpritesInRect(obj.hitbox:offsetBy(kDrawOffsetX+ox, kDrawOffsetY))
+			local collidePlatformAt_ox_0 = false
+			for i=1, #spritesInRect_ox_0 do
+				if spritesInRect_ox_0[i].obj.type_id == 12 then
+					collidePlatformAt_ox_0 = true
+					break
+				end
+			end
+			if not collidePlatformAt_ox_0 then
+				return true
+			end
+		end
+		return solidAt_ox_oy or collideFallFloorAt_ox_oy or collideFakeWallAt_ox_oy
 	end
 
 	obj.is_ice=function(ox,oy)
-		return ice_at(obj.x+obj.hitbox.x+ox,obj.y+obj.hitbox.y+oy,obj.hitbox.width,obj.hitbox.height)
+		local spritesInRect_ox_oy <const> = GFX.sprite.querySpritesInRect(obj.hitbox:offsetBy(kDrawOffsetX+obj.x+ox, kDrawOffsetY+obj.y+oy))
+		local iceAt_ox_oy = false
+		for i=1, #spritesInRect_ox_oy do
+			if spritesInRect_ox_oy[i].obj.type_id == -2 then
+				iceAt_ox_oy = true
+				break
+			end
+		end
+		return iceAt_ox_oy
 	end
 
 	obj.collide=function(type,ox,oy)
@@ -1776,6 +1809,9 @@ function _draw()
 			for _, s in ipairs(iceWallSprites) do
 				s.type = "ice"
 				s.class = "solid"
+				s.class_id = -1
+				s.obj = {}
+				s.obj.type_id = -2
 				s:setGroups({6})
 				s.collisionResponse=function(other)
 					return GFX.sprite.kCollisionTypeOverlap
@@ -1784,6 +1820,8 @@ function _draw()
 			local spikesWallSprites <const> = GFX.sprite.addWallSprites(tilemap, data.emptySpikesIDs, kDrawOffsetX, kDrawOffsetY)
 			for _, s in ipairs(spikesWallSprites) do
 				s.type = "spikes"
+				s.obj = {}
+				s.obj.type_id = -3
 				s:setGroups({5})
 				s.collisionResponse=function(other)
 					return GFX.sprite.kCollisionTypeOverlap
@@ -1793,6 +1831,9 @@ function _draw()
 			for _, s in ipairs(solidWallSprites) do
 				s.type = "solid"
 				s.class = "solid"
+				s.class_id = -1
+				s.obj = {}
+				s.obj.type_id = -1
 				s:setGroups({2})
 				s.collisionResponse=function(other)
 					return GFX.sprite.kCollisionTypeOverlap
