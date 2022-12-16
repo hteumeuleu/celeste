@@ -1,5 +1,6 @@
 -- Global settings
 math.randomseed(playdate.getSecondsSinceEpoch())
+playdate.setCrankSoundsDisabled(true)
 playdate.graphics.setFont(data.font)
 playdate.graphics.clear(playdate.graphics.kColorBlack)
 playdate.graphics.setBackgroundColor(playdate.graphics.kColorBlack)
