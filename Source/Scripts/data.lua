@@ -1,6 +1,22 @@
 data = {}
 
 --
+-- Cache layer
+--
+data.cache = playdate.graphics.sprite.new()
+local pdimg = playdate.graphics.image.new(400,240, playdate.graphics.kColorClear)
+playdate.graphics.pushContext(pdimg)
+	playdate.graphics.setColor(playdate.graphics.kColorBlack)
+	playdate.graphics.fillRect(0,0,400,56)
+	playdate.graphics.fillRect(0,56,136,128)
+	playdate.graphics.fillRect(264,56,136,128)
+	playdate.graphics.fillRect(0,184,400,240)
+playdate.graphics.popContext()
+data.cache:setImage(pdimg)
+data.cache:setZIndex(30)
+data.cache:moveTo(100,60)
+
+--
 -- Flags (Custom Sprites Attributes)
 --
 data.flags = {

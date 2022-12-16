@@ -41,7 +41,6 @@ local is_title = false
 
 function _init()
 	title_screen()
-	begin_game()
 end
 
 function title_screen()
@@ -73,25 +72,29 @@ end
 -- effects --
 -------------
 
-local max_clouds = 8
+local max_clouds = 4
 if playdate.isSimulator then
 	max_clouds = 16
 end
-clouds = {}
+local clouds = {}
 for i=0,max_clouds do
-	add(clouds,{
-		x=rnd(128),
-		y=rnd(128),
-		spd=1+rnd(4),
-		w=32+rnd(32)
-	})
+	local item = {}
+	item.x = math.random()*128
+	item.y = math.random()*128
+	item.spd = 1+math.random()*4
+	item.w = 32+math.random()*32+1
+	item.h = 4+(1-item.w/64)*12+1
+	local img <const> = GFX.image.new(item.w, item.h, GFX.kColorWhite)
+	item.spr = GFX.sprite.new(img:fadedImage(0.4, GFX.image.kDitherTypeHorizontalLine))
+	item.spr:setZIndex(0)
+	table.insert(clouds, item)
 end
 
-local max_particles = 12
+local max_particles = 6
 if playdate.isSimulator then
 	max_particles = 24
 end
-particles = {}
+local particles = {}
 for i=0,max_particles do
 	add(particles,{
 		x=rnd(128),
@@ -763,6 +766,12 @@ smoke={
 		this.flip.x=maybe()
 		this.flip.y=maybe()
 		this.solids=false
+		if not this.pdspr then
+			this.pdspr = GFX.sprite.new()
+			this.pdspr:setCenter(0,0)
+			this.pdspr:setZIndex(20)
+			this.pdspr:add()
+		end
 	end,
 	update=function(this)
 		this.spr+=0.2
@@ -772,12 +781,6 @@ smoke={
 	end,
 	draw=function(this)
 		local pdimg <const> = data.imagetables.tiles:getImage(flr(this.spr)+1)
-		if not this.pdspr then
-			this.pdspr = GFX.sprite.new()
-			this.pdspr:setCenter(0,0)
-			this.pdspr:setZIndex(20)
-			this.pdspr:add()
-		end
 		this.pdspr:setImage(pdimg, flip(this.flip.x, this.flip.y))
 		this.pdspr:moveTo(kDrawOffsetX + this.x, kDrawOffsetY + this.y)
 	end
@@ -989,6 +992,13 @@ key={
 	type_id = 10,
 	tile=8,
 	if_not_fruit=true,
+	init=function(this)
+		if this.pdspr then
+			this.pdspr:setCenter(0,0)
+			this.pdspr:setZIndex(20)
+			this.pdspr:add()
+		end
+	end,
 	update=function(this)
 		local was=flr(this.spr)
 		this.spr=9+(sin(frames/30)+0.5)*1
@@ -1005,12 +1015,6 @@ key={
 	end,
 	draw=function(this)
 		local pdimg <const> = data.imagetables.key:getImage(flr(this.spr) - 7)
-		if not this.pdspr then
-			this.pdspr = GFX.sprite.new(pdimg)
-			this.pdspr:setCenter(0,0)
-			this.pdspr:setZIndex(20)
-			this.pdspr:add()
-		end
 		this.pdspr:setImage(pdimg, flip(this.flip.x,this.flip.y))
 		this.pdspr:moveTo(kDrawOffsetX + this.x - 1, kDrawOffsetY + this.y - 1)
 	end
@@ -1151,15 +1155,11 @@ big_chest={
 		this.hitbox.height=16
 		if this.pdspr ~= nil then
 			this.pdspr:setCollideRect(this.hitbox:offsetBy(1,1))
+			this.pdspr:setZIndex(20)
 		end
 	end,
 	draw=function(this)
-		local pdimg <const> = GFX.image.new(18, 16, GFX.kColorClear)
-		if not this.pdspr then
-			this.pdspr = GFX.sprite.new(pdimg)
-			this.pdspr:setCenter(0,0)
-			this.pdspr:setZIndex(20)
-		end
+		local pdimg = GFX.image.new(18, 16, GFX.kColorClear)
 		if this.state==0 then
 			local hit=this.collide(player,0,8)
 			if hit~=nil and hit.is_solid(0,1) then
@@ -1174,10 +1174,7 @@ big_chest={
 				this.timer=60
 				this.particles={}
 			end
-			GFX.pushContext(pdimg)
-				local pdtile = data.imagetables.big_chest:getImage(1)
-				pdtile:draw(0,0)
-			GFX.popContext()
+			pdimg = data.imagetables.big_chest:getImage(1)
 		elseif this.state==1 then
 			this.timer-=1
 			shake=5
@@ -1200,14 +1197,11 @@ big_chest={
 			end
 			foreach(this.particles,function(p)
 				p.y+=p.spd
-				line(kDrawOffsetX+this.x+p.x,kDrawOffsetY+this.y+8-p.y,kDrawOffsetX+this.x+p.x,kDrawOffsetY+min(this.y+8-p.y+p.h,this.y+8),7)
+				line(kDrawOffsetX+this.x+p.x,kDrawOffsetY+this.y+8-p.y-1,kDrawOffsetX+this.x+p.x,kDrawOffsetY+min(this.y+8-p.y+p.h,this.y+8)-1,7)
 			end)
 		end
 		if this.state~=0 then
-			GFX.pushContext(pdimg)
-				local pdtile = data.imagetables.big_chest:getImage(2)
-				pdtile:draw(0,0)
-			GFX.popContext()
+			pdimg = data.imagetables.big_chest:getImage(2)
 		end
 		this.pdspr:setImage(pdimg)
 		this.pdspr:moveTo(kDrawOffsetX + this.x-1, kDrawOffsetY + this.y)
@@ -1252,12 +1246,8 @@ orb={
 			max_djump=2
 			hit.djump=2
 		end
-		local pdimg <const> = GFX.image.new(8, 8, GFX.kColorClear)
 		if not this.pdspr then
-			GFX.pushContext(pdimg)
-				local pdtile = data.imagetables.tiles:getImage(103)
-				pdtile:draw(0,0)
-			GFX.popContext()
+			local pdimg <const> = data.imagetables.tiles:getImage(103)
 			this.pdspr = GFX.sprite.new(pdimg)
 			this.pdspr:setCenter(0,0)
 			this.pdspr:setZIndex(20)
@@ -1282,6 +1272,11 @@ flag = {
 			if got_fruit[i] then
 				this.score+=1
 			end
+		end
+		if this.pdspr then
+			this.pdspr:setCenter(0,0)
+			this.pdspr:setZIndex(20)
+			this.pdspr:add()
 		end
 	end,
 	draw=function(this)
@@ -1318,12 +1313,6 @@ flag = {
 			this.show=true
 		end
 		local pdimg <const> = data.imagetables.flag:getImage(flr(this.spr) - 117)
-		if not this.pdspr then
-			this.pdspr = GFX.sprite.new(pdimg)
-			this.pdspr:setCenter(0,0)
-			this.pdspr:setZIndex(20)
-			this.pdspr:add()
-		end
 		this.pdspr:setImage(pdimg)
 		this.pdspr:moveTo(kDrawOffsetX + this.x - 1, kDrawOffsetY + this.y - 1)
 	end
@@ -1619,8 +1608,17 @@ function load_room(x,y)
 
 	--remove sprites
 	GFX.sprite.removeAll()
+
+	--clear layer sprites and add them back
 	for _, layer in ipairs(layers) do
+		local image <const> = layers[layer]:getImage()
+		GFX.pushContext(image)
+			image:clear(GFX.kColorClear)
+		GFX.popContext()
 		layers[layer]:add()
+	end
+	if not is_title then
+		data.cache:add()
 	end
 
 	-- entities
@@ -1729,17 +1727,14 @@ function _draw()
 	if freeze>0 then return end
 
 	-- start game flash
-	if is_title then
-		if room_just_changed then
+	if start_game then
+		if not layers.title then
 			local titlespr = GFX.sprite.new(GFX.image.new("Assets/title"))
-			-- titlespr:setCenter(0,0)
 			titlespr:moveTo(100,44)
 			titlespr:setZIndex(20)
 			titlespr:add()
-			layers["title"] = titlespr
+			layers.title = titlespr
 		end
-	end
-	if start_game then
 		local m = GFX.kDrawModeCopy
 		if start_game_flash>10 then
 			if frames%10<5 then
@@ -1750,65 +1745,127 @@ function _draw()
 		elseif start_game_flash>0 then
 			m = GFX.kDrawModeInverted
 		end
-		layers["title"]:setImageDrawMode(m)
+		layers.title:setImageDrawMode(m)
 	end
 
 	-- clouds
-	drawInLayer("clouds", function(img)
-		img:clear(GFX.kColorClear)
-		GFX.setColor(GFX.kColorWhite)
-		if not is_title then
-			for i=1, #clouds do
-				local c = clouds[i]
-				c.x += c.spd
-				rectfill(c.x,c.y,c.x+c.w,c.y+4+(1-c.w/64)*12,new_bg~=nil and 14 or 1)
-				if c.x > 128 then
-					c.x = -c.w
-					c.y=rnd(128-8)
-				end
+	if not is_title then
+		for i=1, #clouds do
+			local c = clouds[i]
+			c.x += c.spd
+			c.spr:moveTo(kDrawOffsetX+c.x, kDrawOffsetY+c.y)
+			if room_just_changed then
+				c.spr:add()
+			end
+			if c.x > 128 then
+				c.x = -c.w
+				c.y = math.random()*120
 			end
 		end
-	end)
-	if layers.clouds ~= nil then
-		local pdimg = layers.clouds:getImage()
-		local alpha = 0.4
-		local ditherType = GFX.image.kDitherTypeHorizontalLine
-		layers.clouds:setImage(pdimg:fadedImage(alpha, ditherType))
 	end
 
-	-- draw bg terrain
-	if room_just_changed then
-		drawInLayer("bg_terrain", function(img)
-			img:clear(GFX.kColorClear)
-			map(room.x * 16,room.y * 16,0,0,16,16,2)
-		end)
-		if layers.bg_terrain ~= nil then
-			local pdimg = layers.bg_terrain:getImage()
-			local alpha = 0.3
-			local ditherType = GFX.image.kDitherTypeDiagonalLine
-			local newpdimg = pdimg:copy()
-			GFX.pushContext(newpdimg)
-				GFX.clear(playdate.graphics.kColorClear)
-				pdimg:invertedImage():draw(0, 0)
-				pdimg:drawFaded(0, 0, alpha, ditherType)
-			GFX.popContext()
-			layers.bg_terrain:setImage(newpdimg)
+	-- draw objects
+	for i=1, #objects do
+		for j=1, #objects[i] do
+			local o = objects[i][j]
+			if o then
+				draw_object(o)
+			end
 		end
 	end
 
-	-- draw terrain
+	-- particles
+	for i=1, #particles do
+		local p = particles[i]
+		if room_just_changed then
+			p.spr:add()
+		end
+		p.x += p.spd
+		p.y += sin(p.off)
+		p.off+= math.min(0.05,p.spd/32)
+		if is_title then
+			p.spr:moveTo(p.x,p.y)
+		else
+			p.spr:moveTo(p.x + kDrawOffsetX,p.y + kDrawOffsetY)
+		end
+		local w = 128
+		if is_title then w = 200 end
+		if p.x>w+4 then
+			p.x=-4
+			p.y=math.random()*w
+		end
+	end
+
+	-- dead particles
+	for i=1, #dead_particles do
+		local p = dead_particles[i]
+		if p then
+			p.x += p.spd.x
+			p.y += p.spd.y
+			p.t -=1
+			if p.t <= 0 then
+				p.spr:remove()
+				del(dead_particles,p)
+			else
+				local img <const> = GFX.image.new(math.floor(p.t/5) + 1, math.floor(p.t/5) + 1, GFX.kColorWhite)
+				p.spr:setImage(img)
+				p.spr:moveTo(p.x + kDrawOffsetX, p.y + kDrawOffsetY)
+			end
+		end
+	end
+
+	if level_index==30 then
+		local image <const> = layers.extra:getImage()
+		playdate.graphics.pushContext(image)
+			image:clear(GFX.kColorClear)
+			local p = objects[player.type_id][1]
+			if p~=nil then
+				local diff=math.min(24,40-math.abs(p.x+4-64))
+				rectfill(0,0,diff,128,0)
+				rectfill(128-diff,0,128,128,0)
+			end
+		playdate.graphics.popContext()
+	end
+
 	if room_just_changed then
-		drawInLayer("terrain", function(img)
-			img:clear(GFX.kColorClear)
-			local off=is_title and -4 or 0
-			map(room.x*16,room.y * 16,off,0,16,16,1)
-		end)
-		-- Create wall sprites
+
+		if is_title and layers.extra ~= nil then
+			local image <const> = layers.extra:getImage()
+			playdate.graphics.pushContext(image)
+				_print("a+b",58,80,5)
+				_print("maddy thorson",40,96,5)
+				_print("noel berry",46,102,5)
+			playdate.graphics.popContext()
+		end
+
+		-- draw bg terrain
+		if layers.bg_terrain ~= nil then
+			local image <const> = layers.bg_terrain:getImage()
+			playdate.graphics.pushContext(image)
+				map(room.x * 16,room.y * 16,0,0,16,16,2)
+			playdate.graphics.popContext()
+			local imageCopy = image:copy()
+			GFX.pushContext(imageCopy)
+				image:invertedImage():draw(0, 0)
+				image:drawFaded(0, 0, 0.3, GFX.image.kDitherTypeDiagonalLine)
+			GFX.popContext()
+			layers.bg_terrain:setImage(imageCopy)
+		end
+
+		-- draw terrain
+		if layers.terrain ~= nil then
+			local image <const> = layers.terrain:getImage()
+			playdate.graphics.pushContext(image)
+				local off=is_title and -4 or 0
+				map(room.x*16,room.y * 16,off,0,16,16,1)
+			playdate.graphics.popContext()
+		end
+
+		-- wall sprites
 		if not is_title then
-			local roomIndex <const> = level_index + 1
 			local tilemap <const> = GFX.tilemap.new()
 			tilemap:setImageTable(data.imagetables.tiles)
-			tilemap:setTiles(data.rooms[roomIndex], 16)
+			tilemap:setTiles(data.rooms[level_index + 1], 16)
 			local iceWallSprites <const> = GFX.sprite.addWallSprites(tilemap, data.emptyIceIDs, kDrawOffsetX, kDrawOffsetY)
 			for _, s in ipairs(iceWallSprites) do
 				s.type = "ice"
@@ -1844,87 +1901,10 @@ function _draw()
 				end
 			end
 		end
+
+		room_just_changed = false
 	end
 
-	-- draw objects
-	for i=1, #objects do
-		for j=1, #objects[i] do
-			local o = objects[i][j]
-			if o then
-				draw_object(o)
-			end
-		end
-	end
-
-	-- particles
-	for i=1, #particles do
-		local p = particles[i]
-		if room_just_changed then
-			p.spr:add()
-		end
-		p.x += p.spd
-		p.y += sin(p.off)
-		p.off+= min(0.05,p.spd/32)
-		if is_title then
-			p.spr:moveTo(p.x,p.y)
-		else
-			p.spr:moveTo(p.x + kDrawOffsetX,p.y + kDrawOffsetY)
-		end
-		local w = 128
-		if is_title then w = 200 end
-		if p.x>w+4 then
-			p.x=-4
-			p.y=rnd(w)
-		end
-	end
-
-	-- dead particles
-	for i=1, #dead_particles do
-		local p = dead_particles[i]
-		if p then
-			p.x += p.spd.x
-			p.y += p.spd.y
-			p.t -=1
-			if p.t <= 0 then
-				p.spr:remove()
-				del(dead_particles,p)
-			else
-				local img <const> = GFX.image.new(flr(p.t/5) + 1, flr(p.t/5) + 1, GFX.kColorWhite)
-				p.spr:setImage(img)
-				p.spr:moveTo(p.x + kDrawOffsetX, p.y + kDrawOffsetY)
-			end
-		end
-	end
-
-	-- credits
-	if room_just_changed then
-		if is_title then
-			drawInLayer("credits", function(img)
-				img:clear(GFX.kColorClear)
-				_print("a+b",58,80,5)
-				_print("maddy thorson",40,96,5)
-				_print("noel berry",46,102,5)
-			end)
-		else
-			drawInLayer("credits", function(img)
-				img:clear(GFX.kColorClear)
-			end)
-		end
-	end
-
-	if level_index==30 then
-		drawInLayer("level30", function(img)
-			img:clear(GFX.kColorClear)
-			local p = objects[player.type_id][1]
-			if p~=nil then
-				local diff=min(24,40-abs(p.x+4-64))
-				rectfill(0,0,diff,128,0)
-				rectfill(128-diff,0,128,128,0)
-			end
-		end)
-	end
-
-	room_just_changed = false
 
 end
 
