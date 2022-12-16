@@ -16,3 +16,11 @@ function playdate.update()
 	playdate.drawFPS(0, 0)
 
 end
+
+function playdate.keyPressed(key)
+
+	if key == "m" then
+		g:toggleOptions()
+	end
+
+end
