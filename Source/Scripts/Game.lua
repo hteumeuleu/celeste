@@ -51,11 +51,29 @@ function Game:toggleOptions()
 	if self.options:isVisible() then
 		self.options:hide()
 		self:unpause()
+		playdate.inputHandlers.pop()
 	else
 		self:pause()
 		local img = playdate.graphics.getDisplayImage()
 		self.options:setBackground(img)
 		self.options:show()
+
+		local myInputHandlers = {
+			AButtonUp = function()
+				self.options:doSelectionCallback()
+			end,
+			BButtonUp = function()
+				self:toggleOptions()
+			end,
+			upButtonDown = function()
+				self.options:up()
+			end,
+			downButtonDown = function()
+				self.options:down()
+			end,
+		}
+		playdate.inputHandlers.push(myInputHandlers, true)
+
 	end
 
 end
