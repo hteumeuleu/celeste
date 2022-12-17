@@ -76,16 +76,23 @@ local max_clouds = 4
 if playdate.isSimulator then
 	max_clouds = 16
 end
+local cloud_pattern = GFX.image.new(400, 240, GFX.kColorWhite)
+cloud_pattern = cloud_pattern:fadedImage(0.4, GFX.image.kDitherTypeHorizontalLine)
 local clouds = {}
 for i=0,max_clouds do
 	local item = {}
-	item.x = math.random()*128
-	item.y = math.random()*128
+	item.x = math.floor(math.random()*128)
+	item.y = math.floor(math.random()*128)
+	item.offset = item.y % 4
 	item.spd = 1+math.random()*4
-	item.w = 32+math.random()*32+1
-	item.h = 4+(1-item.w/64)*12+1
-	local img <const> = GFX.image.new(item.w, item.h, GFX.kColorWhite)
-	item.spr = GFX.sprite.new(img:fadedImage(0.4, GFX.image.kDitherTypeHorizontalLine))
+	item.w = math.floor(32+math.random()*32)+1
+	item.h = math.floor(4+(1-item.w/64)*12)+1
+	local img <const> = GFX.image.new(item.w, item.h, GFX.kColorClear)
+	GFX.pushContext(img)
+		cloud_pattern:draw(item.x * -1, item.y * -1)
+	GFX.popContext()
+	item.spr = GFX.sprite.new(img)
+	item.spr:setCenter(0,0)
 	item.spr:setZIndex(0)
 	table.insert(clouds, item)
 end
@@ -1759,7 +1766,8 @@ function _draw()
 			end
 			if c.x > 128 then
 				c.x = -c.w
-				c.y = math.random()*120
+				c.y = math.floor(math.random()*120)
+				c.y += (c.offset - c.y % 4)
 			end
 		end
 	end
