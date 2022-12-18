@@ -1938,7 +1938,7 @@ function draw_time(x,y)
 	if not layers.time then
 		layers.time = GFX.sprite.new(pdimg)
 		layers.time:setCenter(0,0)
-		layers.time:setZIndex(20)
+		layers.time:setZIndex(40)
 	end
 	layers.time:setImage(pdimg)
 	layers.time:moveTo(kDrawOffsetX + x, kDrawOffsetY + y)
