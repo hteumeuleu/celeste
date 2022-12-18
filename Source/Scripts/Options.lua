@@ -48,9 +48,18 @@ function Options:initItems()
 	-- Skip level
 	local item = {}
 	item.name = "Skip level"
-	item.value = false
+	item.value = 0
 	item.callback = function(item)
-		self.items.skip = true
+		if get_level_index() == 30 then
+			item.value = 0
+			title_screen()
+		elseif get_level_index() == 31 then
+			item.value = 0
+			begin_game()
+		else
+			item.value += 1
+			next_room()
+		end
 		self:hide()
 	end
 	table.insert(self.items, item)
@@ -89,6 +98,26 @@ function Options:initItems()
 		self:hide()
 	end
 	table.insert(self.items, item)
+
+end
+
+function Options:get(name)
+
+	if self.items ~= nil and self.items[name] ~= nil and self.items[name].value ~= nil then
+		printTable(self.items[name].value)
+		return self.items[name].value
+	end
+	return nil
+
+end
+
+function Options:set(name, value)
+
+	if self.items[name] ~= nil then
+		self.items[name].value = value
+		return true
+	end
+	return false
 
 end
 

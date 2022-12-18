@@ -38,6 +38,12 @@ local is_title = false
 
 local game_obj = nil
 
+function get_level_index()
+
+	return level_index
+
+end
+
 -- entry point --
 -----------------
 
@@ -61,8 +67,8 @@ function title_screen()
 end
 
 function begin_game(x,y)
-	x = x or 0
-	y = y or 0
+	local x = x or 0
+	local y = y or 0
 	frames=0
 	seconds=0
 	minutes=0
@@ -1659,12 +1665,6 @@ end
 -----------------------
 
 function _update()
-	-- check game options
-	if game_obj.options.items.skip then
-		next_room()
-		game_obj.options.items.skip = false
-		return
-	end
 
 	frames=((frames+1)%30)
 	if frames==0 and level_index<30 then
