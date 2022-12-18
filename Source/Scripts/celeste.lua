@@ -1,7 +1,7 @@
 local GFX = playdate.graphics
 
 -- ~celeste~
--- matt thorson + noel berry
+-- maddy thorson + noel berry
 
 -- globals --
 -------------
