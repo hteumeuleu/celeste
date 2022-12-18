@@ -67,18 +67,35 @@ function Options:initItems()
 	-- Game Speed
 	item = {}
 	item.name = "Game Speed"
-	item.value = 1
+	item.value = 30
 	item.callback = function(item)
-		print(item.name)
+		if item.value == 30 then
+			item.value = 15
+			item.name = "Game Speed:0.5"
+		else
+			item.value = 30
+			item.name = "Game Speed"
+		end
+		self:forceUpdate()
+		playdate.display.setRefreshRate(item.value)
 	end
 	table.insert(self.items, item)
 	self.items.speed = item
 	-- Air Dashes
 	item = {}
-	item.name = "Air Dashes"
+	item.name = "Dashes"
 	item.value = false
 	item.callback = function(item)
-		print(item.name)
+		if item.value then
+			max_djump = 1
+			item.value = false
+			item.name = "Dashes"
+		else
+			max_djump = 9999
+			item.value = true
+			item.name = "Dashes:Infinite"
+		end
+		self:forceUpdate()
 	end
 	table.insert(self.items, item)
 	self.items.dashes = item
@@ -87,7 +104,14 @@ function Options:initItems()
 	item.name = "Invincibility"
 	item.value = false
 	item.callback = function(item)
-		print(item.name)
+		if item.value then
+			item.value = false
+			item.name = "Invincibility"
+		else
+			item.value = true
+			item.name = "Invincibility:on"
+		end
+		self:forceUpdate()
 	end
 	table.insert(self.items, item)
 	self.items.invicibility = item

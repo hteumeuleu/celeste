@@ -60,6 +60,9 @@ function title_screen()
 	frames=0
 	deaths=0
 	max_djump=1
+	if game_obj.options:get("dashes") then
+		max_djump=9999
+	end
 	start_game=false
 	start_game_flash=0
 	music(40,0,7)
@@ -171,8 +174,10 @@ player =
 			for _, col in ipairs(collisions_at_x_y) do
 				if col.other.type == "spikes" then
 					-- spikes collide
-					if spikes_at(this.x+this.hitbox.x,this.y+this.hitbox.y,this.hitbox.width,this.hitbox.height,this.spd.x,this.spd.y) then
-						kill_player(this)
+					if game_obj.options:get("invicibility") == false then
+						if spikes_at(this.x+this.hitbox.x,this.y+this.hitbox.y,this.hitbox.width,this.hitbox.height,this.spd.x,this.spd.y) then
+							kill_player(this)
+						end
 					end
 				elseif col.other.type == "fall_floor" and col.spriteRect.y + col.spriteRect.height <= col.otherRect.y + col.otherRect.height then
 					break_fall_floor(col.other.obj)
