@@ -128,7 +128,6 @@ end
 function Options:get(name)
 
 	if self.items ~= nil and self.items[name] ~= nil and self.items[name].value ~= nil then
-		printTable(self.items[name].value)
 		return self.items[name].value
 	end
 	return nil
