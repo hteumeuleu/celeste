@@ -67,6 +67,7 @@ data.imagetables = {
 	flag=playdate.graphics.imagetable.new("Assets/flag"),
 	tree=playdate.graphics.image.new("Assets/tree"),
 	lifeup=playdate.graphics.image.new("Assets/lifeup"),
+	arrow=playdate.graphics.image.new("Assets/arrow"),
 }
 
 --

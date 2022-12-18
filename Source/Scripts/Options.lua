@@ -3,11 +3,11 @@ class("Options").extends(playdate.graphics.sprite)
 function Options:init()
 
 	Options.super.init(self)
-	self:setSize(80, 48)
+	self:initItems()
+	self:setSize(80, 50)
 	self:moveTo(100,60)
 	self:setZIndex(99)
-	self:setVisible(false)
-	self:initItems()
+	self:hide()
 	self:initGridView()
 	self:initImage()
 	return self
@@ -45,14 +45,50 @@ end
 function Options:initItems()
 
 	self.items = {}
-	for i=1, 5 do
-		local item = {}
-		item.name = "Foo" .. i
-		item.callback = function()
-			print(item.name, i)
-		end
-		table.insert(self.items, item)
+	-- Skip level
+	local item = {}
+	item.name = "Skip level"
+	item.value = false
+	item.callback = function(item)
+		self.items.skip = true
+		self:hide()
 	end
+	table.insert(self.items, item)
+	self.items.skip = item
+	-- Game Speed
+	item = {}
+	item.name = "Game Speed"
+	item.value = 1
+	item.callback = function(item)
+		print(item.name)
+	end
+	table.insert(self.items, item)
+	self.items.speed = item
+	-- Air Dashes
+	item = {}
+	item.name = "Air Dashes"
+	item.value = false
+	item.callback = function(item)
+		print(item.name)
+	end
+	table.insert(self.items, item)
+	self.items.dashes = item
+	-- Invincibility
+	item = {}
+	item.name = "Invincibility"
+	item.value = false
+	item.callback = function(item)
+		print(item.name)
+	end
+	table.insert(self.items, item)
+	self.items.invicibility = item
+	-- Back
+	item = {}
+	item.name = "Back"
+	item.callback = function(item)
+		self:hide()
+	end
+	table.insert(self.items, item)
 
 end
 
@@ -61,6 +97,7 @@ end
 function Options:initImage()
 
 	self.img = playdate.graphics.image.new(self.width, self.height, playdate.graphics.kColorClear)
+	self.bg = self:getBackgroundImage()
 	playdate.graphics.pushContext(self.img)
 		if self.gridview then
 			self:drawGrid()
@@ -80,22 +117,12 @@ function Options:initGridView()
 		self.gridview:setNumberOfColumns(1)
 		self.gridview:setNumberOfRows(#self.items)
 		self.gridview:setCellPadding(0, 0, 0, 0)
-		self.gridview:setContentInset(2, 2, 0, 0)
-		self.gridview:setHorizontalDividerHeight(4)
+		self.gridview:setContentInset(0, 0, 0, 0)
+		self.gridview:setHorizontalDividerHeight(3)
 		self.gridview:addHorizontalDividerAbove(1, 1)
 		self.gridview:addHorizontalDividerAbove(1, #self.items+1)
 
-		-- Background image
-		local bg = playdate.graphics.image.new(self.width, self.height, playdate.graphics.kColorBlack)
-		playdate.graphics.pushContext(bg)
-			playdate.graphics.setColor(playdate.graphics.kColorWhite)
-			playdate.graphics.setStrokeLocation(playdate.graphics.kStrokeInside)
-			playdate.graphics.drawRect(1, 1, self.width-2, self.height-2)
-		playdate.graphics.popContext()
-		self.gridview.backgroundImage = bg
-
 		local that = self
-		local selectedOffset <const> = 2
 
 		function self.gridview:drawHorizontalDivider(section, x, y, width, height)
 		end
@@ -104,9 +131,11 @@ function Options:initGridView()
 
 			playdate.graphics.setImageDrawMode(playdate.graphics.kDrawModeFillWhite)
 
-			local offset = 10
+			local offset = 9
 			if selected then
-				offset += selectedOffset
+				offset += 1
+				-- Draw arrow
+				data.imagetables.arrow:draw(x+3, y+1)
 			end
 
 			-- Draw text
@@ -125,7 +154,23 @@ end
 --
 function Options:drawGrid()
 
-	self.gridview:drawInRect(0, 0, self.width, self.height)
+	playdate.graphics.clear(playdate.graphics.kColorClear)
+	self.bg:draw(0,0)
+	self.gridview:drawInRect(2, 2, self.width-4, self.height-4)
+
+end
+
+-- getBackgroundImage()
+--
+function Options:getBackgroundImage()
+
+	local bg = playdate.graphics.image.new(self.width, self.height, playdate.graphics.kColorBlack)
+	playdate.graphics.pushContext(bg)
+		playdate.graphics.setColor(playdate.graphics.kColorWhite)
+		playdate.graphics.setStrokeLocation(playdate.graphics.kStrokeInside)
+		playdate.graphics.drawRect(1, 1, self.width-2, self.height-2)
+	playdate.graphics.popContext()
+	return bg
 
 end
 
@@ -133,11 +178,12 @@ end
 --
 function Options:show()
 
-	if self.bg ~= nil then
-		self.bg:add()
-	end
 	self:add()
 	self:setVisible(true)
+	if self.showCallback ~= nil then
+		self:showCallback()
+	end
+
 
 end
 
@@ -145,24 +191,23 @@ end
 --
 function Options:hide()
 
-	if self.bg ~= nil then
-		self.bg:remove()
-	end
 	self:remove()
 	self:setVisible(false)
+	if self.hideCallback ~= nil then
+		self:hideCallback()
+	end
 
 end
 
--- setBackground()
---
-function Options:setBackground(img)
+function Options:setShowCallback(f)
 
-	if not self:isVisible() then
-		self.bg = playdate.graphics.sprite.new(img)
-		self.bg:moveTo(200,120)
-		self.bg:setZIndex(98)
-		self.bg:add()
-	end
+	self.showCallback = f
+
+end
+
+function Options:setHideCallback(f)
+
+	self.hideCallback = f
 
 end
 
@@ -211,7 +256,8 @@ end
 function Options:doSelectionCallback()
 
 	if #self.items > 0 then
-		self.items[self.gridview:getSelectedRow()].callback()
+		local item = self.items[self.gridview:getSelectedRow()]
+		item.callback(item)
 	end
 
 end

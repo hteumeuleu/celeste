@@ -36,10 +36,13 @@ local k_dash=playdate.kButtonB
 local level_index = 0
 local is_title = false
 
+local game_obj = nil
+
 -- entry point --
 -----------------
 
-function _init()
+function _init(game)
+	game_obj = game
 	title_screen()
 end
 
@@ -1656,6 +1659,13 @@ end
 -----------------------
 
 function _update()
+	-- check game options
+	if game_obj.options.items.skip then
+		next_room()
+		game_obj.options.items.skip = false
+		return
+	end
+
 	frames=((frames+1)%30)
 	if frames==0 and level_index<30 then
 		seconds=((seconds+1)%60)

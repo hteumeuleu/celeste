@@ -9,12 +9,13 @@ class("Game").extends()
 function Game:init()
 
 	Game.super.init(self)
-	self:addMenuItems()
 	self._init = _init
 	self._update = _update
 	self._draw = _draw
-	self.options = Options()
-	self:_init()
+	self:scale(2)
+	self:addMenuItems()
+	self:initOptions()
+	self:_init(self)
 	return self
 
 end
@@ -30,7 +31,7 @@ end
 
 function Game:restart()
 
-	self:_init()
+	self:_init(self)
 
 end
 
@@ -46,34 +47,68 @@ function Game:unpause()
 
 end
 
+function Game:initOptions()
+
+	self.options = Options()
+
+	local myInputHandlers = {
+		AButtonUp = function()
+			self.options:doSelectionCallback()
+		end,
+		BButtonUp = function()
+			self:toggleOptions()
+		end,
+		upButtonDown = function()
+			self.options:up()
+		end,
+		downButtonDown = function()
+			self.options:down()
+		end,
+	}
+
+	self.options:setHideCallback(function()
+		self:unpause()
+		playdate.inputHandlers.pop()
+	end)
+	self.options:setShowCallback(function()
+		self:pause()
+		playdate.inputHandlers.push(myInputHandlers, true)
+	end)
+
+end
+
 function Game:toggleOptions()
 
 	if self.options:isVisible() then
 		self.options:hide()
-		self:unpause()
-		playdate.inputHandlers.pop()
 	else
-		self:pause()
-		local img = playdate.graphics.getDisplayImage()
-		self.options:setBackground(img)
 		self.options:show()
+	end
 
-		local myInputHandlers = {
-			AButtonUp = function()
-				self.options:doSelectionCallback()
-			end,
-			BButtonUp = function()
-				self:toggleOptions()
-			end,
-			upButtonDown = function()
-				self.options:up()
-			end,
-			downButtonDown = function()
-				self.options:down()
-			end,
-		}
-		playdate.inputHandlers.push(myInputHandlers, true)
+end
 
+
+
+-- scale()
+--
+function Game:scale(n)
+
+	playdate.display.setScale(n)
+	local kDisplayOffsetX = playdate.display.getWidth() / 2
+	local kDisplayOffsetY = playdate.display.getHeight() / 2
+	kDrawOffsetX = (playdate.display.getWidth() - 128) / 2
+	kDrawOffsetY = (playdate.display.getHeight() - 128) / 2
+
+	if data.cache ~= nil then
+		data.cache:moveTo(kDisplayOffsetX, kDisplayOffsetY)
+	end
+	if self.options ~= nil then
+		self.options:moveTo(kDisplayOffsetX, kDisplayOffsetY)
+	end
+	for i, layer in ipairs(layers) do
+		if layers[layer] ~= nil and type(layers[layer]) == "table" then
+			layers[layer]:moveTo(kDisplayOffsetX, kDisplayOffsetY)
+		end
 	end
 
 end
@@ -81,16 +116,18 @@ end
 function Game:addMenuItems()
 
 	local menu = playdate.getSystemMenu()
-	menu:addMenuItem("Restart", function()
-		self:restart()
+	menu:addCheckmarkMenuItem("Fullscreen", true, function(value)
+		if value then
+			self:scale(2)
+		else
+			self:scale(1)
+		end
 	end)
-	menu:addMenuItem("Options", function()
+	menu:addMenuItem("Assist Mode", function()
 		self:toggleOptions()
 	end)
-	menu:addCheckmarkMenuItem("Assist", false, function(value)
-		if value then
-			max_djump=999
-		end
+	menu:addMenuItem("Reset", function()
+		self:restart()
 	end)
 
 end

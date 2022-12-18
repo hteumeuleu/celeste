@@ -45,27 +45,6 @@ function drawInLayer(layer, func)
 
 end
 
--- Screen scaling
-function scale(x)
-
-	playdate.display.setScale(x)
-	kDisplayOffsetX = playdate.display.getWidth() / 2
-	kDisplayOffsetY = playdate.display.getHeight() / 2
-	kDrawOffsetX = (playdate.display.getWidth() - sceneWidth) / 2
-	kDrawOffsetY = (playdate.display.getHeight() - sceneHeight) / 2
-
-	if data.cache ~= nil then
-		data.cache:moveTo(kDisplayOffsetX, kDisplayOffsetY)
-	end
-	for i, layer in ipairs(layers) do
-		if layers[layer] ~= nil and type(layers[layer]) == "table" then
-			layers[layer]:moveTo(kDisplayOffsetX, kDisplayOffsetY)
-		end
-	end
-
-end
-scale(2)
-
 -- Returns Playdate’s flip value from two booleans
 function flip(flip_x, flip_y)
 
