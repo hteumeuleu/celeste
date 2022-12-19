@@ -1647,8 +1647,7 @@ function load_room(x,y)
 	-- add background drawing
 	playdate.graphics.sprite.setBackgroundDrawingCallback(
 		function(x, y, width, height)
-			if (flash_bg and frames%5==0) then
-				playdate.graphics.setPattern({0x80, 0x0, 0x0, 0x0, 0x8, 0x0, 0x0, 0x0})
+			if (flash_bg and frames%5==0 and not playdate.getReduceFlashing()) then
 				playdate.graphics.setColor(playdate.graphics.kColorWhite)
 			else
 				playdate.graphics.setColor(playdate.graphics.kColorBlack)
