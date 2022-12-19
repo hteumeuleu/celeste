@@ -2,12 +2,6 @@
 math.randomseed(playdate.getSecondsSinceEpoch())
 playdate.setCrankSoundsDisabled(true)
 playdate.graphics.setFont(data.font)
-playdate.graphics.clear(playdate.graphics.kColorBlack)
-playdate.graphics.setBackgroundColor(playdate.graphics.kColorBlack)
-playdate.graphics.sprite.setBackgroundDrawingCallback(
-	function(x, y, width, height)
-	end
-)
 
 -- Variables
 local kDisplayOffsetX = 200

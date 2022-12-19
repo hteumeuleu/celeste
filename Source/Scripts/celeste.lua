@@ -1629,6 +1629,19 @@ function load_room(x,y)
 	--remove sprites
 	GFX.sprite.removeAll()
 
+	-- add background drawing
+	playdate.graphics.sprite.setBackgroundDrawingCallback(
+		function(x, y, width, height)
+			if (flash_bg and frames%5==0) then
+				playdate.graphics.setPattern({0x80, 0x0, 0x0, 0x0, 0x8, 0x0, 0x0, 0x0})
+				playdate.graphics.setColor(playdate.graphics.kColorWhite)
+			else
+				playdate.graphics.setColor(playdate.graphics.kColorBlack)
+			end
+			playdate.graphics.fillRect(0, 0, 400, 240)
+		end
+	)
+
 	--clear layer sprites and add them back
 	for _, layer in ipairs(layers) do
 		local image <const> = layers[layer]:getImage()
@@ -1767,6 +1780,11 @@ function _draw()
 			m = GFX.kDrawModeInverted
 		end
 		layers.title:setImageDrawMode(m)
+	end
+
+	-- clear screen
+	if flash_bg or new_bg~=nil then
+		playdate.graphics.sprite.redrawBackground()
 	end
 
 	-- clouds
