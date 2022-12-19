@@ -1254,6 +1254,12 @@ orb={
 		this.spd.y=-4
 		this.solids=false
 		this.particles={}
+		local pdimg <const> = data.imagetables.tiles:getImage(103)
+		this.pdspr = GFX.sprite.new(pdimg)
+		this.pdspr:setCollideRect(this.hitbox)
+		this.pdspr:setCenter(0,0)
+		this.pdspr:setZIndex(20)
+		this.pdspr:add()
 	end,
 	draw=function(this)
 		this.spd.y=appr(this.spd.y,0,0.5)
@@ -1266,13 +1272,6 @@ orb={
 			destroy_object(this)
 			max_djump=2
 			hit.djump=2
-		end
-		if not this.pdspr then
-			local pdimg <const> = data.imagetables.tiles:getImage(103)
-			this.pdspr = GFX.sprite.new(pdimg)
-			this.pdspr:setCenter(0,0)
-			this.pdspr:setZIndex(20)
-			this.pdspr:add()
 		end
 		this.pdspr:moveTo(kDrawOffsetX + this.x,kDrawOffsetY + this.y)
 		local off=frames/30
