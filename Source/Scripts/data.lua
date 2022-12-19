@@ -13,7 +13,7 @@ playdate.graphics.pushContext(pdimg)
 	playdate.graphics.fillRect(0,184,400,240)
 playdate.graphics.popContext()
 data.cache:setImage(pdimg)
-data.cache:setZIndex(30)
+data.cache:setZIndex(40)
 data.cache:moveTo(100,60)
 
 --
