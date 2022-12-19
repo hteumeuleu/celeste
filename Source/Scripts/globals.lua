@@ -2,6 +2,7 @@
 math.randomseed(playdate.getSecondsSinceEpoch())
 playdate.setCrankSoundsDisabled(true)
 playdate.graphics.setFont(data.font)
+playdate.graphics.setBackgroundColor(playdate.graphics.kColorBlack)
 
 -- Variables
 local kDisplayOffsetX = 200
