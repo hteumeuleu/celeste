@@ -3,6 +3,7 @@ class("Options").extends(playdate.graphics.sprite)
 function Options:init()
 
 	Options.super.init(self)
+	self.used = {}
 	self:initItems()
 	self:setSize(80, 50)
 	self:moveTo(100,60)
@@ -40,6 +41,12 @@ function Options:forceUpdate()
 
 end
 
+function Options:usedAnOption()
+
+	return self.used ~= nil and (self.used.skip or self.used.speed or self.used.dashes or self.used.invicibility)
+
+end
+
 -- initItems()
 --
 function Options:initItems()
@@ -50,6 +57,7 @@ function Options:initItems()
 	item.name = "Skip level"
 	item.value = 0
 	item.callback = function(item)
+		self.used.skip = true
 		if get_level_index() == 30 then
 			item.value = 0
 			title_screen()
@@ -69,6 +77,7 @@ function Options:initItems()
 	item.name = "Game Speed"
 	item.value = 30
 	item.callback = function(item)
+		self.used.speed = true
 		if item.value == 30 then
 			item.value = 15
 			item.name = "Game Speed:0.5"
@@ -86,6 +95,7 @@ function Options:initItems()
 	item.name = "Dashes"
 	item.value = false
 	item.callback = function(item)
+		self.used.dashes = true
 		if item.value then
 			max_djump = 1
 			item.value = false
@@ -104,6 +114,7 @@ function Options:initItems()
 	item.name = "Invincibility"
 	item.value = false
 	item.callback = function(item)
+		self.used.invicibility = true
 		if item.value then
 			item.value = false
 			item.name = "Invincibility"

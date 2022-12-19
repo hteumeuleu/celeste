@@ -1306,32 +1306,40 @@ flag = {
 	end,
 	draw=function(this)
 		this.spr=118+(frames/5)%3
-		if not this.show then
+		if not this.show and layers.time ~= nil then
 			if layers.time ~= nil then
 				layers.time:remove()
-			end
-			if layers.score ~= nil then
-				layers.score:remove()
 			end
 		end
 		if this.show then
 			if not layers.score then
-				local pdimg = GFX.image.new(64, 29)
+				printTable()
+				local pdimg = GFX.image.new(64, 40)
 				GFX.pushContext(pdimg)
+					local usedAssistMode = game_obj.options:usedAnOption()
+					local rectHeight = 31
+					if usedAssistMode then
+						rectHeight = 37
+					end
 					GFX.setColor(GFX.kColorBlack)
-					GFX.fillRect(0, 0, 64, 29)
+					GFX.fillRect(0, 0, 64, rectHeight)
+					GFX.setColor(GFX.kColorWhite)
+					GFX.drawRect(0, 0, 64, rectHeight)
 					local fruit = data.imagetables.fruit:getImage(1)
 					fruit:draw(22, 3)
 					_print("x"..this.score,32,7,7)
 					_print(get_time(),17,15)
 					_print("deaths:"..deaths,16,22,7)
+					if usedAssistMode then
+						_print("assist mode",10,29,7)
+					end
 				GFX.popContext()
 				layers.score = GFX.sprite.new(pdimg)
 				layers.score:setCenter(0,0)
 				layers.score:setZIndex(20)
 				layers.score:moveTo(kDrawOffsetX + 32, 2)
-				layers.score:add()
 			end
+			layers.score:add()
 		elseif this.collide(player,0,0) ~= nil then
 			sfx(55)
 			sfx_timer=30
