@@ -90,7 +90,9 @@ function circfill(x, y, r, col)
 
 	r = r or 4
 	if col == nil then
-		GFX.setBackgroundColor(GFX.kColorBlack)
+		GFX.setColor(GFX.kColorBlack)
+	elseif col == 7 then
+		GFX.setColor(GFX.kColorWhite)
 	end
 	GFX.fillCircleAtPoint(x, y, r)
 
