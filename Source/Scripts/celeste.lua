@@ -1270,8 +1270,13 @@ orb={
 			freeze=10
 			shake=10
 			destroy_object(this)
-			max_djump=2
-			hit.djump=2
+			if game_obj.options:get("dashes") then
+				max_djump=9999
+				hit.djump=9999
+			else
+				max_djump=2
+				hit.djump=2
+			end
 		end
 		this.pdspr:moveTo(kDrawOffsetX + this.x,kDrawOffsetY + this.y)
 		local off=frames/30
@@ -1613,7 +1618,9 @@ function load_room(x,y)
 	--level after orb
 	if level_index > 21 and level_index < 31 then
 		max_djump=2
-		player.djump=2
+	end
+	if game_obj.options:get("dashes") then
+		max_djump=9999
 	end
 
 	--remove existing objects
