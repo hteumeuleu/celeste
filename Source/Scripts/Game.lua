@@ -131,3 +131,37 @@ function Game:addMenuItems()
 	end)
 
 end
+
+-- serialize()
+--
+function Game:serialize()
+
+	return ""
+
+end
+
+-- hasSave()
+--
+function Game:hasSave()
+
+	return playdate.datastore.read("save") ~= nil
+
+end
+
+-- save()
+--
+function Game:save()
+
+	local prettyPrint = false
+	if playdate.isSimulator then
+		prettyPrint = true
+	end
+	playdate.datastore.write(serialize(), "save", prettyPrint)
+
+end
+
+-- load()
+--
+function Game:load()
+
+end

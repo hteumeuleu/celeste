@@ -17,6 +17,22 @@ function playdate.update()
 
 end
 
+-- playdate.gameWillTerminate()
+--
+function playdate.gameWillTerminate()
+
+	g:save()
+
+end
+
+-- playdate.deviceWillSleep()
+--
+function playdate.deviceWillSleep()
+
+	g:save()
+
+end
+
 function playdate.keyPressed(key)
 
 	if key == "m" then

@@ -44,6 +44,19 @@ function get_level_index()
 
 end
 
+function serialize()
+
+	local status = {}
+	status.fruits = got_fruit
+	status.room = room
+	status.deaths = deaths
+	status.seconds = seconds
+	status.minutes = minutes
+	status.options = game_obj.options:serialize()
+	return status
+
+end
+
 -- entry point --
 -----------------
 
@@ -1686,6 +1699,9 @@ function load_room(x,y)
 			end
 		end
 	end
+
+	-- save
+	game_obj:save()
 
 	if not is_title then
 		init_object(room_title,0,0)

@@ -324,3 +324,17 @@ function Options:doSelectionCallback()
 	end
 
 end
+
+-- serialize()
+--
+function Options:serialize()
+
+	local data = {}
+	data.used = self.used
+	data.items = {}
+	data.items.skip = self:get("skip")
+	data.items.dashes = self:get("dashes")
+	data.items.invicibility = self:get("invicibility")
+	return data
+
+end
