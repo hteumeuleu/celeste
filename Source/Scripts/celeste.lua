@@ -912,8 +912,8 @@ fly_fruit={
 				GFX.clear(GFX.kColorClear)
 				local pdtilewing = data.imagetables.fruit:getImage(flr(3+off))
 				local pdtilefruit = data.imagetables.fruit:getImage(2)
-				pdtilewing:draw(4,-1,flip(true, false))
-				pdtilewing:draw(16,-1)
+				pdtilewing:draw(3,-1,flip(true, false))
+				pdtilewing:draw(17,-1)
 				pdtilefruit:draw(10,0)
 			GFX.popContext()
 		end
