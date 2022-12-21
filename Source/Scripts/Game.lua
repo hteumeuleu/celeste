@@ -87,8 +87,6 @@ function Game:toggleOptions()
 
 end
 
-
-
 -- scale()
 --
 function Game:scale(n)
@@ -132,11 +130,17 @@ function Game:addMenuItems()
 
 end
 
+function Game:usedAssistMode()
+
+	return self.options.usedAssistMode ~= nil
+
+end
+
 -- serialize()
 --
 function Game:serialize()
 
-	return ""
+	return serialize() -- see celeste.lua
 
 end
 
@@ -144,7 +148,7 @@ end
 --
 function Game:hasSave()
 
-	return playdate.datastore.read("save") ~= nil
+	return playdate.datastore.read("game") ~= nil
 
 end
 
@@ -156,7 +160,7 @@ function Game:save()
 	if playdate.isSimulator then
 		prettyPrint = true
 	end
-	playdate.datastore.write(serialize(), "save", prettyPrint)
+	playdate.datastore.write(self:serialize(), "game", prettyPrint)
 
 end
 

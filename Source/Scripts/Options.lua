@@ -3,7 +3,7 @@ class("Options").extends(playdate.graphics.sprite)
 function Options:init()
 
 	Options.super.init(self)
-	self.used = {}
+	self.usedAssistMode = false
 	self:initItems()
 	self:setSize(80, 50)
 	self:moveTo(100,60)
@@ -43,7 +43,7 @@ end
 
 function Options:usedAnOption()
 
-	return self.used ~= nil and (self.used.skip or self.used.speed or self.used.dashes or self.used.invicibility)
+	return self.usedAssistMode ~= nil
 
 end
 
@@ -52,12 +52,14 @@ end
 function Options:initItems()
 
 	self.items = {}
+	local saved = self:load() or {}
+
 	-- Skip level
 	local item = {}
 	item.name = "Skip level"
-	item.value = 0
+	item.value = saved.skip or 0
 	item.callback = function(item)
-		self.used.skip = true
+		self.usedAssistMode = true
 		if get_level_index() == 30 then
 			item.value = 0
 			title_screen()
@@ -75,9 +77,13 @@ function Options:initItems()
 	-- Game Speed
 	item = {}
 	item.name = "Game Speed"
-	item.value = 30
+	item.value = tonumber(saved.speed) or 30
+	if item.value == 15 then
+		item.name = "Game Speed:0.5"
+		playdate.display.setRefreshRate(item.value)
+	end
 	item.callback = function(item)
-		self.used.speed = true
+		self.usedAssistMode = true
 		if item.value == 30 then
 			item.value = 15
 			item.name = "Game Speed:0.5"
@@ -93,9 +99,14 @@ function Options:initItems()
 	-- Air Dashes
 	item = {}
 	item.name = "Dashes"
-	item.value = false
+	item.value = (saved.dashes == true)
+	if item.value then
+		max_djump = 9999
+		item.value = true
+		item.name = "Dashes:Infinite"
+	end
 	item.callback = function(item)
-		self.used.dashes = true
+		self.usedAssistMode = true
 		if item.value then
 			max_djump = 1
 			item.value = false
@@ -112,9 +123,12 @@ function Options:initItems()
 	-- Invincibility
 	item = {}
 	item.name = "Invincibility"
-	item.value = false
+	item.value = (saved.invicibility == true)
+	if item.value then
+		item.name = "Invincibility:on"
+	end
 	item.callback = function(item)
-		self.used.invicibility = true
+		self.usedAssistMode = true
 		if item.value then
 			item.value = false
 			item.name = "Invincibility"
@@ -254,6 +268,7 @@ end
 --
 function Options:hide()
 
+	self:save()
 	self:remove()
 	self:setVisible(false)
 	if self.hideCallback ~= nil then
@@ -330,11 +345,43 @@ end
 function Options:serialize()
 
 	local data = {}
-	data.used = self.used
-	data.items = {}
-	data.items.skip = self:get("skip")
-	data.items.dashes = self:get("dashes")
-	data.items.invicibility = self:get("invicibility")
+	data.used = self.usedAssistMode
+	data.skip = self:get("skip")
+	data.speed = self:get("speed")
+	data.dashes = self:get("dashes")
+	data.invicibility = self:get("invicibility")
 	return data
+
+end
+
+-- hasSave()
+--
+function Options:hasSave()
+
+	return playdate.datastore.read("options") ~= nil
+
+end
+
+-- save()
+--
+function Options:save()
+
+	local prettyPrint = false
+	if playdate.isSimulator then
+		prettyPrint = true
+	end
+	playdate.datastore.write(self:serialize(), "options", prettyPrint)
+
+end
+
+-- load()
+--
+function Options:load()
+
+	local save = playdate.datastore.read("options")
+	if save and save.used then
+		self.used = save.used
+	end
+	return save
 
 end

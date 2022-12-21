@@ -52,7 +52,7 @@ function serialize()
 	status.deaths = deaths
 	status.seconds = seconds
 	status.minutes = minutes
-	status.options = game_obj.options:serialize()
+	status.assist = game_obj:usedAssistMode()
 	return status
 
 end
@@ -1329,7 +1329,7 @@ flag = {
 				printTable()
 				local pdimg = GFX.image.new(64, 40)
 				GFX.pushContext(pdimg)
-					local usedAssistMode = game_obj.options:usedAnOption()
+					local usedAssistMode = game_obj:usedAssistMode()
 					local rectHeight = 31
 					if usedAssistMode then
 						rectHeight = 37
@@ -1375,6 +1375,9 @@ room_title = {
 		if this.delay<-30 then
 			destroy_object(this)
 			layers.time:remove()
+			if layers.assist and game_obj then
+				layers.assist:remove()
+			end
 		elseif this.delay<0 then
 			local pdimg <const> = GFX.image.new(80, 12)
 			GFX.pushContext(pdimg)
@@ -1400,6 +1403,9 @@ room_title = {
 			this.pdspr:moveTo(kDrawOffsetX + 24, kDrawOffsetY + 58)
 
 			draw_time(4,8)
+			if game_obj:usedAssistMode() then
+				draw_assist(120, 113)
+			end
 		end
 	end
 }
@@ -2005,6 +2011,26 @@ function draw_time(x,y)
 	layers.time:setImage(pdimg)
 	layers.time:moveTo(kDrawOffsetX + x, kDrawOffsetY + y)
 	layers.time:add()
+
+end
+
+function draw_assist(x,y)
+
+	local pdimg <const> = GFX.image.new(45, 7)
+	GFX.pushContext(pdimg)
+		GFX.setColor(GFX.kColorWhite)
+		GFX.setImageDrawMode(GFX.kDrawModeCopy)
+		GFX.fillRect(0, 0, 45, 7)
+		_print("assist mode",1,1,0)
+	GFX.popContext()
+	if not layers.assist then
+		layers.assist = GFX.sprite.new(pdimg)
+		layers.assist:setCenter(1,0)
+		layers.assist:setZIndex(40)
+	end
+	layers.assist:setImage(pdimg)
+	layers.assist:moveTo(kDrawOffsetX + x, kDrawOffsetY + y)
+	layers.assist:add()
 
 end
 
