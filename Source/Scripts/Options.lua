@@ -43,7 +43,7 @@ end
 
 function Options:usedAnOption()
 
-	return self.usedAssistMode ~= nil
+	return (self.usedAssistMode == true)
 
 end
 
@@ -379,8 +379,8 @@ end
 function Options:load()
 
 	local save = playdate.datastore.read("options")
-	if save and save.used then
-		self.used = save.used
+	if save and (save.used == "true") then
+		self.usedAssistMode = save.used
 	end
 	return save
 

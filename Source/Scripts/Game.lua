@@ -132,7 +132,7 @@ end
 
 function Game:usedAssistMode()
 
-	return self.options.usedAssistMode ~= nil
+	return self.options:usedAnOption()
 
 end
 
