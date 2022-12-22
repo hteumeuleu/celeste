@@ -63,6 +63,7 @@ end
 function _init(game)
 	game_obj = game
 	title_screen()
+	begin_game(3,0)
 end
 
 function title_screen()
@@ -176,10 +177,20 @@ player =
 				return GFX.sprite.kCollisionTypeOverlap
 			end
 		end
-		create_hair(this)
+		if not game_obj:isOldeste() then
+			create_hair(this)
+		end
+		if game_obj:isOldeste() then
+			this.runwave=0
+			this.spdm = 0.35
+		end
 	end,
 	update=function(this)
 		if (pause_player) then return end
+
+		if game_obj:isOldeste() then
+			this.runwave+=1
+		end
 
 		-- collisions
 		local _, _, collisions_at_x_y, length = this.pdspr:checkCollisions(kDrawOffsetX+this.x, kDrawOffsetY+this.y)
@@ -240,7 +251,13 @@ player =
 
 		this.dash_effect_time -=1
 		if this.dash_time > 0 then
-			init_object(smoke,this.x,this.y)
+			if game_obj:isOldeste() then
+				if this.dash_time / 4 == flr(this.dash_time / 4) then
+					init_object(smoke,this.x,this.y)
+				end
+			else
+				init_object(smoke,this.x,this.y)
+			end
 			this.dash_time-=1
 			this.spd.x=appr(this.spd.x,this.dash_target.x,this.dash_accel.x)
 			this.spd.y=appr(this.spd.y,this.dash_target.y,this.dash_accel.y)
@@ -249,6 +266,12 @@ player =
 			local maxrun=1
 			local accel=0.6
 			local deccel=0.15
+
+			if game_obj:isOldeste() then
+				if on_ground then
+					maxrun=(1 + math.sin(this.runwave * 0.10)) / 2
+				end
+			end
 
 			if not on_ground then
 				accel=0.4
@@ -287,7 +310,11 @@ player =
 			end
 
 			if not on_ground then
-				this.spd.y=appr(this.spd.y,maxfall,gravity)
+				if game_obj:isOldeste() then
+					this.spd.y=appr(this.spd.y,maxfall,(math.abs(this.spd.y)>0.15 and 0.21 or 0.105) * this.spdm)
+				else
+					this.spd.y=appr(this.spd.y,maxfall,gravity)
+				end
 			end
 
 			-- jump
@@ -321,7 +348,11 @@ player =
 			if this.djump>0 and dash then
 				init_object(smoke,this.x,this.y)
 				this.djump-=1
-				this.dash_time=4
+				if game_obj:isOldeste() then
+					this.dash_time=4 / this.spdm
+				else
+					this.dash_time=4
+				end
 				has_dashed=true
 				this.dash_effect_time=10
 				local v_input=(btn(k_up) and -1 or (btn(k_down) and 1 or 0))
@@ -405,15 +436,21 @@ player =
 
 		-- Playdate sprite drawing
 		if this.pdspr ~= nil then
-			local pdimg <const> = data.imagetables.player:getImage(flr(this.spr))
+			local pdimgtable = data.imagetables.player
+			if game_obj:isOldeste() then
+				pdimgtable = data.imagetables.granny
+			end
+			local pdimg <const> = pdimgtable:getImage(flr(this.spr))
 			pdimg:setInverted(this.djump == 0)
 			this.pdspr:setImage(pdimg, flip(this.flip.x,this.flip.y))
 			this.pdspr:moveTo(kDrawOffsetX + this.x - 1, kDrawOffsetY + this.y - 1)
 		end
 
-		set_hair_color(this.djump)
-		draw_hair(this,this.flip.x and -1 or 1)
-		unset_hair_color()
+		if not game_obj:isOldeste() then
+			set_hair_color(this.djump)
+			draw_hair(this,this.flip.x and -1 or 1)
+			unset_hair_color()
+		end
 	end,
 }
 
@@ -530,7 +567,9 @@ player_spawn = {
 		this.state=0
 		this.delay=0
 		this.solids=false
-		create_hair(this)
+		if not game_obj:isOldeste() then
+			create_hair(this)
+		end
 		if this.pdspr ~= nil then
 			this.pdspr.type = "player_spawn"
 			this.pdspr:setZIndex(20)
@@ -572,15 +611,21 @@ player_spawn = {
 	end,
 	draw=function(this)
 		if this.pdspr ~= nil then
-			local pdimg <const> = data.imagetables.player:getImage(flr(this.spr))
+			local pdimgtable = data.imagetables.player
+			if game_obj:isOldeste() then
+				pdimgtable = data.imagetables.granny
+			end
+			local pdimg <const> = pdimgtable:getImage(flr(this.spr))
 			pdimg:setInverted(max_djump == 0)
 			this.pdspr:setImage(pdimg, flip(this.flip.x,this.flip.y))
 			this.pdspr:moveTo(kDrawOffsetX + this.x - 1, kDrawOffsetY + this.y - 1)
 		end
 
-		set_hair_color(max_djump)
-		draw_hair(this,1)
-		unset_hair_color()
+		if not game_obj:isOldeste() then
+			set_hair_color(max_djump)
+			draw_hair(this,1)
+			unset_hair_color()
+		end
 	end
 }
 add(types,player_spawn)
@@ -1133,7 +1178,11 @@ message={
 	tile=86,
 	last=0,
 	init=function(this)
-		this.text="-- celeste mountain --#this memorial to those# perished on the climb"
+		if game_obj:isOldeste() then
+			this.text="-- celeste mountain -- #this memorial dedicated#   to all the haters   "
+		else
+			this.text="-- celeste mountain --#this memorial to those# perished on the climb"
+		end
 		this.index=0
 		this.last=0
 		this.off={x=2,y=2}
@@ -1371,6 +1420,14 @@ room_title = {
 		this.delay=5
 	end,
 	draw=function(this)
+		if game_obj:isOldeste() then
+			local t={
+				"these old bones",
+				"climbin' away!!",
+				"this ain't hard",
+				"ha ha ha ha ha.",
+				"nothin' to it.."}
+		end
 		this.delay-=1
 		if this.delay<-30 then
 			destroy_object(this)
@@ -1765,7 +1822,8 @@ function _update()
 			local obj = objects[i][j]
 			if obj then
 				if obj.spd.x ~= 0 or obj.spd.y ~= 0 then
-					obj.move(obj.spd.x,obj.spd.y)
+					local m = obj.spdm and obj.spdm or 1
+					obj.move(obj.spd.x * m,obj.spd.y * m)
 				end
 				if obj.type.update~=nil then
 					obj.type.update(obj)
@@ -1773,6 +1831,7 @@ function _update()
 			end
 		end
 	end
+
 
 	-- start game
 	if is_title then

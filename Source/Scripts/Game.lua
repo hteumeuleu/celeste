@@ -169,3 +169,10 @@ end
 function Game:load()
 
 end
+
+-- isOldeste()
+--
+function Game:isOldeste()
+
+	return true
+end

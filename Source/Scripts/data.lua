@@ -57,6 +57,7 @@ end
 data.imagetables = {
 	tiles=playdate.graphics.imagetable.new("Assets/tiles"),
 	player=playdate.graphics.imagetable.new("Assets/player"),
+	granny=playdate.graphics.imagetable.new("Assets/granny"),
 	fruit=playdate.graphics.imagetable.new("Assets/fruit"),
 	balloon=playdate.graphics.imagetable.new("Assets/balloon"),
 	spring=playdate.graphics.imagetable.new("Assets/spring"),
