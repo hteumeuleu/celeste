@@ -181,10 +181,23 @@ player =
 	update=function(this)
 		if (pause_player) then return end
 
+		local on_ground_collision = false
+		local on_ice_collision = false
+
 		-- collisions
 		local _, _, collisions_at_x_y, length = this.pdspr:checkCollisions(kDrawOffsetX+this.x, kDrawOffsetY+this.y)
 		if length > 0 then
 			for _, col in ipairs(collisions_at_x_y) do
+				if col.other.class == "solid" then
+					local x1, y1 = col.sprite:getPosition()
+					local x2, y2 = col.other:getPosition()
+					local rect1 = col.sprite:getCollideRect():offsetBy(x1, y1+1)
+					local rect2 = col.other:getCollideRect():offsetBy(x2, y2)
+					on_ground_collision = rect1:intersects(rect2) and rect1.y + rect1.height <= rect2.y + rect2.height
+					if col.other.type == "ice" and on_ground_collision then
+						on_ice_collision = true
+					end
+				end
 				if col.other.type == "spikes" then
 					-- spikes collide
 					if game_obj.options:get("invicibility") == false then
@@ -210,7 +223,12 @@ player =
 		end
 
         local on_ground=this.is_solid(0,1)
+        if on_ground ~= on_ground_collision then
+       		print(on_ground, on_ground_collision)
+       	end
         local on_ice=this.is_ice(0,1)
+        -- local on_ground=on_ground_collision
+        -- local on_ice=on_ice_collision
 
 		-- smoke particles
 		if on_ground and not this.was_on_ground then
