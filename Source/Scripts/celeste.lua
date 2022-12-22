@@ -1950,9 +1950,8 @@ function _draw()
 				s.obj = {}
 				s.obj.type_id = -2
 				s:setGroups({6})
-				s.collisionResponse=function(other)
-					return GFX.sprite.kCollisionTypeOverlap
-				end
+				s:setCenter(0,0)
+				s:moveBy(s.width/2 * -1, s.height/2 * -1)
 			end
 			local spikesWallSprites <const> = GFX.sprite.addWallSprites(tilemap, data.emptySpikesIDs, kDrawOffsetX, kDrawOffsetY)
 			for _, s in ipairs(spikesWallSprites) do
@@ -1960,9 +1959,8 @@ function _draw()
 				s.obj = {}
 				s.obj.type_id = -3
 				s:setGroups({5})
-				s.collisionResponse=function(other)
-					return GFX.sprite.kCollisionTypeOverlap
-				end
+				s:setCenter(0,0)
+				s:moveBy(s.width/2 * -1, s.height/2 * -1)
 			end
 			local solidWallSprites <const> = GFX.sprite.addWallSprites(tilemap, data.emptySolidIDs, kDrawOffsetX, kDrawOffsetY)
 			for _, s in ipairs(solidWallSprites) do
@@ -1971,10 +1969,9 @@ function _draw()
 				s.class_id = -1
 				s.obj = {}
 				s.obj.type_id = -1
+				s:setCenter(0,0)
+				s:moveBy(s.width/2 * -1, s.height/2 * -1)
 				s:setGroups({2})
-				s.collisionResponse=function(other)
-					return GFX.sprite.kCollisionTypeOverlap
-				end
 			end
 		end
 
