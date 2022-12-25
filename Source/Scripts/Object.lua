@@ -12,15 +12,15 @@ function Object:init(x, y)
 	self.flip = {x=false,y=false}
 
 	self.pos = playdate.geometry.point.new(x, y)
-	self.hitbox = { x=0,y=0,w=8,h=8 }
+	self.hitbox = playdate.geometry.rect.new(0, 0, 8, 8)
 
-	self.spd = {x=0,y=0}
-	self.rem = {x=0,y=0}
+	self.spd = playdate.geometry.vector2D.new(0, 0)
+	self.rem = playdate.geometry.vector2D.new(0, 0)
 
 	self:setCenter(0,0)
 	self:setZIndex(10)
 	self:moveTo(self.pos)
-	self:setCollideRect(self.hitbox.x, self.hitbox.y, self.hitbox.w, self.hitbox.h)
+	self:setCollideRect(self.hitbox)
 	self:add()
 	table.insert(globalObjectsTable, self)
 
@@ -48,7 +48,7 @@ end
 function Object:is_solid(ox, oy)
 
 	local sprites = playdate.graphics.sprite.querySpritesAtPoint(self.pos.x+ox, self.pos.y+oy)
-	print("is_solid", ox, oy, #sprites)
+	-- print("is_solid", ox, oy, #sprites)
 	if #sprites == 0 then
 		return false
 	end
