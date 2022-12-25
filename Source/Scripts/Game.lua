@@ -3,7 +3,7 @@ class('Game').extends()
 function Game:init()
 
 	Game.super.init(self)
-	self.player = Player(20, 96)
+	self.player = Player(20, 92)
 	-- map
 	local tilemap = playdate.graphics.tilemap.new()
 	tilemap:setImageTable(data.imagetables.tiles)
@@ -11,10 +11,11 @@ function Game:init()
 	local wallSprites = playdate.graphics.sprite.addWallSprites(tilemap, data.emptyIDs, 0, -4)
 	for _, s in ipairs(wallSprites) do
 		s:setGroups({2})
-		s:setCenter({2})
+		s:setCenter(0,0)
+		s:moveBy(s.width/2*-1, s.height/2*-1)
 		s.is_solid = true
 		s.is_ground = true
-		s.is_ice = true
+		s.is_ice = false
 		s.collisionResponse = function(other)
 			return playdate.graphics.sprite.kCollisionTypeSlide
 		end
