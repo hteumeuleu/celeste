@@ -731,9 +731,7 @@ fall_floor = {
 			this.pdspr.type = "fall_floor"
 			this.pdspr:setZIndex(20)
 			this.pdspr:setGroups({3})
-			this.pdspr.collisionResponse=function(other)
-				return GFX.sprite.kCollisionTypeOverlap
-			end
+			this.pdspr:moveTo(kDrawOffsetX + this.x, kDrawOffsetY + this.y)
 		end
 	end,
 	update=function(this)
@@ -770,7 +768,6 @@ fall_floor = {
 		if this.pdspr ~= nil then
 			local pdimg <const> = data.imagetables.tiles:getImage(flr(spr_index))
 			this.pdspr:setImage(pdimg)
-			this.pdspr:moveTo(kDrawOffsetX + this.x, kDrawOffsetY + this.y)
 		end
 	end
 }
