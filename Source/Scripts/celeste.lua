@@ -993,6 +993,7 @@ fake_wall = {
 			this.pdspr:setCollideRect(this.hitbox)
 			this.pdspr.class="solid"
 			this.pdspr.class_id=-1
+			this.pdspr:moveTo(kDrawOffsetX + this.x, kDrawOffsetY + this.y)
 		end
 	end,
 	update=function(this)
@@ -1014,9 +1015,6 @@ fake_wall = {
 		this.hitbox=playdate.geometry.rect.new(0,0,16,16)
 	end,
 	draw=function(this)
-		if this.pdspr ~= nil then
-			this.pdspr:moveTo(kDrawOffsetX + this.x, kDrawOffsetY + this.y)
-		end
 	end
 }
 add(types,fake_wall)
