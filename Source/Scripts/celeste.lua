@@ -1445,9 +1445,18 @@ function init_object(type,x,y)
         if (#objects[platform.type_id] > 0) and (oy>0) and not (obj.collide(platform,ox,0) ~= nil) and (obj.collide(platform,ox,oy) ~= nil) then
             return true
         end
-        return solid_at(obj.x+obj.hitbox.x+ox,obj.y+obj.hitbox.y+oy,obj.hitbox.w,obj.hitbox.h)
-				or (obj.collide(fall_floor,ox,oy) ~= nil)
-				or (obj.collide(fake_wall,ox,oy) ~= nil)
+		local r <const> = playdate.geometry.rect.new(obj.x+obj.hitbox.x+ox+kDrawOffsetX, obj.y+obj.hitbox.y+oy+kDrawOffsetY, obj.hitbox.w, obj.hitbox.h)
+		local sprites_in_rect <const> = GFX.sprite.querySpritesInRect(r)
+		for _, s in ipairs(sprites_in_rect) do
+			if s.obj ~= nil then
+				-- solid or fall_floor or fake_wall
+ 				if s.class == "solid" or s.obj.type_id == 4 or s.obj.type_id == 9 then
+					return true
+				end
+			end
+		end
+		return false
+
 	end
 
 	obj.is_ice=function(ox,oy)
@@ -2057,25 +2066,6 @@ end
 
 function maybe()
 	return rnd(1)<0.5
-end
-
-function ice_at(x,y,w,h)
-	return tile_flag_at(x,y,w,h,4)
-end
-
-function solid_at(x,y,w,h)
-	return tile_flag_at(x,y,w,h,0)
-end
-
-function tile_flag_at(x,y,w,h,flag)
-	for i=math.max(0,math.floor(x/8)),math.min(15,(x+w-1)/8) do
-		for j=math.max(0,math.floor(y/8)),math.min(15,(y+h-1)/8) do
-			if fget(tile_at(i,j),flag) then
-				return true
-			end
-		end
-	end
-	return false
 end
 
 function tile_at(x,y)
