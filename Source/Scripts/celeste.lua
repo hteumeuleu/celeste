@@ -779,9 +779,11 @@ function break_fall_floor(obj)
 		obj.state=1
 		obj.delay=15--how long until it falls
 		init_object(smoke,obj.x,obj.y)
-		local hit=obj.collide(spring,0,-1)
-		if hit~=nil then
-			break_spring(hit)
+		if (#objects[spring.type_id] > 0) then
+			local hit=obj.collide(spring,0,-1)
+			if hit~=nil then
+				break_spring(hit)
+			end
 		end
 	end
 end
@@ -1441,7 +1443,8 @@ function init_object(type,x,y)
 	obj.rem = {x=0,y=0}
 
 	obj.is_solid=function(ox,oy)
-        if oy>0 and not (obj.collide(platform,ox,0) ~= nil) and (obj.collide(platform,ox,oy) ~= nil) then
+
+        if (#objects[platform.type_id] > 0) and (oy>0) and not (obj.collide(platform,ox,0) ~= nil) and (obj.collide(platform,ox,oy) ~= nil) then
             return true
         end
         return solid_at(obj.x+obj.hitbox.x+ox,obj.y+obj.hitbox.y+oy,obj.hitbox.w,obj.hitbox.h)
