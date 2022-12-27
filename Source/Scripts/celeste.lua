@@ -172,9 +172,6 @@ player =
 			this.pdspr:setCollidesWithGroups({2,3,4,5,6})
 			this.pdspr:setZIndex(20)
 			this.pdspr:setGroups({1})
-			this.pdspr.collisionResponse=function(other)
-				return GFX.sprite.kCollisionTypeOverlap
-			end
 		end
 		create_hair(this)
 	end,
@@ -259,7 +256,7 @@ player =
 				end
 			end
 
-			if abs(this.spd.x) > maxrun then
+			if math.abs(this.spd.x) > maxrun then
 				this.spd.x=appr(this.spd.x,sign(this.spd.x)*maxrun,deccel)
 			else
 				this.spd.x=appr(this.spd.x,input*maxrun,accel)
@@ -274,14 +271,14 @@ player =
 			local maxfall=2
 			local gravity=0.21
 
-			if abs(this.spd.y) <= 0.15 then
+			if math.abs(this.spd.y) <= 0.15 then
 				gravity*=0.5
 			end
 
 			-- wall slide
 			if input~=0 and this.is_solid(input,0) and not this.is_ice(input,0) then
 				maxfall=0.4
-				if rnd(10)<2 then
+				if (math.random()*10)<2 then
 					init_object(smoke,this.x+input*6,this.y)
 				end
 			end
