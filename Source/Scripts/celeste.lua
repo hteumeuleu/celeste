@@ -735,6 +735,7 @@ fall_floor = {
 		end
 	end,
 	update=function(this)
+		this.previous_state = this.state
 		-- shaking
 		if this.state==1 then
 			this.delay-=1
@@ -757,17 +758,19 @@ fall_floor = {
 		end
 	end,
 	draw=function(this)
-		local spr_index = 0
-		if this.state~=2 then
-			if this.state~=1 then
-				spr_index = 24
-			else
-				spr_index = 24+(15-this.delay)/5
+		if this.previous_state ~= this.state or this.state > 0 then
+			local spr_index = 0
+			if this.state~=2 then
+				if this.state~=1 then
+					spr_index = 24
+				else
+					spr_index = 24+(15-this.delay)/5
+				end
 			end
-		end
-		if this.pdspr ~= nil then
-			local pdimg <const> = data.imagetables.tiles:getImage(flr(spr_index))
-			this.pdspr:setImage(pdimg)
+			if this.pdspr ~= nil then
+				local pdimg <const> = data.imagetables.tiles:getImage(flr(spr_index))
+				this.pdspr:setImage(pdimg)
+			end
 		end
 	end
 }
