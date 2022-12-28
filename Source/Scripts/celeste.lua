@@ -178,10 +178,14 @@ player =
 	update=function(this)
 		if (pause_player) then return end
 
+        local on_ground=this.is_solid(0,1)
+        local on_ice=this.is_ice(0,1)
+
 		-- collisions
 		local _, _, collisions_at_x_y, length = this.pdspr:checkCollisions(kDrawOffsetX+this.x, kDrawOffsetY+this.y)
 		if length > 0 then
 			for _, col in ipairs(collisions_at_x_y) do
+				local playerIsAboveObject = col.spriteRect.y + col.spriteRect.height <= col.otherRect.y + col.otherRect.height
 				if col.other.type == "spikes" then
 					-- spikes collide
 					if game_obj.options:get("invicibility") == false then
@@ -189,11 +193,13 @@ player =
 							kill_player(this)
 						end
 					end
-				elseif col.other.type == "fall_floor" and col.spriteRect.y + col.spriteRect.height <= col.otherRect.y + col.otherRect.height then
+				elseif col.other.type == "fall_floor" and playerIsAboveObject then
 					break_fall_floor(col.other.obj)
 				elseif (col.other.type == "fruit" or col.other.type == "fly_fruit") and col.other.hit ~= nil then
 					col.other:hit(col.sprite.obj)
 				elseif col.other.type == "balloon" and col.other.hit ~= nil then
+					col.other:hit(col.sprite.obj)
+				elseif col.other.type == "platform" and col.other.hit ~= nil and on_ground and playerIsAboveObject then
 					col.other:hit(col.sprite.obj)
 				end
 			end
@@ -205,9 +211,6 @@ player =
 		if this.y>128 then
 			kill_player(this)
 		end
-
-        local on_ground=this.is_solid(0,1)
-        local on_ice=this.is_ice(0,1)
 
 		-- smoke particles
 		if on_ground and not this.was_on_ground then
@@ -1089,20 +1092,23 @@ platform={
 	init=function(this)
 		this.x-=4
 		this.solids=false
-		this.hitbox=playdate.geometry.rect.new(1, 1, 16, 8)
+		this.hitbox=playdate.geometry.rect.new(1, 1, 16, 4)
 		this.last=this.x
 		if not this.pdspr then
 			local pdimg <const> = data.imagetables.platform
 			this.pdspr = GFX.sprite.new(pdimg)
+			this.pdspr.type = "platform"
 			this.pdspr:setCenter(0,0)
 			this.pdspr:setGroups({4})
 			this.pdspr:setZIndex(20)
 			this.pdspr:setCollideRect(this.hitbox)
-			this.pdspr.collisionResponse=function(other)
-				return GFX.sprite.kCollisionTypeOverlap
+			this.pdspr.hit=function(platform_sprite, player_obj)
+				if player_obj and this.pdspr.diff then
+					player_obj.move_x(this.pdspr.diff,1)
+				end
 			end
 			this.pdspr:add()
-			this.pdspr.obj = this.type
+			this.pdspr.obj = this
 		end
 	end,
 	update=function(this)
@@ -1112,11 +1118,16 @@ platform={
 		elseif this.x>128 then
 			this.x=-16
 		end
-		if not this.collide(player,0,0) ~= nil then
-			local hit=this.collide(player,0,-1)
-			if hit~=nil then
-				hit.move_x(this.x-this.last,1)
-			end
+		-- if not this.collide(player,0,0) ~= nil then
+		-- 	local hit=this.collide(player,0,-1)
+		-- 	if hit~=nil then
+		-- 		printTable("platform.update", hit)
+		-- 		hit.move_x(this.x-this.last,1)
+		-- 	end
+		-- end
+		this.pdspr.diff = this.x-this.last
+		if this.pdspr.diff > 1 or this.pdspr.diff < -1 then
+			this.pdspr.diff = 0
 		end
 		this.last=this.x
 	end,
@@ -1442,17 +1453,34 @@ function init_object(type,x,y)
 
 	obj.is_solid=function(ox,oy)
 
-        if (#objects[platform.type_id] > 0) and (oy>0) and not (obj.collide(platform,ox,0) ~= nil) and (obj.collide(platform,ox,oy) ~= nil) then
-            return true
+        if (#objects[platform.type_id] > 0) and (oy>0) then
+        	local collide_at_ox_0 = false
+        	local collide_at_ox_oy = false
+        	-- equivalent to obj.collide(platform,ox,oy) ~= nil
+			local r <const> = playdate.geometry.rect.new(obj.x+obj.hitbox.x+ox+kDrawOffsetX, obj.y+obj.hitbox.y+oy+kDrawOffsetY, obj.hitbox.w, obj.hitbox.h)
+        	local sprites_in_rect = GFX.sprite.querySpritesInRect(r)
+			for _, s in ipairs(sprites_in_rect) do
+				if s.type == "platform" then
+					collide_at_ox_oy = true
+				end
+			end
+			-- equivalent to obj.collide(platform,ox,0) ~= nil
+			sprites_in_rect = GFX.sprite.querySpritesInRect(r:offsetBy(0, oy * -1))
+			for _, s in ipairs(sprites_in_rect) do
+ 				if s.type == "platform" then
+					collide_at_ox_0 = true
+				end
+			end
+			if not collide_at_ox_0 and collide_at_ox_oy then
+            	return true
+			end
         end
 		local r <const> = playdate.geometry.rect.new(obj.x+obj.hitbox.x+ox+kDrawOffsetX, obj.y+obj.hitbox.y+oy+kDrawOffsetY, obj.hitbox.w, obj.hitbox.h)
 		local sprites_in_rect <const> = GFX.sprite.querySpritesInRect(r)
 		for _, s in ipairs(sprites_in_rect) do
-			if s.obj ~= nil then
-				-- solid or fall_floor or fake_wall
- 				if s.class == "solid" or s.obj.type_id == 4 or s.obj.type_id == 9 then
-					return true
-				end
+			-- solid or fall_floor or fake_wall
+			if s.obj and s.class == "solid" or s.obj.type_id == 4 or s.obj.type_id == 9 then
+				return true
 			end
 		end
 		return false
@@ -1460,15 +1488,14 @@ function init_object(type,x,y)
 	end
 
 	obj.is_ice=function(ox,oy)
-		local spritesInRect_ox_oy <const> = GFX.sprite.querySpritesInRect(obj.hitbox:offsetBy(kDrawOffsetX+obj.x+ox, kDrawOffsetY+obj.y+oy))
-		local iceAt_ox_oy = false
-		for i=1, #spritesInRect_ox_oy do
-			if spritesInRect_ox_oy[i].obj and spritesInRect_ox_oy[i].obj.type_id == -2 then
-				iceAt_ox_oy = true
-				break
+		local r <const> = obj.hitbox:offsetBy(kDrawOffsetX+obj.x+ox, kDrawOffsetY+obj.y+oy)
+		local sprites_in_rect <const> = GFX.sprite.querySpritesInRect(r)
+		for _, s in ipairs(sprites_in_rect) do
+			if s.obj and s.obj.type_id == -2 then
+				return true
 			end
 		end
-		return iceAt_ox_oy
+		return false
 	end
 
 	obj.collide=function(type,ox,oy)
