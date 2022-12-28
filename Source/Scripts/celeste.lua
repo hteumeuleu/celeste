@@ -25,6 +25,10 @@ local pause_player=false
 local flash_bg=false
 local music_timer=0
 local room_just_changed=true
+local level_index = 0
+local is_title = false
+local game_obj = nil
+local reduce_clouds_and_particles = false
 
 local k_left=playdate.kButtonLeft
 local k_right=playdate.kButtonRight
@@ -32,11 +36,6 @@ local k_up=playdate.kButtonUp
 local k_down=playdate.kButtonDown
 local k_jump=playdate.kButtonA
 local k_dash=playdate.kButtonB
-
-local level_index = 0
-local is_title = false
-
-local game_obj = nil
 
 function get_level_index()
 
@@ -1479,7 +1478,7 @@ function init_object(type,x,y)
 		local sprites_in_rect <const> = GFX.sprite.querySpritesInRect(r)
 		for _, s in ipairs(sprites_in_rect) do
 			-- solid or fall_floor or fake_wall
-			if s.obj and s.class == "solid" or s.obj.type_id == 4 or s.obj.type_id == 9 then
+			if s.obj ~= nil and (s.class == "solid" or s.obj.type_id == 4 or s.obj.type_id == 9) then
 				return true
 			end
 		end
@@ -1491,7 +1490,7 @@ function init_object(type,x,y)
 		local r <const> = obj.hitbox:offsetBy(kDrawOffsetX+obj.x+ox, kDrawOffsetY+obj.y+oy)
 		local sprites_in_rect <const> = GFX.sprite.querySpritesInRect(r)
 		for _, s in ipairs(sprites_in_rect) do
-			if s.obj and s.obj.type_id == -2 then
+			if s.obj ~= nil and s.obj.type_id == -2 then
 				return true
 			end
 		end
@@ -1676,6 +1675,13 @@ function load_room(x,y)
 	level_index = room.x%8+room.y*8
 	is_title = level_index == 31
 
+	-- reduce particles
+	if not playdate.isSimulator and (level_index == 3 or level_index == 6 or level_index == 17 or level_index == 20) then
+		reduce_clouds_and_particles = true
+	else
+		reduce_clouds_and_particles = false
+	end
+
 	--level after orb
 	if level_index > 21 and level_index < 31 then
 		max_djump=2
@@ -1859,7 +1865,11 @@ function _draw()
 
 	-- clouds
 	if not is_title then
-		for i=1, #clouds do
+		local clouds_number = #clouds
+		if reduce_clouds_and_particles then
+			clouds_number = math.floor(clouds_number / 2)
+		end
+		for i=1, clouds_number do
 			local c = clouds[i]
 			c.x += c.spd
 			c.spr:moveTo(kDrawOffsetX+c.x, kDrawOffsetY+c.y)
@@ -1885,7 +1895,11 @@ function _draw()
 	end
 
 	-- particles
-	for i=1, #particles do
+	local particles_number = #particles
+	if reduce_clouds_and_particles then
+		particles_number = math.floor(particles_number / 2)
+	end
+	for i=1, particles_number do
 		local p = particles[i]
 		if room_just_changed then
 			p.spr:add()
