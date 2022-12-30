@@ -13,7 +13,7 @@ function playdate.update()
 	playdate.timer.updateTimers()
 	playdate.graphics.sprite.update()
 	g:update()
-	playdate.drawFPS(0, 0)
+	-- playdate.drawFPS(0, 0)
 
 end
 

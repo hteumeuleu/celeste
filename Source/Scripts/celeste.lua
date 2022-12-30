@@ -126,21 +126,23 @@ if playdate.isSimulator then
 	max_particles = 24
 end
 local particles = {}
+local card_frames = 30
 for i=0,max_particles do
 	add(particles,{
-		x=rnd(128),
-		y=rnd(128),
+		x=rnd(200),
+		y=rnd(120),
 		s=0+flr(rnd(5)/4),
-		spd=0.25+rnd(5),
-		off=rnd(1),
-		c=6+flr(0.5+rnd(1))
+		spd=(200/card_frames)
 	})
 end
 
 for i, item in ipairs(particles) do
 	local img <const> = GFX.image.new(item.s + 1, item.s + 1, GFX.kColorWhite)
 	item.spr = GFX.sprite.new(img)
+	item.spr:setCenter(0, 0)
 	item.spr:setZIndex(30)
+	item.x_start = item.x
+	item.y_start = item.y
 end
 
 dead_particles = {}
@@ -1905,8 +1907,12 @@ function _draw()
 			p.spr:add()
 		end
 		p.x += p.spd
-		p.y += sin(p.off)
-		p.off+= math.min(0.05,p.spd/32)
+		-- local off = vmap(p.x, p.x_start, 200-p.x_start, 0, math.pi*2)
+		-- print(off)
+		-- p.y = sin(p.x_start)+50
+		-- local off = vmap(p.x, 0, 200, -1, 1)
+		-- p.y = vmap(sin(off+p.x_start), -1, 1, 0, 120)
+		p.y = p.y_start
 		if is_title then
 			p.spr:moveTo(p.x,p.y)
 		else
@@ -1916,7 +1922,6 @@ function _draw()
 		if is_title then w = 200 end
 		if p.x>w+4 then
 			p.x=-4
-			p.y=math.random()*w
 		end
 	end
 
@@ -1956,9 +1961,9 @@ function _draw()
 		if is_title and layers.extra ~= nil then
 			local image <const> = layers.extra:getImage()
 			playdate.graphics.pushContext(image)
-				_print("a+b",58,80,5)
-				_print("maddy thorson",40,96,5)
-				_print("noel berry",46,102,5)
+				-- _print("a+b",58,80,5)
+				-- _print("maddy thorson",40,96,5)
+				-- _print("noel berry",46,102,5)
 			playdate.graphics.popContext()
 		end
 
