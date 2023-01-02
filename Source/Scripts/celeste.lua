@@ -185,6 +185,7 @@ player =
 		if length > 0 then
 			for _, col in ipairs(collisions_at_x_y) do
 				local playerIsAboveObject = col.spriteRect.y + col.spriteRect.height <= col.otherRect.y + col.otherRect.height
+				local playerIsUnder = (col.spriteRect.y >= col.otherRect.y + col.otherRect.height) and ((col.spriteRect.x + col.spriteRect.width >= col.otherRect.x) or (col.spriteRect.x <= col.otherRect.x + col.otherRect.width))
 				if col.other.type == "spikes" then
 					-- spikes collide
 					if game_obj.options:get("invicibility") == false then
@@ -192,7 +193,7 @@ player =
 							kill_player(this)
 						end
 					end
-				elseif col.other.type == "fall_floor" and playerIsAboveObject then
+				elseif col.other.type == "fall_floor" and not playerIsUnder then
 					break_fall_floor(col.other.obj)
 				elseif (col.other.type == "fruit" or col.other.type == "fly_fruit") and col.other.hit ~= nil then
 					col.other:hit(col.sprite.obj)
