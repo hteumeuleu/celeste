@@ -2108,7 +2108,7 @@ function sign(v)
 end
 
 function maybe()
-	return rnd(1)<0.5
+	return (math.random()*1)<0.5
 end
 
 function tile_at(x,y)
