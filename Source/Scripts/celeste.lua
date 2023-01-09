@@ -1238,10 +1238,10 @@ big_chest={
 				init_object(orb,this.x+4,this.y+4)
 				pause_player=false
 			end
-			foreach(this.particles,function(p)
+			for _, p in ipairs(this.particles) do
 				p.y+=p.spd
 				line(kDrawOffsetX+this.x+p.x,kDrawOffsetY+this.y+8-p.y-1,kDrawOffsetX+this.x+p.x,kDrawOffsetY+min(this.y+8-p.y+p.h,this.y+8)-1,7)
-			end)
+			end
 		end
 		if this.state~=0 then
 			pdimg = data.imagetables.big_chest:getImage(2)
@@ -1738,12 +1738,11 @@ function load_room(x,y)
 			elseif tile==12 then
 				init_object(platform,tx*8,ty*8).dir=1
 			else
-				foreach(types,
-				function(type)
+				for _, type in ipairs(types) do
 					if type.tile == tile then
 						init_object(type,tx*8,ty*8)
 					end
-				end)
+				end
 			end
 		end
 	end
