@@ -1,5 +1,11 @@
 local GFX = playdate.graphics
 local data = g_data
+local rnd = function(arg) return math.random() * arg end
+local sin = function(angle) return math.sin(math.rad(angle * -1 * 360.0)) end
+local cos = function(angle) return math.cos(math.rad(angle * -1 * 360.0)) end
+local min = function(a, b) return math.min(a, b) end
+local max = function(a, b) return math.max(a, b) end
+local btn = function(i) return playdate.buttonIsPressed(i) end
 
 -- ~celeste~
 -- maddy thorson + noel berry
