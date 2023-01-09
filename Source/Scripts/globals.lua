@@ -1,9 +1,3 @@
--- Global settings
-math.randomseed(playdate.getSecondsSinceEpoch())
-playdate.setCrankSoundsDisabled(true)
-playdate.graphics.setFont(data.font)
-playdate.graphics.setBackgroundColor(playdate.graphics.kColorBlack)
-
 -- Variables
 local kDisplayOffsetX = 200
 local kDisplayOffsetY = 120
@@ -11,6 +5,13 @@ kDrawOffsetX = 0
 kDrawOffsetY = 0
 local sceneWidth = 128
 local sceneHeight = 128
+local data = g_data
+
+-- Global settings
+math.randomseed(playdate.getSecondsSinceEpoch())
+playdate.setCrankSoundsDisabled(true)
+playdate.graphics.setFont(data.font)
+playdate.graphics.setBackgroundColor(playdate.graphics.kColorBlack)
 
 -- Scene layers
 layers = {

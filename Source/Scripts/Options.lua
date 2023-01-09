@@ -1,5 +1,7 @@
 class("Options").extends(playdate.graphics.sprite)
 
+local data = g_data
+
 function Options:init()
 
 	Options.super.init(self)

@@ -1,5 +1,6 @@
 local GFX = playdate.graphics
 local musicPlayer, fxPlayer
+local data = g_data
 
 --
 -- PICO-8 functions

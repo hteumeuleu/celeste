@@ -1,4 +1,5 @@
 local GFX = playdate.graphics
+local data = g_data
 
 -- ~celeste~
 -- maddy thorson + noel berry

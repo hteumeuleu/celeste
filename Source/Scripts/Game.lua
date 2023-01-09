@@ -6,6 +6,8 @@ import "Scripts/Options"
 
 class("Game").extends()
 
+local data = g_data
+
 function Game:init()
 
 	Game.super.init(self)
