@@ -131,10 +131,10 @@ for i=0,max_particles do
 	table.insert(particles,{
 		x=rnd(128),
 		y=rnd(128),
-		s=0+flr(rnd(5)/4),
+		s=0+math.floor(rnd(5)/4),
 		spd=0.25+rnd(5),
 		off=rnd(1),
-		c=6+flr(0.5+rnd(1))
+		c=6+math.floor(0.5+rnd(1))
 	})
 end
 
@@ -406,7 +406,7 @@ player =
 
 		-- Playdate sprite drawing
 		if this.pdspr ~= nil then
-			local pdimg <const> = data.imagetables.player:getImage(flr(this.spr))
+			local pdimg <const> = data.imagetables.player:getImage(math.floor(this.spr))
 			pdimg:setInverted(this.djump == 0)
 			this.pdspr:setImage(pdimg, flip(this.flip.x,this.flip.y))
 			this.pdspr:moveTo(kDrawOffsetX + this.x - 1, kDrawOffsetY + this.y - 1)
@@ -573,7 +573,7 @@ player_spawn = {
 	end,
 	draw=function(this)
 		if this.pdspr ~= nil then
-			local pdimg <const> = data.imagetables.player:getImage(flr(this.spr))
+			local pdimg <const> = data.imagetables.player:getImage(math.floor(this.spr))
 			pdimg:setInverted(max_djump == 0)
 			this.pdspr:setImage(pdimg, flip(this.flip.x,this.flip.y))
 			this.pdspr:moveTo(kDrawOffsetX + this.x - 1, kDrawOffsetY + this.y - 1)
@@ -639,7 +639,7 @@ spring = {
 	end,
 	draw=function(this)
 		if this.pdspr ~= nil then
-			local pdimg <const> = data.imagetables.tiles:getImage(flr(this.spr) + 1)
+			local pdimg <const> = data.imagetables.tiles:getImage(math.floor(this.spr) + 1)
 			this.pdspr:setImage(pdimg)
 			this.pdspr:moveTo(kDrawOffsetX + this.x, kDrawOffsetY + this.y)
 		end
@@ -664,7 +664,7 @@ balloon = {
 			local pdimg <const> = GFX.image.new(10, 17, GFX.kColorClear)
 			GFX.pushContext(pdimg)
 				local pdtileballoon = data.imagetables.balloon:getImage(1)
-				local pdtilestring = data.imagetables.balloon:getImage(flr(2+(this.offset*8)%3))
+				local pdtilestring = data.imagetables.balloon:getImage(math.floor(2+(this.offset*8)%3))
 				pdtileballoon:draw(0,0)
 				pdtilestring:draw(0,8)
 			GFX.popContext()
@@ -700,7 +700,7 @@ balloon = {
 			local function drawBalloon(img)
 				GFX.pushContext(img)
 					GFX.clear(GFX.kColorClear)
-					local pdtilestring = data.imagetables.balloon:getImage(flr(2+(this.offset*8)%3))
+					local pdtilestring = data.imagetables.balloon:getImage(math.floor(2+(this.offset*8)%3))
 					local pdtileballoon = data.imagetables.balloon:getImage(1)
 					pdtileballoon:draw(0,0)
 					pdtilestring:draw(0,8)
@@ -769,7 +769,7 @@ fall_floor = {
 				end
 			end
 			if this.pdspr ~= nil then
-				local pdimg <const> = data.imagetables.tiles:getImage(flr(spr_index))
+				local pdimg <const> = data.imagetables.tiles:getImage(math.floor(spr_index))
 				this.pdspr:setImage(pdimg)
 			end
 		end
@@ -817,7 +817,7 @@ smoke={
 		end
 	end,
 	draw=function(this)
-		local pdimg <const> = data.imagetables.tiles:getImage(flr(this.spr)+1)
+		local pdimg <const> = data.imagetables.tiles:getImage(math.floor(this.spr)+1)
 		this.pdspr:setImage(pdimg, flip(this.flip.x, this.flip.y))
 		this.pdspr:moveTo(kDrawOffsetX + this.x, kDrawOffsetY + this.y)
 	end
@@ -926,7 +926,7 @@ fly_fruit={
 		local drawFruit=function(img)
 			GFX.pushContext(img)
 				GFX.clear(GFX.kColorClear)
-				local pdtilewing = data.imagetables.fruit:getImage(flr(3+off))
+				local pdtilewing = data.imagetables.fruit:getImage(math.floor(3+off))
 				local pdtilefruit = data.imagetables.fruit:getImage(2)
 				pdtilewing:draw(3,-1,flip(true, false))
 				pdtilewing:draw(17,-1)
@@ -1035,9 +1035,9 @@ key={
 		end
 	end,
 	update=function(this)
-		local was=flr(this.spr)
+		local was=math.floor(this.spr)
 		this.spr=9+(sin(frames/30)+0.5)*1
-		local is=flr(this.spr)
+		local is=math.floor(this.spr)
 		if is==10 and is~=was then
 			this.flip.x=not this.flip.x
 		end
@@ -1049,7 +1049,7 @@ key={
 		end
 	end,
 	draw=function(this)
-		local pdimg <const> = data.imagetables.key:getImage(flr(this.spr) - 7)
+		local pdimg <const> = data.imagetables.key:getImage(math.floor(this.spr) - 7)
 		this.pdspr:setImage(pdimg, flip(this.flip.x,this.flip.y))
 		this.pdspr:moveTo(kDrawOffsetX + this.x - 1, kDrawOffsetY + this.y - 1)
 	end
@@ -1367,7 +1367,7 @@ flag = {
 			sfx_timer=30
 			this.show=true
 		end
-		local pdimg <const> = data.imagetables.flag:getImage(flr(this.spr) - 117)
+		local pdimg <const> = data.imagetables.flag:getImage(math.floor(this.spr) - 117)
 		this.pdspr:setImage(pdimg)
 		this.pdspr:moveTo(kDrawOffsetX + this.x - 1, kDrawOffsetY + this.y - 1)
 	end
@@ -2085,7 +2085,7 @@ function get_time()
 
 	local s=seconds
 	local m=minutes%60
-	local h=flr(minutes/60)
+	local h=math.floor(minutes/60)
 	return (h<10 and "0"..h or h)..":"..(m<10 and "0"..m or m)..":"..(s<10 and "0"..s or s)
 
 end
