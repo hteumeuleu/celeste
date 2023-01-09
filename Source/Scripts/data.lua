@@ -56,6 +56,8 @@ end
 --
 g_data.imagetables = {
 	tiles=playdate.graphics.imagetable.new("Assets/tiles"),
+	background=playdate.graphics.imagetable.new("Assets/tiles-background"),
+	foreground=playdate.graphics.imagetable.new("Assets/tiles-foreground"),
 	player=playdate.graphics.imagetable.new("Assets/player"),
 	fruit=playdate.graphics.imagetable.new("Assets/fruit"),
 	balloon=playdate.graphics.imagetable.new("Assets/balloon"),
@@ -168,9 +170,6 @@ for room=0, 31 do
 		x = i%16 + rx*16
 		y = math.floor(i/16)*16*8 + ry*16*16*8
 		local tile_index = g_data.map[x + y + 1] + 1
-		if g_data.flags[tile_index] == 4 then
-			tile_index = 0
-		end
 		table.insert(room, tile_index)
 	end
 	table.insert(g_data.rooms, room)

@@ -1953,6 +1953,8 @@ function _draw()
 	end
 
 	if room_just_changed then
+		local tilemap <const> = GFX.tilemap.new()
+		tilemap:setTiles(data.rooms[level_index + 1], 16)
 
 		if is_title and layers.extra ~= nil then
 			local image <const> = layers.extra:getImage()
@@ -1964,11 +1966,13 @@ function _draw()
 		end
 
 		-- draw bg terrain
+		tilemap:setImageTable(data.imagetables.background)
 		if layers.bg_terrain ~= nil then
 			local image <const> = layers.bg_terrain:getImage()
 			playdate.graphics.pushContext(image)
-				map(room.x * 16,room.y * 16,0,0,16,16,2)
+				tilemap:draw(0, 0)
 			playdate.graphics.popContext()
+			playdate.simulator.writeToFile(image, "~/Desktop/image.png")
 			local imageCopy = image:copy()
 			GFX.pushContext(imageCopy)
 				image:invertedImage():draw(0, 0)
@@ -1978,19 +1982,18 @@ function _draw()
 		end
 
 		-- draw terrain
+		tilemap:setImageTable(data.imagetables.foreground)
 		if layers.terrain ~= nil then
 			local image <const> = layers.terrain:getImage()
 			playdate.graphics.pushContext(image)
 				local off=is_title and -4 or 0
-				map(room.x*16,room.y * 16,off,0,16,16,1)
+				tilemap:draw(off, 0)
 			playdate.graphics.popContext()
 		end
 
 		-- wall sprites
+		tilemap:setImageTable(data.imagetables.tiles)
 		if not is_title then
-			local tilemap <const> = GFX.tilemap.new()
-			tilemap:setImageTable(data.imagetables.tiles)
-			tilemap:setTiles(data.rooms[level_index + 1], 16)
 			local iceWallSprites <const> = GFX.sprite.addWallSprites(tilemap, data.emptyIceIDs, kDrawOffsetX, kDrawOffsetY)
 			for _, s in ipairs(iceWallSprites) do
 				s.type = "ice"
