@@ -68,7 +68,7 @@ end
 function title_screen()
 	got_fruit = {}
 	for i=0,29 do
-		add(got_fruit,false)
+		table.insert(got_fruit,false)
 	end
 	frames=0
 	deaths=0
@@ -128,7 +128,7 @@ if playdate.isSimulator then
 end
 local particles = {}
 for i=0,max_particles do
-	add(particles,{
+	table.insert(particles,{
 		x=rnd(128),
 		y=rnd(128),
 		s=0+flr(rnd(5)/4),
@@ -427,7 +427,7 @@ end
 create_hair=function(obj)
 	obj.hair={}
 	for i=0,4 do
-		add(obj.hair,{x=obj.x,y=obj.y,size=max(1,min(2,3-i))})
+		table.insert(obj.hair,{x=obj.x,y=obj.y,size=max(1,min(2,3-i))})
 	end
 end
 
@@ -584,7 +584,7 @@ player_spawn = {
 		unset_hair_color()
 	end
 }
-add(types,player_spawn)
+table.insert(types,player_spawn)
 
 spring = {
 	type_id = 2,
@@ -645,7 +645,7 @@ spring = {
 		end
 	end
 }
-add(types,spring)
+table.insert(types,spring)
 
 function break_spring(obj)
 	obj.hide_in=15
@@ -718,7 +718,7 @@ balloon = {
 		end
 	end
 }
-add(types,balloon)
+table.insert(types,balloon)
 
 fall_floor = {
 	type_id = 4,
@@ -775,7 +775,7 @@ fall_floor = {
 		end
 	end
 }
-add(types,fall_floor)
+table.insert(types,fall_floor)
 
 function break_fall_floor(obj)
 	if obj.state==0 then
@@ -860,7 +860,7 @@ fruit={
 		end
 	end
 }
-add(types,fruit)
+table.insert(types,fruit)
 
 fly_fruit={
 	type_id = 7,
@@ -941,7 +941,7 @@ fly_fruit={
 		end
 	end
 }
-add(types,fly_fruit)
+table.insert(types,fly_fruit)
 
 lifeup = {
 	type_id = 8,
@@ -1021,7 +1021,7 @@ fake_wall = {
 	draw=function(this)
 	end
 }
-add(types,fake_wall)
+table.insert(types,fake_wall)
 
 key={
 	type_id = 10,
@@ -1054,7 +1054,7 @@ key={
 		this.pdspr:moveTo(kDrawOffsetX + this.x - 1, kDrawOffsetY + this.y - 1)
 	end
 }
-add(types,key)
+table.insert(types,key)
 
 chest={
 	type_id = 11,
@@ -1086,7 +1086,7 @@ chest={
 		this.pdspr:moveTo(kDrawOffsetX + this.x, kDrawOffsetY + this.y)
 	end
 }
-add(types,chest)
+table.insert(types,chest)
 
 platform={
 	type_id = 12,
@@ -1187,7 +1187,7 @@ message={
 		end
 	end
 }
-add(types,message)
+table.insert(types,message)
 
 big_chest={
 	type_id = 14,
@@ -1223,7 +1223,7 @@ big_chest={
 			shake=5
 			flash_bg=true
 			if this.timer<=45 and #this.particles<50 then
-				add(this.particles,{
+				table.insert(this.particles,{
 					x=1+rnd(14),
 					y=0,
 					h=32+rnd(32),
@@ -1251,7 +1251,7 @@ big_chest={
 		this.pdspr:add()
 	end
 }
-add(types,big_chest)
+table.insert(types,big_chest)
 
 tree={
 	type_id = 15,
@@ -1268,7 +1268,7 @@ tree={
 	draw=function(this)
 	end,
 }
-add(types,tree)
+table.insert(types,tree)
 
 orb={
 	type_id = 15,
@@ -1372,7 +1372,7 @@ flag = {
 		this.pdspr:moveTo(kDrawOffsetX + this.x - 1, kDrawOffsetY + this.y - 1)
 	end
 }
-add(types,flag)
+table.insert(types,flag)
 
 room_title = {
 	type_id = 17,
@@ -1618,7 +1618,7 @@ function kill_player(obj)
 	dead_particles={}
 	for dir=0,7 do
 		local angle=(dir/8)
-		add(dead_particles,{
+		table.insert(dead_particles,{
 			x=obj.x+4,
 			y=min(obj.y+4, 120),
 			t=10,
