@@ -501,28 +501,29 @@ draw_hair=function(obj,facing)
 	-- Adjust hair sprite to new coordinates and size
 	layers.hair:setSize(w, h)
 	layers.hair:setCenter(0, 0)
-	layers.hair:moveTo(x1 + kDrawOffsetX, y1 + kDrawOffsetY-1)
+	layers.hair:moveTo(x1 + kDrawOffsetX, y1 + kDrawOffsetY)
 	layers.hair:setCollideRect(1, 1, 8, 8)
 	-- Difference between hair sprite and player sprite
 	local diff = {}
 	diff.x = math.floor(obj.x - x1)
 	diff.y = math.floor(obj.y - y1)
+	local mask_x = diff.x
+	local mask_y = diff.y
+	local mask_w = math.max(32,w)
+	local mask_h = math.max(32,h)
 	-- Create mask image for hair
 	-- (will be used as a stencil so needs to be at least 32x32)
-	local pdmask = playdate.graphics.image.new(math.max(32,w), math.max(32,h), playdate.graphics.kColorClear)
+	local pdmask = playdate.graphics.image.new(mask_w, mask_h, playdate.graphics.kColorClear)
 	playdate.graphics.pushContext(pdmask)
-		local mask_x = diff.x-1
-		local mask_y = diff.y+1
 		-- Fill the image with white except where the mask will be
 		playdate.graphics.setColor(playdate.graphics.kColorWhite)
-		playdate.graphics.fillRect(8-mask_x, 0, 8-mask_x, 8-mask_y)
-		local pdmask_spr_index = math.floor(obj.spr+7)-7
+		playdate.graphics.fillRect(0, 0, mask_w, mask_h)
+		local pdmask_spr_index = math.floor(obj.spr+7)
 		local pdmask_img = data.imagetables.player:getImage(pdmask_spr_index)
 		pdmask_img:draw(mask_x, mask_y, flip(obj.flip.x, false))
 	playdate.graphics.popContext()
 	-- Create new image for drawing hair
-	local pdimg <const> = playdate.graphics.image.new(math.max(32,w), math.max(32,h), playdate.graphics.kColorClear)
-
+	local pdimg = playdate.graphics.image.new(math.max(32,w), math.max(32,h), playdate.graphics.kColorClear)
 	playdate.graphics.pushContext(pdimg)
 		-- Add mask
 		playdate.graphics.setStencilImage(pdmask)
@@ -541,7 +542,7 @@ draw_hair=function(obj,facing)
 		-- Clear mask's stencil
 		playdate.graphics.clearStencil()
 	playdate.graphics.popContext()
-	-- pdimg:setInverted(max_djump == 0)
+	pdimg:setInverted(obj.djump == 0)
 	layers.hair:setImage(pdimg)
 	layers.hair:setZIndex(200)
 end
