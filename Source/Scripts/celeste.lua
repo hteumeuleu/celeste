@@ -419,9 +419,7 @@ player =
 			this.pdspr:moveTo(kDrawOffsetX + this.x - 1, kDrawOffsetY + this.y - 1)
 		end
 
-		set_hair_color(this.djump)
 		draw_hair(this,this.flip.x and -1 or 1)
-		unset_hair_color()
 	end,
 }
 
@@ -436,14 +434,6 @@ create_hair=function(obj)
 	for i=0,4 do
 		table.insert(obj.hair,{x=obj.x,y=obj.y,size=max(1,min(2,3-i))})
 	end
-end
-
-set_hair_color=function(djump)
-	-- if djump ~= 0 then
-	-- 	hair_color = playdate.graphics.kColorBlack
-	-- else
-	-- 	hair_color = playdate.graphics.kColorWhite
-	-- end
 end
 
 draw_hair=function(obj,facing)
@@ -502,7 +492,6 @@ draw_hair=function(obj,facing)
 	layers.hair:setSize(w, h)
 	layers.hair:setCenter(0, 0)
 	layers.hair:moveTo(x1 + kDrawOffsetX, y1 + kDrawOffsetY)
-	layers.hair:setCollideRect(1, 1, 8, 8)
 	-- Difference between hair sprite and player sprite
 	local diff = {}
 	diff.x = math.floor(obj.x - x1)
@@ -545,10 +534,6 @@ draw_hair=function(obj,facing)
 	pdimg:setInverted(obj.djump == 0)
 	layers.hair:setImage(pdimg)
 	layers.hair:setZIndex(200)
-end
-
-unset_hair_color=function()
-	-- hair_color = playdate.graphics.kColorBlack
 end
 
 player_spawn = {
@@ -611,9 +596,7 @@ player_spawn = {
 			this.pdspr:moveTo(kDrawOffsetX + this.x - 1, kDrawOffsetY + this.y - 1)
 		end
 
-		set_hair_color(max_djump)
 		draw_hair(this,1)
-		unset_hair_color()
 	end
 }
 table.insert(types,player_spawn)
