@@ -1629,10 +1629,11 @@ function kill_player(obj)
 	deaths+=1
 	shake=10
 	destroy_object(obj)
-	drawInLayer("hair", function(img)
-		img:clear(GFX.kColorClear)
-	end)
-	layers["hair"]:markDirty()
+	if layers.hair ~= nil then
+		local image <const> = layers.hair:getImage()
+		image:clear(GFX.kColorClear)
+		layers.hair:setImage(image)
+	end
 	dead_particles={}
 	for dir=0,7 do
 		local angle=(dir/8)
