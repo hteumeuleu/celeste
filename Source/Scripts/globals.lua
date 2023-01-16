@@ -30,17 +30,6 @@ for i, layer in ipairs(layers) do
 	layers[layer]:add()
 end
 
-function drawInLayer(layer, func)
-
-	if layers[layer] ~= nil and type(layers[layer]) == "table" then
-		local image <const> = layers[layer]:getImage()
-		playdate.graphics.pushContext(image)
-			func(image)
-		playdate.graphics.popContext()
-	end
-
-end
-
 -- Returns Playdate’s flip value from two booleans
 function flip(flip_x, flip_y)
 
