@@ -6,6 +6,7 @@ local cos = function(angle) return math.cos(math.rad(angle * -1 * 360.0)) end
 local min = function(a, b) return math.min(a, b) end
 local max = function(a, b) return math.max(a, b) end
 local btn = function(i) return playdate.buttonIsPressed(i) end
+local mget = function(celx, cely) return data.map[celx + (cely * 128) + 1] end
 
 -- ~celeste~
 -- maddy thorson + noel berry

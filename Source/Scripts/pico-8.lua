@@ -142,11 +142,11 @@ function spr(n, x, y, w, h, flip_x, flip_y)
 
 end
 
-function mget(celx, cely)
+-- function mget(celx, cely)
 
-	return data.map[celx + (cely * 128) + 1]
+-- 	return data.map[celx + (cely * 128) + 1]
 
-end
+-- end
 
 function fget(tile, flag)
 
