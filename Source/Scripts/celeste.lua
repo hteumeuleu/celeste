@@ -16,11 +16,13 @@ local mget = function(celx, cely) return data.map[celx + (cely * 128) + 1] end
 
 local room = { x=0, y=0 }
 local objects = {}
-for i = 1, 18 do
+for i = 1, 19 do
 	objects[i] = {}
 end
-
 local types = {}
+for i = 1, 19 do
+	types[i] = {}
+end
 local freeze=0
 local shake=0
 local will_restart=false
@@ -1278,7 +1280,7 @@ tree={
 table.insert(types,tree)
 
 orb={
-	type_id = 15,
+	type_id = 16,
 	init=function(this)
 		this.spd.y=-4
 		this.solids=false
@@ -1316,7 +1318,7 @@ orb={
 }
 
 flag = {
-	type_id = 16,
+	type_id = 17,
 	tile=118,
 	init=function(this)
 		this.x+=5
@@ -1382,7 +1384,7 @@ flag = {
 table.insert(types,flag)
 
 room_title = {
-	type_id = 17,
+	type_id = 19,
 	init=function(this)
 		this.delay=5
 	end,
