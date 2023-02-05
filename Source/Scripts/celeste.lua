@@ -20,8 +20,8 @@ for i = 1, 19 do
 	objects[i] = {}
 end
 local types = {}
-for i = 1, 19 do
-	types[i] = {}
+for i = 1, 128 do
+	types[i] = false
 end
 local freeze=0
 local shake=0
@@ -605,7 +605,7 @@ player_spawn = {
 		draw_hair(this,1)
 	end
 }
-table.insert(types,player_spawn)
+types[player_spawn.tile] = player_spawn
 
 spring = {
 	type_id = 2,
@@ -666,7 +666,7 @@ spring = {
 		end
 	end
 }
-table.insert(types,spring)
+types[spring.tile] = spring
 
 function break_spring(obj)
 	obj.hide_in=15
@@ -739,7 +739,7 @@ balloon = {
 		end
 	end
 }
-table.insert(types,balloon)
+types[balloon.tile] = balloon
 
 fall_floor = {
 	type_id = 4,
@@ -796,7 +796,7 @@ fall_floor = {
 		end
 	end
 }
-table.insert(types,fall_floor)
+types[fall_floor.tile] = fall_floor
 
 function break_fall_floor(obj)
 	if obj.state==0 then
@@ -881,7 +881,7 @@ fruit={
 		end
 	end
 }
-table.insert(types,fruit)
+types[fruit.tile] = fruit
 
 fly_fruit={
 	type_id = 7,
@@ -962,7 +962,7 @@ fly_fruit={
 		end
 	end
 }
-table.insert(types,fly_fruit)
+types[fly_fruit.tile] = fly_fruit
 
 lifeup = {
 	type_id = 8,
@@ -1042,7 +1042,7 @@ fake_wall = {
 	draw=function(this)
 	end
 }
-table.insert(types,fake_wall)
+types[fake_wall.tile] = fake_wall
 
 key={
 	type_id = 10,
@@ -1075,7 +1075,7 @@ key={
 		this.pdspr:moveTo(kDrawOffsetX + this.x - 1, kDrawOffsetY + this.y - 1)
 	end
 }
-table.insert(types,key)
+types[key.tile] = key
 
 chest={
 	type_id = 11,
@@ -1107,7 +1107,7 @@ chest={
 		this.pdspr:moveTo(kDrawOffsetX + this.x, kDrawOffsetY + this.y)
 	end
 }
-table.insert(types,chest)
+types[chest.tile] = chest
 
 platform={
 	type_id = 12,
@@ -1208,7 +1208,7 @@ message={
 		end
 	end
 }
-table.insert(types,message)
+types[message.tile] = message
 
 big_chest={
 	type_id = 14,
@@ -1272,7 +1272,7 @@ big_chest={
 		this.pdspr:add()
 	end
 }
-table.insert(types,big_chest)
+types[big_chest.tile] = big_chest
 
 tree={
 	type_id = 15,
@@ -1289,7 +1289,7 @@ tree={
 	draw=function(this)
 	end,
 }
-table.insert(types,tree)
+types[tree.tile] = tree
 
 orb={
 	type_id = 16,
@@ -1393,7 +1393,7 @@ flag = {
 		this.pdspr:moveTo(kDrawOffsetX + this.x - 1, kDrawOffsetY + this.y - 1)
 	end
 }
-table.insert(types,flag)
+types[flag.tile] = flag
 
 room_title = {
 	type_id = 19,
@@ -1759,12 +1759,8 @@ function load_room(x,y)
 				init_object(platform,tx*8,ty*8).dir=-1
 			elseif tile==12 then
 				init_object(platform,tx*8,ty*8).dir=1
-			else
-				for _, type in ipairs(types) do
-					if type.tile == tile then
-						init_object(type,tx*8,ty*8)
-					end
-				end
+			elseif types[tile] then
+				init_object(types[tile],tx*8,ty*8)
 			end
 		end
 	end
