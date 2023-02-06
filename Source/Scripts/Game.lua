@@ -3,7 +3,7 @@ class('Game').extends()
 function Game:init()
 
 	Game.super.init(self)
-	self.player = Player(20, 92)
+	self.player = Player(20, 62)
 	-- map
 	local tilemap = playdate.graphics.tilemap.new()
 	tilemap:setImageTable(data.imagetables.tiles)

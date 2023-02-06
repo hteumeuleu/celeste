@@ -47,17 +47,30 @@ end
 
 function Object:is_solid(ox, oy)
 
-	local sprites = playdate.graphics.sprite.querySpritesAtPoint(self.pos.x+ox, self.pos.y+oy)
-	-- print("is_solid", ox, oy, #sprites)
-	if #sprites == 0 then
-		return false
+	local rect = self:getCollideRect():offsetBy(self.pos.x+ox, self.pos.y+oy)
+	local spritesInRect = playdate.graphics.sprite.querySpritesInRect(rect)
+	if #spritesInRect > 0 then
+		for _, s in ipairs(spritesInRect) do
+			if s ~= self and s.is_solid then
+				return true
+			end
+		end
 	end
-	return true
+	return false
 
 end
 
 function Object:is_ice(ox, oy)
 
+	local rect = self:getCollideRect():offsetBy(self.pos.x+ox, self.pos.y+oy)
+	local spritesInRect = playdate.graphics.sprite.querySpritesInRect(rect)
+	if #spritesInRect > 0 then
+		for _, s in ipairs(spritesInRect) do
+			if s ~= self and s.is_ice then
+				return true
+			end
+		end
+	end
 	return false
 
 end
