@@ -1,8 +1,11 @@
 class('Game').extends()
 
+local data <const> = g_data
+
 function Game:init()
 
 	Game.super.init(self)
+	self:scale(2)
 	self.player = Player(20, 62)
 	-- map
 	local tilemap = playdate.graphics.tilemap.new()
@@ -27,6 +30,30 @@ function Game:init()
 	)
 	-- return
 	return self
+
+end
+
+-- scale()
+--
+function Game:scale(n)
+
+	playdate.display.setScale(n)
+	local kDisplayOffsetX = playdate.display.getWidth() / 2
+	local kDisplayOffsetY = playdate.display.getHeight() / 2
+	kDrawOffsetX = (playdate.display.getWidth() - 128) / 2
+	kDrawOffsetY = (playdate.display.getHeight() - 128) / 2
+
+	if data.cache ~= nil then
+		data.cache:moveTo(kDisplayOffsetX, kDisplayOffsetY)
+	end
+	if self.options ~= nil then
+		self.options:moveTo(kDisplayOffsetX, kDisplayOffsetY)
+	end
+	for i, layer in ipairs(layers) do
+		if layers[layer] ~= nil and type(layers[layer]) == "table" then
+			layers[layer]:moveTo(kDisplayOffsetX, kDisplayOffsetY)
+		end
+	end
 
 end
 

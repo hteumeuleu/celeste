@@ -5,12 +5,12 @@ local data = g_data
 --
 -- PICO-8 functions
 --
--- function add(t, value, index)
+function add(t, value, index)
 
--- 	index = index or #t+1
--- 	table.insert(t, index, value)
+	index = index or #t+1
+	table.insert(t, index, value)
 
--- end
+end
 
 function del(t, value)
 
@@ -23,54 +23,54 @@ function del(t, value)
 
 end
 
--- function flr(num)
+function flr(num)
 
--- 	return math.floor(num)
+	return math.floor(num)
 
--- end
+end
 
--- function abs(num)
+function abs(num)
 
--- 	return math.abs(num)
+	return math.abs(num)
 
--- end
+end
 
--- function rnd(arg)
+function rnd(arg)
 
--- 	arg = arg or 1.0
--- 	if type(arg) == "table" then
--- 		return arg[math.random(1, #arg)]
--- 	else
--- 		return math.random() * arg
--- 	end
+	arg = arg or 1.0
+	if type(arg) == "table" then
+		return arg[math.random(1, #arg)]
+	else
+		return math.random() * arg
+	end
 
--- end
+end
 
--- function sin(angle)
+function sin(angle)
 
--- 	return math.sin(math.rad(angle * -1 * 360.0))
+	return math.sin(math.rad(angle * -1 * 360.0))
 
--- end
+end
 
--- function cos(angle)
+function cos(angle)
 
--- 	return math.cos(math.rad(angle * -1 * 360.0))
+	return math.cos(math.rad(angle * -1 * 360.0))
 
--- end
+end
 
--- function min(first, second)
+function min(first, second)
 
--- 	second = second or 0
--- 	return math.min(first, second)
+	second = second or 0
+	return math.min(first, second)
 
--- end
+end
 
--- function max(first, second)
+function max(first, second)
 
--- 	second = second or 0
--- 	return math.max(first, second)
+	second = second or 0
+	return math.max(first, second)
 
--- end
+end
 
 function rectfill(x0, y0, x1, y1, col)
 
@@ -99,23 +99,23 @@ function circfill(x, y, r, col)
 
 end
 
--- function foreach(tbl, func)
+function foreach(tbl, func)
 
--- 	for _, item in ipairs(tbl) do
--- 		func(item)
--- 	end
+	for _, item in ipairs(tbl) do
+		func(item)
+	end
 
--- end
+end
 
--- function btn(i, p)
+function btn(i, p)
 
--- 	if i == nil then
--- 		return
--- 	end
--- 	p = p or 0
--- 	return playdate.buttonIsPressed(i)
+	if i == nil then
+		return
+	end
+	p = p or 0
+	return playdate.buttonIsPressed(i)
 
--- end
+end
 
 -- spr(n, [x,] [y,] [w,] [h,] [flip_x,] [flip_y])
 function spr(n, x, y, w, h, flip_x, flip_y)
@@ -159,24 +159,24 @@ function fget(tile, flag)
 
 end
 
--- function map(celx, cely, sx, sy, celw, celh, mask)
+function map(celx, cely, sx, sy, celw, celh, mask)
 
--- 	mask = mask or 0x0
---     for cx=0,celw-1 do
---         for cy=0,celh-1 do
---         	local tile = mget(celx + cx, cely + cy)
---         	if tile <= #data.imagetables.tiles then
--- 				if (mask == 0) or (fget(tile, mask)) then
--- 					local img = data.imagetables.tiles:getImage(tile + 1)
--- 					local x = sx + (cx * 8)
--- 					local y = sy + (cy * 8)
--- 					img:draw(x, y)
--- 				end
--- 			end
---         end
---     end
+	mask = mask or 0x0
+    for cx=0,celw-1 do
+        for cy=0,celh-1 do
+        	local tile = mget(celx + cx, cely + cy)
+        	if tile <= #data.imagetables.tiles then
+				if (mask == 0) or (fget(tile, mask)) then
+					local img = data.imagetables.tiles:getImage(tile + 1)
+					local x = sx + (cx * 8)
+					local y = sy + (cy * 8)
+					img:draw(x, y)
+				end
+			end
+        end
+    end
 
--- end
+end
 
 function pal(c0, c1, p)
 

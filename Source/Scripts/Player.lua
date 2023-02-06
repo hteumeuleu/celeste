@@ -1,5 +1,6 @@
 class('Player').extends(Object)
 
+local data <const> = g_data
 local max_djump=1
 local has_dashed=false
 local freeze=0

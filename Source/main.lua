@@ -5,11 +5,12 @@ import "CoreLibs/timer"
 import "CoreLibs/ui"
 import "CoreLibs/crank"
 
+import "Scripts/data.lua"
+import "Scripts/globals.lua"
+import "Scripts/pico-8.lua"
 import "Scripts/Game"
 import "Scripts/Object"
 import "Scripts/Player"
-import "Scripts/data.lua"
-import "Scripts/pico-8.lua"
 import "Scripts/celeste.lua"
 
 -- _init()
