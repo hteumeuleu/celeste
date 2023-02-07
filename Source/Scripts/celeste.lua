@@ -497,6 +497,9 @@ draw_hair=function(obj,facing)
 	diff.x = math.floor(obj.x - x1)
 	diff.y = math.floor(obj.y - y1)
 	local mask_x = diff.x
+	if facing == -1 then
+		mask_x -= 1
+	end
 	local mask_y = diff.y
 	local mask_w = math.max(32,w)
 	local mask_h = math.max(32,h)
@@ -509,7 +512,7 @@ draw_hair=function(obj,facing)
 		playdate.graphics.fillRect(0, 0, mask_w, mask_h)
 		local pdmask_spr_index = math.floor(obj.spr+7)
 		local pdmask_img = data.imagetables.player:getImage(pdmask_spr_index)
-		pdmask_img:draw(mask_x, mask_y, flip(obj.flip.x, false))
+		pdmask_img:draw(mask_x, mask_y, flip(facing, false))
 	playdate.graphics.popContext()
 	-- Create new image for drawing hair
 	local pdimg = playdate.graphics.image.new(math.max(32,w), math.max(32,h), playdate.graphics.kColorClear)
