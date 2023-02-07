@@ -7,6 +7,7 @@ function Game:init()
 	Game.super.init(self)
 	self:scale(2)
 	self.player = Player(20, 62)
+	self.platform = Platform(60, 62, -1)
 	-- map
 	local tilemap = playdate.graphics.tilemap.new()
 	tilemap:setImageTable(data.imagetables.tiles)
@@ -59,13 +60,20 @@ end
 
 function Game:update()
 
-	self.player:move(self.player.spd.x, self.player.spd.y)
-	-- self.player:update()
+	for _, o in ipairs(globalObjectsTable) do
+		if o.move and o.spd then
+			o:move(o.spd.x, o.spd.y)
+		end
+	end
 
 end
 
 function Game:draw()
 
-	self.player:draw()
+	for _, o in ipairs(globalObjectsTable) do
+		if o.draw then
+			o:draw()
+		end
+	end
 
 end

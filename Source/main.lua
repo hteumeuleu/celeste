@@ -11,6 +11,7 @@ import "Scripts/pico-8.lua"
 import "Scripts/Game"
 import "Scripts/Object"
 import "Scripts/Player"
+import "Scripts/Platform"
 import "Scripts/celeste.lua"
 
 -- _init()

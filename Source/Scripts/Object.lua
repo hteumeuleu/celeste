@@ -35,7 +35,6 @@ function Object:update()
 end
 
 function Object:draw(x, y, width, height)
-
 end
 
 function Object:destroy()
@@ -98,6 +97,8 @@ function Object:move(ox,oy)
 	self.rem.y -= amount
 	self:move_y(amount)
 
+	self:moveWithCollisions(self.pos.x, self.pos.y)
+
 end
 
 function Object:move_x(amount,start)
@@ -153,5 +154,6 @@ function Object:getFlipValue(flip_x, flip_y)
 end
 
 function Object:collisionResponse(other)
+	print(self.pos, other.pos)
 	return playdate.graphics.sprite.kCollisionTypeSlide
 end

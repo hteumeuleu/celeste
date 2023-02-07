@@ -56,6 +56,32 @@ function Player:update()
 	local on_ground=self:is_solid(0,1)
 	local on_ice=self:is_ice(0,1)
 
+	local _, _, collisions_at_x_y, length = self:checkCollisions(self.pos.x, self.pos.y)
+	if length > 0 then
+		print(length)
+		for _, col in ipairs(collisions_at_x_y) do
+			local playerIsAboveObject = col.spriteRect.y + col.spriteRect.height <= col.otherRect.y + col.otherRect.height
+			local playerIsUnder = (col.spriteRect.y >= col.otherRect.y + col.otherRect.height) and ((col.spriteRect.x + col.spriteRect.width >= col.otherRect.x) or (col.spriteRect.x <= col.otherRect.x + col.otherRect.width))
+			if col.other.type == "spikes" then
+				-- spikes collide
+				-- if game_obj.options:get("invicibility") == false then
+				-- 	if spikes_at(this.x+this.hitbox.x,this.y+this.hitbox.y,this.hitbox.width,this.hitbox.height,this.spd.x,this.spd.y) then
+				-- 		kill_player(this)
+				-- 	end
+				-- end
+			-- elseif col.other.type == "fall_floor" and not playerIsUnder then
+			-- 	break_fall_floor(col.other.obj)
+			-- elseif (col.other.type == "fruit" or col.other.type == "fly_fruit") and col.other.hit ~= nil then
+			-- 	col.other:hit(col.sprite.obj)
+			-- elseif col.other.type == "balloon" and col.other.hit ~= nil then
+			-- 	col.other:hit(col.sprite.obj)
+			elseif col.other.className == "Platform" and col.other.hit ~= nil and on_ground and playerIsAboveObject then
+				print("platform--")
+				col.other:hit(col.sprite)
+			end
+		end
+	end
+
 	-- smoke particles
 	-- if on_ground and not self.was_on_ground then
 	-- 	-- init_object(smoke,self.x,self.y+4)
@@ -256,7 +282,7 @@ function Player:draw(x, y)
 	self:setImage(pdimg, self:getFlipValue(self.flip.x,self.flip.y))
 
 	-- move sprite
-	_, _, self.collisions, _ = self:moveWithCollisions(self.pos.x, self.pos.y)
+	-- _, _, self.collisions, _ = self:moveWithCollisions(self.pos.x, self.pos.y)
 
 end
 
