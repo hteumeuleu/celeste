@@ -2022,7 +2022,11 @@ function _draw()
 				s:setCenter(0,0)
 				s:moveBy(s.width/2 * -1, s.height/2 * -1)
 			end
-			local spikesWallSprites <const> = GFX.sprite.addWallSprites(tilemap, data.emptySpikesIDs, kDrawOffsetX, kDrawOffsetY)
+			local emptySpikesIDs17 = data.emptySpikesIDs
+			table.insert(emptySpikesIDs17, 28)
+			table.insert(emptySpikesIDs17, 44)
+			table.insert(emptySpikesIDs17, 60)
+			local spikesWallSprites <const> = GFX.sprite.addWallSprites(tilemap, emptySpikesIDs17, kDrawOffsetX, kDrawOffsetY)
 			for _, s in ipairs(spikesWallSprites) do
 				s.type = "spikes"
 				s.obj = {}
@@ -2137,6 +2141,34 @@ function tile_at(x,y)
 end
 
 function spikes_at(x,y,w,h,xspd,yspd)
+
+	-- Example 1
+
+	-- x=78
+	-- y=110
+	-- w=6
+	-- h=5
+
+	-- for i=9, 10.375 do
+	-- 		for j=13, 14.25 do
+	--			tile=(9,13)=17
+	-- 				(y+h-1)%8 = (110+5-1)%8 = 114%8 = 2 		--	(>=6) = false
+	-- 				y+h==j*8+8   --  115 == (13*8+8=112)
+
+	-- Example 2
+
+	-- x=84
+	-- y=112
+	-- w=6
+	-- h=5
+
+	-- for i=10, 11.125 do
+	-- 		for j=14, 15 do
+	--			tile=(10,14)=17
+	-- (y+h-1)%8 = (216+10-1)%8 = 116%8 = 4		--	(>=6) = false
+	-- y+h==j*8+8   = 117 == (14*8+8=120) -- false
+
+
 	for i=math.max(0,math.floor(x/8)),math.min(15,(x+w-1)/8) do
 		for j=math.max(0,math.floor(y/8)),math.min(15,(y+h-1)/8) do
 			local tile=tile_at(i,j)
