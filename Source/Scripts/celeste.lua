@@ -39,6 +39,7 @@ local level_index = 0
 local is_title = false
 local game_obj = nil
 local reduce_clouds_and_particles = false
+local reduce_flashing = playdate.getReduceFlashing()
 
 local k_left=playdate.kButtonLeft
 local k_right=playdate.kButtonRight
@@ -417,15 +418,23 @@ player =
 		-- Playdate sprite drawing
 		if this.pdspr ~= nil then
 			local pdimg = data.imagetables.player:getImage(math.floor(this.spr))
-			if this.djump == 0 then
+			local has_orb_effect = (this.djump >= 2 and math.floor((frames/3)%2) == 0)
+			if reduce_flashing then
+				has_orb_effect = false
+			end
+			if this.djump == 0 or has_orb_effect then
 				local newimg = pdimg:copy()
 				newimg:clear(playdate.graphics.kColorClear)
 				playdate.graphics.pushContext(newimg)
 					playdate.graphics.setImageDrawMode(playdate.graphics.kDrawModeFillWhite)
 					pdimg:draw(0,0)
-					local shadow <const> = data.imagetables.player:getImage(math.floor(this.spr) + 2*7)
+					local overlay_index_increment = 2*7
+					if has_orb_effect then
+						overlay_index_increment += 7
+					end
+					local overlay <const> = data.imagetables.player:getImage(math.floor(this.spr) + overlay_index_increment)
 					playdate.graphics.setImageDrawMode(playdate.graphics.kDrawModeCopy)
-					shadow:draw(0,0)
+					overlay:draw(0,0)
 				playdate.graphics.popContext()
 				pdimg = newimg
 			end
@@ -548,15 +557,21 @@ draw_hair=function(obj,facing)
 		-- Clear mask's stencil
 		playdate.graphics.clearStencil()
 	playdate.graphics.popContext()
-	if obj.djump == 0 then
-		local newimg = pdimg:copy()
-		newimg:clear(playdate.graphics.kColorClear)
-		playdate.graphics.pushContext(newimg)
-			playdate.graphics.setImageDrawMode(playdate.graphics.kDrawModeFillWhite)
-			pdimg:draw(0,0)
-			playdate.graphics.setImageDrawMode(playdate.graphics.kDrawModeCopy)
-		playdate.graphics.popContext()
-		pdimg = newimg
+	if obj.djump then
+		local has_orb_effect = (obj.djump >= 2 and math.floor((frames/3)%2) == 0)
+		if reduce_flashing then
+			has_orb_effect = false
+		end
+		if obj.djump == 0 or has_orb_effect then
+			local newimg = pdimg:copy()
+			newimg:clear(playdate.graphics.kColorClear)
+			playdate.graphics.pushContext(newimg)
+				playdate.graphics.setImageDrawMode(playdate.graphics.kDrawModeFillWhite)
+				pdimg:draw(0,0)
+				playdate.graphics.setImageDrawMode(playdate.graphics.kDrawModeCopy)
+			playdate.graphics.popContext()
+			pdimg = newimg
+		end
 	end
 	layers.hair:setImage(pdimg)
 	layers.hair:setZIndex(200)
@@ -1750,7 +1765,7 @@ function load_room(x,y)
 	-- add background drawing
 	playdate.graphics.sprite.setBackgroundDrawingCallback(
 		function(x, y, width, height)
-			if (flash_bg and frames%5==0 and not playdate.getReduceFlashing()) then
+			if (flash_bg and frames%5==0 and not reduce_flashing) then
 				playdate.graphics.setColor(playdate.graphics.kColorWhite)
 			else
 				playdate.graphics.setColor(playdate.graphics.kColorBlack)
