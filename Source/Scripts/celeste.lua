@@ -1994,9 +1994,10 @@ function _draw()
 	end
 
 	if level_index==30 and layers.extra ~= nil then
+		layers.extra:setZIndex(40)
 		local image <const> = layers.extra:getImage()
+		image:clear(GFX.kColorClear)
 		playdate.graphics.pushContext(image)
-			image:clear(GFX.kColorClear)
 			local p = objects[player.type_id][1]
 			if p~=nil then
 				local diff=math.min(24,40-math.abs(p.x+4-64))
@@ -2012,6 +2013,7 @@ function _draw()
 
 		if is_title and layers.extra ~= nil then
 			local image <const> = layers.extra:getImage()
+			image:clear(GFX.kColorClear)
 			playdate.graphics.pushContext(image)
 				_print("a+b",58,80,5)
 				_print("maddy thorson",40,96,5)
