@@ -1992,7 +1992,7 @@ function _draw()
 		end
 	end
 
-	if level_index==30 then
+	if level_index==30 and layers.extra ~= nil then
 		local image <const> = layers.extra:getImage()
 		playdate.graphics.pushContext(image)
 			image:clear(GFX.kColorClear)
