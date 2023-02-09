@@ -1403,12 +1403,14 @@ flag = {
 				GFX.drawRect(0, 0, 64, rectHeight)
 				local fruit = data.imagetables.fruit:getImage(1)
 				fruit:draw(22, 3)
-				_print("x"..this.score,32,7,7)
-				_print(get_time(),17,15)
-				_print("deaths:"..deaths,16,22,7)
-				if usedAssistMode then
-					_print("assist mode",10,29,7)
-				end
+				GFX.setImageDrawMode(GFX.kDrawModeFillWhite)
+					GFX.drawText("x"..this.score, 32, 7)
+					GFX.drawTextInRect(get_time(), 2, 15, 60, 20, nil, nil, kTextAlignment.center)
+					GFX.drawTextInRect("deaths:"..deaths, 2, 22, 60, 20, nil, nil, kTextAlignment.center)
+					if usedAssistMode then
+						GFX.drawTextInRect("assist mode", 2, 29, 60, 20, nil, nil, kTextAlignment.center)
+					end
+				GFX.setImageDrawMode(GFX.kDrawModeCopy)
 			GFX.popContext()
 			if not layers.score then
 				layers.score = GFX.sprite.new(pdimg)
