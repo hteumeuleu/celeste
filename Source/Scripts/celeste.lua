@@ -574,7 +574,7 @@ draw_hair=function(obj,facing)
 		end
 	end
 	layers.hair:setImage(pdimg)
-	layers.hair:setZIndex(200)
+	layers.hair:setZIndex(21)
 end
 
 player_spawn = {
@@ -1390,32 +1390,33 @@ flag = {
 			end
 		end
 		if this.show then
+			local pdimg = GFX.image.new(64, 40)
+			GFX.pushContext(pdimg)
+				local usedAssistMode = game_obj:usedAssistMode()
+				local rectHeight = 31
+				if usedAssistMode then
+					rectHeight = 37
+				end
+				GFX.setColor(GFX.kColorBlack)
+				GFX.fillRect(0, 0, 64, rectHeight)
+				GFX.setColor(GFX.kColorWhite)
+				GFX.drawRect(0, 0, 64, rectHeight)
+				local fruit = data.imagetables.fruit:getImage(1)
+				fruit:draw(22, 3)
+				_print("x"..this.score,32,7,7)
+				_print(get_time(),17,15)
+				_print("deaths:"..deaths,16,22,7)
+				if usedAssistMode then
+					_print("assist mode",10,29,7)
+				end
+			GFX.popContext()
 			if not layers.score then
-				printTable()
-				local pdimg = GFX.image.new(64, 40)
-				GFX.pushContext(pdimg)
-					local usedAssistMode = game_obj:usedAssistMode()
-					local rectHeight = 31
-					if usedAssistMode then
-						rectHeight = 37
-					end
-					GFX.setColor(GFX.kColorBlack)
-					GFX.fillRect(0, 0, 64, rectHeight)
-					GFX.setColor(GFX.kColorWhite)
-					GFX.drawRect(0, 0, 64, rectHeight)
-					local fruit = data.imagetables.fruit:getImage(1)
-					fruit:draw(22, 3)
-					_print("x"..this.score,32,7,7)
-					_print(get_time(),17,15)
-					_print("deaths:"..deaths,16,22,7)
-					if usedAssistMode then
-						_print("assist mode",10,29,7)
-					end
-				GFX.popContext()
 				layers.score = GFX.sprite.new(pdimg)
 				layers.score:setCenter(0,0)
-				layers.score:setZIndex(20)
+				layers.score:setZIndex(19)
 				layers.score:moveTo(kDrawOffsetX + 32, 2)
+			else
+				layers.score:setImage(pdimg)
 			end
 			layers.score:add()
 		elseif this.collide(player,0,0) ~= nil then
