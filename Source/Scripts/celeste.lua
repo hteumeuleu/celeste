@@ -416,8 +416,19 @@ player =
 
 		-- Playdate sprite drawing
 		if this.pdspr ~= nil then
-			local pdimg <const> = data.imagetables.player:getImage(math.floor(this.spr))
-			pdimg:setInverted(this.djump == 0)
+			local pdimg = data.imagetables.player:getImage(math.floor(this.spr))
+			if this.djump == 0 then
+				local newimg = pdimg:copy()
+				newimg:clear(playdate.graphics.kColorClear)
+				playdate.graphics.pushContext(newimg)
+					playdate.graphics.setImageDrawMode(playdate.graphics.kDrawModeFillWhite)
+					pdimg:draw(0,0)
+					local shadow <const> = data.imagetables.player:getImage(math.floor(this.spr) + 2*7)
+					playdate.graphics.setImageDrawMode(playdate.graphics.kDrawModeCopy)
+					shadow:draw(0,0)
+				playdate.graphics.popContext()
+				pdimg = newimg
+			end
 			this.pdspr:setImage(pdimg, flip(this.flip.x,this.flip.y))
 			this.pdspr:moveTo(kDrawOffsetX + this.x - 1, kDrawOffsetY + this.y - 1)
 		end
@@ -537,7 +548,16 @@ draw_hair=function(obj,facing)
 		-- Clear mask's stencil
 		playdate.graphics.clearStencil()
 	playdate.graphics.popContext()
-	pdimg:setInverted(obj.djump == 0)
+	if obj.djump == 0 then
+		local newimg = pdimg:copy()
+		newimg:clear(playdate.graphics.kColorClear)
+		playdate.graphics.pushContext(newimg)
+			playdate.graphics.setImageDrawMode(playdate.graphics.kDrawModeFillWhite)
+			pdimg:draw(0,0)
+			playdate.graphics.setImageDrawMode(playdate.graphics.kDrawModeCopy)
+		playdate.graphics.popContext()
+		pdimg = newimg
+	end
 	layers.hair:setImage(pdimg)
 	layers.hair:setZIndex(200)
 end
