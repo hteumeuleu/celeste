@@ -1010,7 +1010,7 @@ lifeup = {
 		this.solids=false
 		this.pdspr = GFX.sprite.new(data.imagetables.lifeup)
 		this.pdspr:setCenter(0,0)
-		this.pdspr:setZIndex(20)
+		this.pdspr:setZIndex(30)
 		this.pdspr:add()
 	end,
 	update=function(this)
