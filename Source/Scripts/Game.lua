@@ -6,6 +6,7 @@ import "Scripts/Options"
 
 class("Game").extends()
 
+local GFX = playdate.graphics
 local data = g_data
 
 function Game:init()
@@ -169,5 +170,60 @@ end
 -- load()
 --
 function Game:load()
+
+end
+
+-- updatePauseScreen()
+--
+function Game:updatePauseScreen()
+
+	local image <const> = GFX.image.new(400, 240)
+	local offset = 72
+	local status = self:serialize()
+	printTable(status)
+	GFX.pushContext(image)
+		-- Draw dark overlay
+		local overlay <const> = GFX.image.new(400, 240, GFX.kColorBlack)
+		overlay:drawFaded(0, 0, 0.5, GFX.image.kDitherTypeBayer2x2)
+		if not (status.room.x == 7 and status.room.y == 3) then
+			local boxImage <const> = GFX.image.new(64, 48) 
+			GFX.pushContext(boxImage)
+				-- Draw box
+				local box = playdate.geometry.rect.new(0, 0, 64, 45)
+				GFX.setColor(GFX.kColorWhite)
+				GFX.fillRect(box)
+				local inside = playdate.geometry.rect.new(box.x + 1, box.y + 13, box.width - 2, box.height - 14)
+				GFX.setColor(GFX.kColorBlack)
+				GFX.fillRect(inside)
+				-- Draw room title
+				local fontHeight <const> = data.font:getHeight()
+				GFX.drawTextInRect(get_room_title(), 1, 4, 62, fontHeight, nil, nil, kTextAlignment.center)
+				-- Draw fruit and score
+				local fruit = data.imagetables.fruit:getImage(1)
+				fruit:draw(23, 15)
+				local score = 0
+				for i=1,#status.fruits do
+					if status.fruits[i] then
+						score+=1
+					end
+				end
+				GFX.setImageDrawMode(GFX.kDrawModeFillWhite)
+					GFX.drawText("x" .. score, 33, 19)
+					GFX.drawTextInRect(get_time(), 2, 27, 60, fontHeight, nil, nil, kTextAlignment.center)
+					GFX.drawTextInRect("deaths:"..status.deaths, 2, 34, 60, fontHeight, nil, nil, kTextAlignment.center)
+				GFX.setImageDrawMode(GFX.kDrawModeCopy)
+				if status.assist then
+					local assistBox = playdate.geometry.rect.new(8, 41, 49, 7)
+					GFX.setColor(GFX.kColorWhite)
+					GFX.fillRect(assistBox)
+					GFX.drawTextInRect("+assist mode", 8, 42, 49, fontHeight, nil, nil, kTextAlignment.center)
+				end
+			GFX.popContext()
+			boxImage:drawScaled(offset + (200-128)/2, (240-90)/2, 2)
+		else
+			offset = 100
+		end
+	GFX.popContext()
+	playdate.setMenuImage(image, offset)
 
 end

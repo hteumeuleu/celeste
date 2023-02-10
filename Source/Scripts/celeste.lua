@@ -1433,6 +1433,21 @@ flag = {
 }
 types[flag.tile] = flag
 
+function get_room_title()
+
+	local room_title = ""
+	if room.x==3 and room.y==1 then
+		room_title = "old site"
+	elseif level_index==30 then
+		room_title = "summit"
+	else
+		local level=(1+level_index)*100
+		room_title = level.." m"
+	end
+	return room_title
+
+end
+
 room_title = {
 	type_id = 19,
 	init=function(this)

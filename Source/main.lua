@@ -8,6 +8,8 @@ import "CoreLibs/crank"
 import "Scripts/Game"
 local g = Game()
 
+-- playdate.update()
+--
 function playdate.update()
 
 	playdate.timer.updateTimers()
@@ -33,6 +35,16 @@ function playdate.deviceWillSleep()
 
 end
 
+-- playdate.gameWillPause()
+--
+function playdate.gameWillPause()
+
+	g:updatePauseScreen()
+
+end
+
+-- playdate.keyPressed()
+--
 function playdate.keyPressed(key)
 
 	if key == "m" then
