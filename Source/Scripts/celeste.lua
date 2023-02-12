@@ -1014,10 +1014,12 @@ lifeup = {
 	end,
 	draw=function(this)
 		this.flash+=0.5
-		if math.floor(this.flash) % 2 == 0 then
-			this.pdspr:setImageDrawMode(GFX.kDrawModeInverted)
-		else
-			this.pdspr:setImageDrawMode(GFX.kDrawModeCopy)
+		if not reduce_flashing then
+			if math.floor(this.flash) % 2 == 0 then
+				this.pdspr:setImageDrawMode(GFX.kDrawModeInverted)
+			else
+				this.pdspr:setImageDrawMode(GFX.kDrawModeCopy)
+			end
 		end
 		this.pdspr:moveTo(kDrawOffsetX + this.x-2, kDrawOffsetY + this.y)
 	end
