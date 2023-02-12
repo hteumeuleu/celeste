@@ -418,6 +418,10 @@ player =
 		-- Playdate sprite drawing
 		if this.pdspr ~= nil then
 			local pdimg = data.imagetables.player:getImage(math.floor(this.spr))
+			local has_orb_effect = (this.djump >= 2 and math.floor((frames/3)%2) == 0)
+			if reduce_flashing then
+				has_orb_effect = false
+			end
 			if this.djump == 0 or has_orb_effect then
 				local newimg = pdimg:copy()
 				newimg:clear(playdate.graphics.kColorClear)
