@@ -73,7 +73,6 @@ end
 function _init(game)
 	game_obj = game
 	title_screen()
-	begin_game()
 end
 
 function title_screen()
