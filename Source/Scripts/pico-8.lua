@@ -189,6 +189,10 @@ function music(n, fade_len, channel_mask)
 	fade_len = fade_len or 1000
 	channel_mask = channel_mask or 1
 
+	if n == -1 and musicPlayer ~= nil and musicPlayer:isPlaying() then
+		musicPlayer:stop()
+	end
+
 	if data.music[n] ~= nil then
 		if musicPlayer == nil then
 			musicPlayer = playdate.sound.fileplayer.new(data.music[n])
