@@ -418,20 +418,13 @@ player =
 		-- Playdate sprite drawing
 		if this.pdspr ~= nil then
 			local pdimg = data.imagetables.player:getImage(math.floor(this.spr))
-			local has_orb_effect = (this.djump >= 2 and math.floor((frames/3)%2) == 0)
-			if reduce_flashing then
-				has_orb_effect = false
-			end
 			if this.djump == 0 or has_orb_effect then
 				local newimg = pdimg:copy()
 				newimg:clear(playdate.graphics.kColorClear)
 				playdate.graphics.pushContext(newimg)
 					playdate.graphics.setImageDrawMode(playdate.graphics.kDrawModeFillWhite)
 					pdimg:draw(0,0)
-					local overlay_index_increment = 2*7
-					if has_orb_effect then
-						overlay_index_increment += 7
-					end
+					local overlay_index_increment = 3*7
 					local overlay <const> = data.imagetables.player:getImage(math.floor(this.spr) + overlay_index_increment)
 					playdate.graphics.setImageDrawMode(playdate.graphics.kDrawModeCopy)
 					overlay:draw(0,0)
