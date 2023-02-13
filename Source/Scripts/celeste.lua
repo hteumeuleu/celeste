@@ -67,6 +67,29 @@ function serialize()
 
 end
 
+function _load(save)
+
+	printTable(save)
+	if save.deaths then
+		deaths = save.deaths
+	end
+	if save.room then 
+		room.x = save.room.x
+		room.y = save.room.y
+	end
+	if save.fruits then 
+		got_fruit = save.fruits
+	end
+	if save.minutes and save.seconds then
+		seconds = save.seconds
+		minutes = save.minutes
+	end
+	if not (save.room.x == 7 and save.room.y == 3) then
+		begin_game(room.x, room.y)
+	end
+
+end
+
 -- entry point --
 -----------------
 
@@ -96,8 +119,10 @@ function begin_game(x,y)
 	local x = x or 0
 	local y = y or 0
 	frames=0
-	seconds=0
-	minutes=0
+	if x == 0 and y == 0 then
+		seconds=0
+		minutes=0
+	end
 	music_timer=0
 	start_game=false
 	music(0,0,7)
@@ -1815,9 +1840,6 @@ function load_room(x,y)
 			end
 		end
 	end
-
-	-- save
-	game_obj:save()
 
 	if not is_title then
 		init_object(room_title,0,0)
