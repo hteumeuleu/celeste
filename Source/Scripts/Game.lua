@@ -19,6 +19,7 @@ function Game:init()
 	self:addMenuItems()
 	self:initOptions()
 	self:_init(self)
+	self:load()
 	return self
 
 end
@@ -170,6 +171,14 @@ end
 -- load()
 --
 function Game:load()
+
+	local save = playdate.datastore.read("game")
+	if save then
+		if save.assist == "true" then 
+			self.options.usedAssistMode = true
+		end
+		_load(save)
+	end
 
 end
 
