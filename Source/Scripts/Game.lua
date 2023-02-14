@@ -95,6 +95,7 @@ end
 --
 function Game:scale(n)
 
+	self._scaleValue = n
 	playdate.display.setScale(n)
 	local kDisplayOffsetX = playdate.display.getWidth() / 2
 	local kDisplayOffsetY = playdate.display.getHeight() / 2
@@ -107,11 +108,24 @@ function Game:scale(n)
 	if self.options ~= nil then
 		self.options:moveTo(kDisplayOffsetX, kDisplayOffsetY)
 	end
+	if data.frame ~= nil and n == 1 then
+		data.frame:moveTo(kDisplayOffsetX, kDisplayOffsetY)
+	elseif data.frame ~= nil then
+		data.frame:remove()
+	end
 	for i, layer in ipairs(layers) do
 		if layers[layer] ~= nil and type(layers[layer]) == "table" then
 			layers[layer]:moveTo(kDisplayOffsetX, kDisplayOffsetY)
 		end
 	end
+
+end
+
+-- getScale()
+--
+function Game:getScale()
+
+	return self._scaleValue
 
 end
 

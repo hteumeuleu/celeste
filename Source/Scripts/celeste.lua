@@ -1826,6 +1826,9 @@ function load_room(x,y)
 	if not is_title then
 		data.cache:add()
 	end
+	if game_obj:getScale() == 1 then
+		data.frame:add()
+	end
 
 	-- entities
 	for tx=0,15 do

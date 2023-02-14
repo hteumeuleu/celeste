@@ -7,14 +7,22 @@ g_data.cache = playdate.graphics.sprite.new()
 local pdimg = playdate.graphics.image.new(400,240, playdate.graphics.kColorClear)
 playdate.graphics.pushContext(pdimg)
 	playdate.graphics.setColor(playdate.graphics.kColorBlack)
-	playdate.graphics.fillRect(0,0,400,56)
-	playdate.graphics.fillRect(0,56,136,128)
-	playdate.graphics.fillRect(264,56,136,128)
-	playdate.graphics.fillRect(0,184,400,240)
+	playdate.graphics.fillRect(0,0,400,240)
+	playdate.graphics.setColor(playdate.graphics.kColorClear)
+	playdate.graphics.fillRect(136,56,128,128)
 playdate.graphics.popContext()
 g_data.cache:setImage(pdimg)
 g_data.cache:setZIndex(40)
-g_data.cache:moveTo(100,60)
+g_data.cache:moveTo(0,0)
+
+--
+-- Frame layer
+--
+g_data.frame = playdate.graphics.sprite.new()
+local pdimg = playdate.graphics.image.new("Assets/frame")
+g_data.frame:setImage(pdimg)
+g_data.frame:setZIndex(50)
+g_data.frame:moveTo(0,0)
 
 --
 -- Flags (Custom Sprites Attributes)
