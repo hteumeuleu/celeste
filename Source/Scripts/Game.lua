@@ -15,11 +15,10 @@ function Game:init()
 	self._init = _init
 	self._update = _update
 	self._draw = _draw
-	self:scale(2)
-	self:addMenuItems()
 	self:initOptions()
 	self:_init(self)
 	self:load()
+	self:addMenuItems()
 	return self
 
 end
@@ -110,6 +109,7 @@ function Game:scale(n)
 	end
 	if data.frame ~= nil and n == 1 then
 		data.frame:moveTo(kDisplayOffsetX, kDisplayOffsetY)
+		data.frame:add()
 	elseif data.frame ~= nil then
 		data.frame:remove()
 	end
@@ -121,18 +121,18 @@ function Game:scale(n)
 
 end
 
--- getScale()
+-- isFullScreen()
 --
-function Game:getScale()
+function Game:isFullScreen()
 
-	return self._scaleValue
+	return (self._scaleValue == 2)
 
 end
 
 function Game:addMenuItems()
 
 	local menu = playdate.getSystemMenu()
-	menu:addCheckmarkMenuItem("Fullscreen", true, function(value)
+	menu:addCheckmarkMenuItem("Fullscreen", self:isFullScreen(), function(value)
 		if value then
 			self:scale(2)
 		else
@@ -191,7 +191,15 @@ function Game:load()
 		if save.assist == "true" then 
 			self.options.usedAssistMode = true
 		end
+		if save.fullscreen == "true" then 
+			self:scale(2)
+		else
+			self:scale(1)
+		end
 		_load(save)
+	else
+		self.options.usedAssistMode = false
+		self:scale(2)
 	end
 
 end

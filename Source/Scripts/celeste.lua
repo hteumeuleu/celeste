@@ -63,13 +63,13 @@ function serialize()
 	status.seconds = seconds
 	status.minutes = minutes
 	status.assist = game_obj:usedAssistMode()
+	status.fullscreen = game_obj:isFullScreen()
 	return status
 
 end
 
 function _load(save)
 
-	printTable(save)
 	if save.deaths then
 		deaths = save.deaths
 	end
@@ -1826,7 +1826,7 @@ function load_room(x,y)
 	if not is_title then
 		data.cache:add()
 	end
-	if game_obj:getScale() == 1 then
+	if not game_obj:isFullScreen() then
 		data.frame:add()
 	end
 
