@@ -114,7 +114,7 @@ function Game:scale(n)
 		data.frame:remove()
 	end
 	for i, layer in ipairs(layers) do
-		if layers[layer] ~= nil and type(layers[layer]) == "table" then
+		if layers[layer] ~= nil then
 			layers[layer]:moveTo(kDisplayOffsetX, kDisplayOffsetY)
 		end
 	end
