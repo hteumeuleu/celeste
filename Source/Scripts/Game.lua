@@ -188,10 +188,10 @@ function Game:load()
 
 	local save = playdate.datastore.read("game")
 	if save then
-		if save.assist == "true" then 
+		if save.assist == true then 
 			self.options.usedAssistMode = true
 		end
-		if save.fullscreen == "true" then 
+		if save.fullscreen == true then 
 			self:scale(2)
 		else
 			self:scale(1)
