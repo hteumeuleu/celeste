@@ -1709,9 +1709,7 @@ function kill_player(obj)
 	shake=10
 	destroy_object(obj)
 	if layers.hair ~= nil then
-		local image <const> = layers.hair:getImage()
-		image:clear(GFX.kColorClear)
-		layers.hair:setImage(image)
+		layers.hair:remove()
 	end
 	dead_particles={}
 	for dir=0,7 do
@@ -1818,9 +1816,7 @@ function load_room(x,y)
 	--clear layer sprites and add them back
 	for _, layer in ipairs(layers) do
 		local image <const> = layers[layer]:getImage()
-		GFX.pushContext(image)
-			image:clear(GFX.kColorClear)
-		GFX.popContext()
+		image:clear(GFX.kColorClear)
 		layers[layer]:add()
 	end
 	if not is_title then
