@@ -73,11 +73,11 @@ function _load(save)
 	if save.deaths then
 		deaths = save.deaths
 	end
-	if save.room then 
+	if save.room then
 		room.x = save.room.x
 		room.y = save.room.y
 	end
-	if save.fruits then 
+	if save.fruits then
 		got_fruit = save.fruits
 	end
 	if save.minutes and save.seconds then
