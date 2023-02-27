@@ -212,7 +212,6 @@ function Game:updatePauseScreen()
 	local image <const> = GFX.image.new(400, 240)
 	local offset = 72
 	local status = self:serialize()
-	printTable(status)
 	GFX.pushContext(image)
 		-- Draw dark overlay
 		local overlay <const> = GFX.image.new(400, 240, GFX.kColorBlack)
