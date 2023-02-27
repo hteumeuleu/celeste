@@ -670,6 +670,7 @@ spring = {
 		this.hide_in=0
 		this.hide_for=0
 		if this.pdspr ~= nil then
+			this.pdspr:setZIndex(1)
 			this.pdspr.type = "spring"
 		end
 	end,
