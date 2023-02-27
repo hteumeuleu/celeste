@@ -34,6 +34,7 @@ end
 
 function Game:restart()
 
+	self:initOptions()
 	self:_init(self)
 
 end

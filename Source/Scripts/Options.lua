@@ -1,6 +1,7 @@
 class("Options").extends(playdate.graphics.sprite)
 
 local data = g_data
+local firstStart = true
 
 function Options:init()
 
@@ -13,6 +14,7 @@ function Options:init()
 	self:hide()
 	self:initGridView()
 	self:initImage()
+	firstStart = false
 	return self
 
 end
@@ -76,6 +78,9 @@ function Options:initItems()
 	end
 	table.insert(self.items, item)
 	self.items.skip = item
+	if firstStart and item.value ~= 0 then
+		self.usedAssistMode = true
+	end
 	-- Game Speed
 	item = {}
 	item.name = "Game Speed"
@@ -98,6 +103,9 @@ function Options:initItems()
 	end
 	table.insert(self.items, item)
 	self.items.speed = item
+	if item.value ~= 30 then
+		self.usedAssistMode = true
+	end
 	-- Air Dashes
 	item = {}
 	item.name = "Dashes"
@@ -122,6 +130,9 @@ function Options:initItems()
 	end
 	table.insert(self.items, item)
 	self.items.dashes = item
+	if item.value == true then
+		self.usedAssistMode = true
+	end
 	-- Invincibility
 	item = {}
 	item.name = "Invincibility"
@@ -142,6 +153,9 @@ function Options:initItems()
 	end
 	table.insert(self.items, item)
 	self.items.invicibility = item
+	if item.value == true then
+		self.usedAssistMode = true
+	end
 	-- Back
 	item = {}
 	item.name = "Back"
@@ -381,8 +395,8 @@ end
 function Options:load()
 
 	local save = playdate.datastore.read("options")
-	if save and (save.used == "true") then
-		self.usedAssistMode = save.used
+	if save and (save.used == "true") and firstStart then
+		self.usedAssistMode = true
 	end
 	return save
 

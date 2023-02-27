@@ -1476,6 +1476,7 @@ room_title = {
 	type_id = 19,
 	init=function(this)
 		this.delay=5
+		this.shouldDrawAssist=game_obj:usedAssistMode()
 	end,
 	draw=function(this)
 		this.delay-=1
@@ -1510,7 +1511,7 @@ room_title = {
 			this.pdspr:moveTo(kDrawOffsetX + 24, kDrawOffsetY + 58)
 
 			draw_time(4,8)
-			if game_obj:usedAssistMode() then
+			if this.shouldDrawAssist then
 				draw_assist(120, 113)
 			end
 		end
