@@ -1419,22 +1419,23 @@ flag = {
 				local usedAssistMode = game_obj:usedAssistMode()
 				local rectHeight = 31
 				if usedAssistMode then
-					rectHeight = 37
+					rectHeight = 36
 				end
 				GFX.setColor(GFX.kColorBlack)
 				GFX.fillRect(0, 0, 64, rectHeight)
 				GFX.setColor(GFX.kColorWhite)
 				GFX.drawRect(0, 0, 64, rectHeight)
+				GFX.fillRect(0, 29, 64, 6)
 				local fruit = data.imagetables.fruit:getImage(1)
 				fruit:draw(22, 3)
 				GFX.setImageDrawMode(GFX.kDrawModeFillWhite)
 					GFX.drawText("x"..this.score, 32, 7)
 					GFX.drawTextInRect(get_time(), 2, 15, 60, 20, nil, nil, kTextAlignment.center)
 					GFX.drawTextInRect("deaths:"..deaths, 2, 22, 60, 20, nil, nil, kTextAlignment.center)
-					if usedAssistMode then
-						GFX.drawTextInRect("assist mode", 2, 29, 60, 20, nil, nil, kTextAlignment.center)
-					end
 				GFX.setImageDrawMode(GFX.kDrawModeCopy)
+				if usedAssistMode then
+					GFX.drawTextInRect("+assist mode", 2, 30, 60, 20, nil, nil, kTextAlignment.center)
+				end
 			GFX.popContext()
 			if not layers.score then
 				layers.score = GFX.sprite.new(pdimg)
@@ -1512,7 +1513,7 @@ room_title = {
 
 			draw_time(4,8)
 			if this.shouldDrawAssist then
-				draw_assist(120, 113)
+				draw_assist(124, 113)
 			end
 		end
 	end
@@ -2161,12 +2162,10 @@ end
 
 function draw_assist(x,y)
 
-	local pdimg <const> = GFX.image.new(45, 7)
+	local pdimg <const> = GFX.image.new(49, 7, GFX.kColorWhite)
 	GFX.pushContext(pdimg)
-		GFX.setColor(GFX.kColorWhite)
 		GFX.setImageDrawMode(GFX.kDrawModeCopy)
-		GFX.fillRect(0, 0, 45, 7)
-		_print("assist mode",1,1,0)
+		_print("+assist mode",1,1,0)
 	GFX.popContext()
 	if not layers.assist then
 		layers.assist = GFX.sprite.new(pdimg)
