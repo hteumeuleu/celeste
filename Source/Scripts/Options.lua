@@ -276,6 +276,7 @@ function Options:show()
 	if self.showCallback ~= nil then
 		self:showCallback()
 	end
+	pauseMusic() -- see pico-8.lua
 
 
 end
@@ -290,6 +291,7 @@ function Options:hide()
 	if self.hideCallback ~= nil then
 		self:hideCallback()
 	end
+	unPauseMusic() -- see pico-8.lua
 
 end
 

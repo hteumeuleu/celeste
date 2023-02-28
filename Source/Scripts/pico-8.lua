@@ -2,6 +2,26 @@ local GFX = playdate.graphics
 local musicPlayer, fxPlayer
 local data = g_data
 
+function pauseMusic()
+
+	if musicPlayer ~= nil then
+		if musicPlayer:isPlaying() then
+			musicPlayer:pause()
+		end
+	end
+
+end
+
+function unPauseMusic()
+
+	if musicPlayer ~= nil then
+		if not musicPlayer:isPlaying() then
+			musicPlayer:play()
+		end
+	end
+
+end
+
 --
 -- PICO-8 functions
 --
