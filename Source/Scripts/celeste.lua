@@ -1937,6 +1937,8 @@ function _draw()
 			titlespr:setZIndex(20)
 			titlespr:add()
 			layers.title = titlespr
+		else
+			layers.title:add()
 		end
 		local m = GFX.kDrawModeCopy
 		if start_game_flash>10 then
