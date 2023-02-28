@@ -179,7 +179,7 @@ for i, item in ipairs(particles) do
 	item.spr:setZIndex(30)
 end
 
-dead_particles = {}
+local dead_particles = {}
 
 -- player entity --
 -------------------
