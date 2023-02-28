@@ -1994,6 +1994,7 @@ function _draw()
 	if reduce_clouds_and_particles then
 		particles_number = math.floor(particles_number / 2)
 	end
+	local is_full_screen = game_obj:isFullScreen()
 	for i=1, particles_number do
 		local p = particles[i]
 		if room_just_changed then
@@ -2002,7 +2003,7 @@ function _draw()
 		p.x += p.spd
 		p.y += sin(p.off)
 		p.off+= math.min(0.05,p.spd/32)
-		if is_title then
+		if is_title and is_full_screen then
 			p.spr:moveTo(p.x,p.y)
 		else
 			p.spr:moveTo(p.x + kDrawOffsetX,p.y + kDrawOffsetY)
