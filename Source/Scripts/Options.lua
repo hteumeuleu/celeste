@@ -92,9 +92,11 @@ function Options:initItems()
 	item.callback = function(item)
 		self.usedAssistMode = true
 		if item.value == 30 then
+			psfx(7)
 			item.value = 15
 			item.name = "Game Speed:0.5"
 		else
+			psfx(5)
 			item.value = 30
 			item.name = "Game Speed"
 		end
@@ -118,10 +120,12 @@ function Options:initItems()
 	item.callback = function(item)
 		self.usedAssistMode = true
 		if item.value then
+			psfx(5)
 			max_djump = 1
 			item.value = false
 			item.name = "Dashes"
 		else
+			psfx(7)
 			max_djump = 9999
 			item.value = true
 			item.name = "Dashes:Infinite"
@@ -143,9 +147,11 @@ function Options:initItems()
 	item.callback = function(item)
 		self.usedAssistMode = true
 		if item.value then
+			psfx(5)
 			item.value = false
 			item.name = "Invincibility"
 		else
+			psfx(7)
 			item.value = true
 			item.name = "Invincibility:on"
 		end
@@ -316,6 +322,7 @@ function Options:up()
 		self.gridview:selectPreviousRow(true)
 		self:setSelection(self.gridview:getSelectedRow())
 		self:forceUpdate()
+		psfx(1)
 	end
 
 end
@@ -329,6 +336,7 @@ function Options:down()
 		self.gridview:selectNextRow(true)
 		self:setSelection(self.gridview:getSelectedRow())
 		self:forceUpdate()
+		psfx(2)
 	end
 
 end
