@@ -1446,6 +1446,7 @@ flag = {
 				layers.score:setImage(pdimg)
 			end
 			layers.score:add()
+			add_restart_button()
 		elseif this.collide(player,0,0) ~= nil then
 			sfx(55)
 			sfx_timer=30
@@ -1457,6 +1458,27 @@ flag = {
 	end
 }
 types[flag.tile] = flag
+
+function add_restart_button()
+
+	local img <const> = GFX.image.new(33, 11, GFX.kColorClear)
+	GFX.pushContext(img)
+		GFX.setColor(GFX.kColorWhite)
+		GFX.fillCircleInRect(1, 1, 9, 9)
+		GFX.setImageDrawMode(GFX.kDrawModeFillBlack)
+			GFX.drawText("a", 4, 3)
+		GFX.setImageDrawMode(GFX.kDrawModeFillWhite)
+			GFX.drawText("reset", 12, 3)
+		GFX.setImageDrawMode(GFX.kDrawModeCopy)
+	GFX.popContext()
+	local button <const> = GFX.sprite.new(img)
+	button:setCenter(0,0)
+	button:moveTo(200-button.width, 120-button.height)
+	button:setZIndex(100)
+	button:add()
+	layers.restart = button
+
+end
 
 function get_room_title()
 
