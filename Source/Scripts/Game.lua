@@ -216,7 +216,7 @@ function Game:updatePauseScreen()
 		-- Draw dark overlay
 		local overlay <const> = GFX.image.new(400, 240, GFX.kColorBlack)
 		overlay:drawFaded(0, 0, 0.5, GFX.image.kDitherTypeBayer2x2)
-		if not (status.room.x == 7 and status.room.y == 3) then
+		if not (status.room.x == 7 and status.room.y == 3) and not (status.room.x == 6 and status.room.y == 3) then
 			local boxImage <const> = GFX.image.new(64, 50)
 			GFX.pushContext(boxImage)
 				-- Draw box
