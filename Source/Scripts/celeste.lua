@@ -40,6 +40,9 @@ local is_title = false
 local game_obj = nil
 local reduce_clouds_and_particles = false
 local reduce_flashing = playdate.getReduceFlashing()
+local start_game = false
+local game_just_restarted = false
+local restartTimer = nil
 
 local k_left=playdate.kButtonLeft
 local k_right=playdate.kButtonRight
@@ -1413,7 +1416,8 @@ flag = {
 				layers.time:remove()
 			end
 		end
-		if this.show then
+		if this.show and not this.score_is_visible then
+			this.score_is_visible = true
 			local pdimg = GFX.image.new(64, 40)
 			GFX.pushContext(pdimg)
 				local usedAssistMode = game_obj:usedAssistMode()
@@ -1447,6 +1451,7 @@ flag = {
 			end
 			layers.score:add()
 			add_restart_button()
+			print("add_restart_button()")
 		elseif this.collide(player,0,0) ~= nil then
 			sfx(55)
 			sfx_timer=30
@@ -1465,9 +1470,10 @@ function add_restart_button()
 	GFX.pushContext(img)
 		GFX.setColor(GFX.kColorWhite)
 		GFX.fillCircleInRect(1, 1, 9, 9)
-		GFX.setImageDrawMode(GFX.kDrawModeFillBlack)
+		GFX.setColor(GFX.kColorBlack)
+		GFX.fillCircleInRect(2, 2, 7, 7)
+		GFX.setImageDrawMode(GFX.kDrawModeNXOR)
 			GFX.drawText("a", 4, 3)
-		GFX.setImageDrawMode(GFX.kDrawModeFillWhite)
 			GFX.drawText("reset", 12, 3)
 		GFX.setImageDrawMode(GFX.kDrawModeCopy)
 	GFX.popContext()
@@ -1477,6 +1483,34 @@ function add_restart_button()
 	button:setZIndex(100)
 	button:add()
 	layers.restart = button
+
+	local myInputHandlers = {
+		AButtonDown = function()
+			print("AButtonDown", restartTimer)
+			game_just_restarted = true
+			if restartTimer == nil then
+				restartTimer = playdate.timer.performAfterDelay(3000, function()
+					print("performAfterDelay")
+					game_obj:restart()
+					restartTimer = nil
+				end)
+				print("-- restartTimer", restartTimer)
+			end
+		end,
+		AButtonUp = function()
+			print("AButtonUp", restartTimer)
+			if game_just_restarted then
+				playdate.inputHandlers.pop()
+			end
+			if restartTimer ~= nil then
+				print("-- timeout ~= nil", restartTimer)
+				restartTimer:remove()
+				restartTimer = nil
+			end
+			game_just_restarted = false
+		end,
+	}
+	playdate.inputHandlers.push(myInputHandlers)
 
 end
 
@@ -1932,7 +1966,8 @@ function _update()
 
 	-- start game
 	if is_title then
-		if not start_game and (btn(k_jump) or btn(k_dash)) then
+		print("game_just_restarted", game_just_restarted)
+		if not start_game and not game_just_restarted and (btn(k_jump) or btn(k_dash)) then
 			music(-1)
 			start_game_flash=50
 			start_game=true
