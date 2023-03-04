@@ -1453,7 +1453,7 @@ flag = {
 			add_restart_button()
 			print("add_restart_button()")
 		elseif this.collide(player,0,0) ~= nil then
-			sfx(55)
+			psfx(55)
 			sfx_timer=30
 			this.show=true
 		end
