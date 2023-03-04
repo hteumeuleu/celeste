@@ -7,6 +7,7 @@ import "CoreLibs/crank"
 
 import "Scripts/Game"
 local g = Game()
+local showFPS = false
 
 -- playdate.update()
 --
@@ -15,7 +16,21 @@ function playdate.update()
 	playdate.timer.updateTimers()
 	playdate.graphics.sprite.update()
 	g:update()
-	-- playdate.drawFPS(0, 0)
+	if showFPS then
+		playdate.drawFPS(0, 0)
+	end
+
+end
+
+function playdate.crankUndocked()
+
+	showFPS = true
+
+end
+
+function playdate.crankDocked()
+
+	showFPS = false
 
 end
 
