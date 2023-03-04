@@ -1450,8 +1450,7 @@ flag = {
 				layers.score:setImage(pdimg)
 			end
 			layers.score:add()
-			add_restart_button()
-			print("add_restart_button()")
+			playdate.timer.performAfterDelay(2000, add_restart_button)
 		elseif this.collide(player,0,0) ~= nil then
 			psfx(55)
 			sfx_timer=30
