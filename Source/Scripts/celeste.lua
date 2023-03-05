@@ -1,3 +1,4 @@
+local pd = playdate
 local GFX = playdate.graphics
 local data = g_data
 local rnd = function(arg) return math.random() * arg end
@@ -7,6 +8,7 @@ local min = function(a, b) return math.min(a, b) end
 local max = function(a, b) return math.max(a, b) end
 local btn = function(i) return playdate.buttonIsPressed(i) end
 local mget = function(celx, cely) return data.map[celx + (cely * 128) + 1] end
+local music = pico8.music
 
 -- ~celeste~
 -- maddy thorson + noel berry
@@ -14,6 +16,7 @@ local mget = function(celx, cely) return data.map[celx + (cely * 128) + 1] end
 -- globals --
 -------------
 
+local i = 0
 local room = { x=0, y=0 }
 local objects = {}
 for i = 1, 19 do
@@ -41,8 +44,14 @@ local game_obj = nil
 local reduce_clouds_and_particles = false
 local reduce_flashing = playdate.getReduceFlashing()
 local start_game = false
+local start_game_flash = 0
 local game_just_restarted = false
 local restartTimer = nil
+local frames=0
+local deaths=0
+local max_djump=1
+local seconds=0
+local minutes=0
 
 local k_left=playdate.kButtonLeft
 local k_right=playdate.kButtonRight
@@ -136,7 +145,7 @@ end
 -------------
 
 local max_clouds = 4
-if playdate.isSimulator then
+if pd.isSimulator then
 	max_clouds = 16
 end
 local cloud_pattern = GFX.image.new(400, 240, GFX.kColorWhite)
@@ -161,7 +170,7 @@ for i=0,max_clouds do
 end
 
 local max_particles = 6
-if playdate.isSimulator then
+if pd.isSimulator then
 	max_particles = 24
 end
 local particles = {}
@@ -184,10 +193,16 @@ end
 
 local dead_particles = {}
 
+local psfx=function(num)
+	if sfx_timer<=0 then
+		sfx(num)
+	end
+end
+
 -- player entity --
 -------------------
 
-player =
+local player =
 {
 	tile=2,
 	type_id = 18,
@@ -469,12 +484,6 @@ player =
 		draw_hair(this,this.flip.x and -1 or 1)
 	end,
 }
-
-psfx=function(num)
-	if sfx_timer<=0 then
-		sfx(num)
-	end
-end
 
 create_hair=function(obj)
 	obj.hair={}

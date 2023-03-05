@@ -1,6 +1,7 @@
 local GFX = playdate.graphics
 local musicPlayer, fxPlayer
 local data = g_data
+pico8 = {}
 
 function pauseMusic()
 
@@ -204,7 +205,7 @@ function pal(c0, c1, p)
 
 end
 
-function music(n, fade_len, channel_mask)
+pico8.music = function(n, fade_len, channel_mask)
 
 	fade_len = fade_len or 1000
 	channel_mask = channel_mask or 1
