@@ -2157,7 +2157,8 @@ function _draw()
 		tilemap:setImageTable(data.imagetables.tiles)
 		if not is_title then
 			local iceWallSprites <const> = GFX.sprite.addWallSprites(tilemap, data.emptyIceIDs, kDrawOffsetX, kDrawOffsetY)
-			for _, s in ipairs(iceWallSprites) do
+			for i=1, #iceWallSprites do
+				local s = iceWallSprites[i]
 				s.type = "ice"
 				s.class = "solid"
 				s.class_id = -1
@@ -2168,7 +2169,8 @@ function _draw()
 				s:moveBy(s.width/2 * -1, s.height/2 * -1)
 			end
 			local spikesWallSprites <const> = GFX.sprite.addWallSprites(tilemap, data.emptySpikesIDs, kDrawOffsetX, kDrawOffsetY)
-			for _, s in ipairs(spikesWallSprites) do
+			for i=1, #spikesWallSprites do
+				local s = spikesWallSprites[i]
 				s.type = "spikes"
 				s.obj = {}
 				s.obj.type_id = -3
@@ -2177,7 +2179,8 @@ function _draw()
 				s:moveBy(s.width/2 * -1, s.height/2 * -1)
 			end
 			local solidWallSprites <const> = GFX.sprite.addWallSprites(tilemap, data.emptySolidIDs, kDrawOffsetX, kDrawOffsetY)
-			for _, s in ipairs(solidWallSprites) do
+			for i=1, #solidWallSprites do
+				local s = solidWallSprites[i]
 				s.type = "solid"
 				s.class = "solid"
 				s.class_id = -1
