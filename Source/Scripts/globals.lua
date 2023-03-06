@@ -21,7 +21,8 @@ layers = {
 	"extra"
 }
 
-for i, layer in ipairs(layers) do
+for i=1, #layers do
+	local layer = layers[i]
 	local image <const> = playdate.graphics.image.new(sceneWidth,sceneHeight, playdate.graphics.kColorClear)
 	layers[layer] = playdate.graphics.sprite.new(image)
 	layers[layer]:setSize(sceneWidth, sceneHeight)

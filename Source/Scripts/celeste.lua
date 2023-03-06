@@ -185,7 +185,8 @@ for i=0,max_particles do
 	})
 end
 
-for i, item in ipairs(particles) do
+for i=1, #particles do
+	local item = particles[i]
 	local img <const> = GFX.image.new(item.s + 1, item.s + 1, GFX.kColorWhite)
 	item.spr = GFX.sprite.new(img)
 	item.spr:setZIndex(30)
@@ -237,7 +238,9 @@ local player =
 		-- collisions
 		local _, _, collisions_at_x_y, length = this.pdspr:checkCollisions(kDrawOffsetX+this.x, kDrawOffsetY+this.y)
 		if length > 0 then
-			for _, col in ipairs(collisions_at_x_y) do
+
+			for i=1, #collisions_at_x_y do
+				local col = collisions_at_x_y[i]
 				local playerIsAboveObject = col.spriteRect.y + col.spriteRect.height <= col.otherRect.y + col.otherRect.height
 				local playerIsUnder = (col.spriteRect.y >= col.otherRect.y + col.otherRect.height) and ((col.spriteRect.x + col.spriteRect.width >= col.otherRect.x) or (col.spriteRect.x <= col.otherRect.x + col.otherRect.width))
 				if col.other.type == "spikes" then
@@ -579,12 +582,14 @@ draw_hair=function(obj,facing)
 		playdate.graphics.setColor(playdate.graphics.kColorWhite)
 		playdate.graphics.setLineWidth(1)
 		playdate.graphics.setStrokeLocation(playdate.graphics.kStrokeOutside)
-		for _, c in ipairs(coords) do
+		for i=1, #coords do
+			local c = coords[i]
 			playdate.graphics.drawCircleAtPoint(c.x - x1, c.y - y1, c.s)
 		end
 		-- Draw black fill of hair
 		playdate.graphics.setColor(playdate.graphics.kColorBlack)
-		for _, c in ipairs(coords) do
+		for i=1, #coords do
+			local c = coords[i]
 			playdate.graphics.fillCircleAtPoint(c.x - x1, c.y - y1, c.s)
 		end
 		-- Clear mask's stencil
@@ -1330,7 +1335,8 @@ big_chest={
 				init_object(orb,this.x+4,this.y+4)
 				pause_player=false
 			end
-			for _, p in ipairs(this.particles) do
+			for i=1, #this.particles do
+				local p = this.particles[i]
 				p.y+=p.spd
 				line(kDrawOffsetX+this.x+p.x,kDrawOffsetY+this.y+8-p.y-1,kDrawOffsetX+this.x+p.x,kDrawOffsetY+min(this.y+8-p.y+p.h,this.y+8)-1,7)
 			end
@@ -1624,14 +1630,16 @@ function init_object(type,x,y)
         	-- equivalent to obj.collide(platform,ox,oy) ~= nil
 			local r <const> = playdate.geometry.rect.new(obj.x+obj.hitbox.x+ox+kDrawOffsetX, obj.y+obj.hitbox.y+oy+kDrawOffsetY, obj.hitbox.w, obj.hitbox.h)
         	local sprites_in_rect = GFX.sprite.querySpritesInRect(r)
-			for _, s in ipairs(sprites_in_rect) do
+			for i=1, #sprites_in_rect do
+				local s = sprites_in_rect[i]
 				if s.type == "platform" then
 					collide_at_ox_oy = true
 				end
 			end
 			-- equivalent to obj.collide(platform,ox,0) ~= nil
 			sprites_in_rect = GFX.sprite.querySpritesInRect(r:offsetBy(0, oy * -1))
-			for _, s in ipairs(sprites_in_rect) do
+			for i=1, #sprites_in_rect do
+				local s = sprites_in_rect[i]
  				if s.type == "platform" then
 					collide_at_ox_0 = true
 				end
@@ -1642,7 +1650,8 @@ function init_object(type,x,y)
         end
 		local r <const> = playdate.geometry.rect.new(obj.x+obj.hitbox.x+ox+kDrawOffsetX, obj.y+obj.hitbox.y+oy+kDrawOffsetY, obj.hitbox.w, obj.hitbox.h)
 		local sprites_in_rect <const> = GFX.sprite.querySpritesInRect(r)
-		for _, s in ipairs(sprites_in_rect) do
+		for i=1, #sprites_in_rect do
+			local s = sprites_in_rect[i]
 			-- solid or fall_floor or fake_wall
 			if s.obj ~= nil and (s.class == "solid" or s.obj.type_id == 4 or s.obj.type_id == 9) then
 				return true
@@ -1655,7 +1664,8 @@ function init_object(type,x,y)
 	obj.is_ice=function(ox,oy)
 		local r <const> = obj.hitbox:offsetBy(kDrawOffsetX+obj.x+ox, kDrawOffsetY+obj.y+oy)
 		local sprites_in_rect <const> = GFX.sprite.querySpritesInRect(r)
-		for _, s in ipairs(sprites_in_rect) do
+		for i=1, #sprites_in_rect do
+			local s = sprites_in_rect[i]
 			if s.obj ~= nil and s.obj.type_id == -2 then
 				return true
 			end
@@ -1790,7 +1800,8 @@ function kill_player(obj)
 				y=cos(angle)*3
 			}
 		})
-		for i, item in ipairs(dead_particles) do
+		for i=1, #dead_particles do
+			local item = dead_particles[i]
 			local img <const> = GFX.image.new(item.t, item.t, GFX.kColorWhite)
 			item.spr = GFX.sprite.new(img)
 			item.spr:setZIndex(30)
@@ -1881,7 +1892,8 @@ function load_room(x,y)
 	)
 
 	--clear layer sprites and add them back
-	for _, layer in ipairs(layers) do
+	for i=1, #layers do
+		local layer = layers[i]
 		local image <const> = layers[layer]:getImage()
 		image:clear(GFX.kColorClear)
 		layers[layer]:add()
