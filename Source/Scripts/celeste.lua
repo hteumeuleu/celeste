@@ -1986,7 +1986,6 @@ function _update()
 
 	-- start game
 	if is_title then
-		print("game_just_restarted", game_just_restarted)
 		if not start_game and not game_just_restarted and (btn(k_jump) or btn(k_dash)) then
 			music(-1)
 			start_game_flash=50
