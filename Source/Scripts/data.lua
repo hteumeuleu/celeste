@@ -94,7 +94,7 @@ end
 --
 g_data.music = {}
 for i=0, 40, 10 do
-	local sample = "Sounds/music/" .. i .. ".mp3"
+	local sample = "Sounds/music/" .. i
 	g_data.music[i] = sample
 end
 
