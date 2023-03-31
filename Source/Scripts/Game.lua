@@ -246,11 +246,14 @@ function Game:updatePauseScreen()
 	local image <const> = GFX.image.new(400, 240)
 	local offset = 72
 	local status = self:serialize()
+	local is_start_screen = (status.room.x == 7 and status.room.y == 3)
+	local scores = playdate.datastore.read("scores")
+	local has_scores = (scores ~= nil)
 	GFX.pushContext(image)
 		-- Draw dark overlay
 		local overlay <const> = GFX.image.new(400, 240, GFX.kColorBlack)
 		overlay:drawFaded(0, 0, 0.5, GFX.image.kDitherTypeBayer2x2)
-		if not (status.room.x == 7 and status.room.y == 3) and not (status.room.x == 6 and status.room.y == 3) then
+		if (not is_start_screen and not (status.room.x == 6 and status.room.y == 3)) or (is_start_screen and has_scores) then
 			local boxImage <const> = GFX.image.new(64, 50)
 			GFX.pushContext(boxImage)
 				-- Draw box
@@ -262,28 +265,66 @@ function Game:updatePauseScreen()
 				GFX.fillRect(inside)
 				-- Draw room title
 				local fontHeight <const> = data.font:getHeight()
-				GFX.drawTextInRect(get_room_title(), 1, 4, 62, fontHeight, nil, nil, kTextAlignment.center)
+				local room_title = get_room_title()
+				if (is_start_screen and has_scores) then
+					room_title = "Best Time"
+				end
+				GFX.drawTextInRect(room_title, 1, 4, 62, fontHeight, nil, nil, kTextAlignment.center)
 				-- Draw fruit and score
 				local fruit = data.imagetables.fruit:getImage(1)
 				fruit:draw(23, 15)
 				local score = 0
+				local time = get_time()
+				local deaths = status.deaths
+				local assist = status.assist
 				for i=1,#status.fruits do
 					if status.fruits[i] then
 						score+=1
 					end
 				end
+				if (is_start_screen and has_scores) then
+					local best = scores[1]
+					if #scores > 1 then
+						for i=2, #scores do
+							print(i)
+							local current = scores[i]
+							if tonumber(current.minutes) < tonumber(best.minutes) then
+								best = current
+							elseif tonumber(current.minutes) == tonumber(best.minutes) then
+								if tonumber(current.seconds) < tonumber(best.seconds) then 
+									best = current
+								elseif tonumber(current.seconds) == tonumber(best.seconds) then 
+									if tonumber(current.deaths) < tonumber(best.deaths) then
+										best = current
+									elseif tonumber(current.deaths) == tonumber(best.deaths) then
+							   			if tonumber(current.fruits) > tonumber(best.fruits) then
+											best = current
+										end
+									end
+								end
+							end
+						end
+					end
+					score = best.fruits
+					deaths = best.deaths
+					assist = best.assist
+					time = get_time(tonumber(best.minutes), tonumber(best.seconds))
+				end
 				GFX.setImageDrawMode(GFX.kDrawModeFillWhite)
 					GFX.drawText("x" .. score, 33, 19)
-					GFX.drawTextInRect(get_time(), 2, 27, 60, fontHeight, nil, nil, kTextAlignment.center)
-					GFX.drawTextInRect("deaths:"..status.deaths, 2, 34, 60, fontHeight, nil, nil, kTextAlignment.center)
+					GFX.drawTextInRect(time, 2, 27, 60, fontHeight, nil, nil, kTextAlignment.center)
+					GFX.drawTextInRect("deaths:"..deaths, 2, 34, 60, fontHeight, nil, nil, kTextAlignment.center)
 				GFX.setImageDrawMode(GFX.kDrawModeCopy)
-				if status.assist then
+				if assist then
 					local assistBox = playdate.geometry.rect.new(0, 42, 64, 6)
 					GFX.setColor(GFX.kColorWhite)
 					GFX.fillRect(assistBox)
 					GFX.drawTextInRect("+assist mode", 8, 42, 49, fontHeight, nil, nil, kTextAlignment.center)
 				end
 			GFX.popContext()
+			if (is_start_screen and has_scores) then
+				offset = 100
+			end
 			boxImage:drawScaled(offset + (200-128)/2, (240-90)/2, 2)
 		else
 			offset = 100

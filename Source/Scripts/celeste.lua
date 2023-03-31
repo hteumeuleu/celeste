@@ -2259,8 +2259,10 @@ function draw_assist(x,y)
 
 end
 
-function get_time()
+function get_time(marg, sarg)
 
+	seconds=sarg or seconds
+	minutes=marg or minutes
 	local s=seconds
 	local m=minutes%60
 	local h=math.floor(minutes/60)
