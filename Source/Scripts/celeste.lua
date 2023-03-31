@@ -1503,27 +1503,26 @@ function add_restart_button()
 
 	local myInputHandlers = {
 		AButtonDown = function()
-			print("AButtonDown", restartTimer)
-			game_just_restarted = true
+			game_just_restarted = false
 			if restartTimer == nil then
-				restartTimer = playdate.timer.performAfterDelay(3000, function()
-					print("performAfterDelay")
+				shake = 30
+				restartTimer = playdate.timer.performAfterDelay(1000, function()
+					game_just_restarted = true
 					game_obj:restart()
 					restartTimer = nil
+					shake = 1
 				end)
-				print("-- restartTimer", restartTimer)
 			end
 		end,
 		AButtonUp = function()
-			print("AButtonUp", restartTimer)
 			if game_just_restarted then
 				playdate.inputHandlers.pop()
 			end
 			if restartTimer ~= nil then
-				print("-- timeout ~= nil", restartTimer)
 				restartTimer:remove()
 				restartTimer = nil
 			end
+			shake = 1
 			game_just_restarted = false
 		end,
 	}
