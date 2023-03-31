@@ -1444,7 +1444,9 @@ flag = {
 				GFX.fillRect(0, 0, 64, rectHeight)
 				GFX.setColor(GFX.kColorWhite)
 				GFX.drawRect(0, 0, 64, rectHeight)
-				GFX.fillRect(0, 29, 64, 6)
+				if usedAssistMode then
+					GFX.fillRect(0, 29, 64, 6)
+				end
 				local fruit = data.imagetables.fruit:getImage(1)
 				fruit:draw(22, 3)
 				GFX.setImageDrawMode(GFX.kDrawModeFillWhite)
