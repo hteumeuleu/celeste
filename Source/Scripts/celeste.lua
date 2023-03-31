@@ -1423,6 +1423,7 @@ flag = {
 			this.pdspr:setZIndex(20)
 			this.pdspr:add()
 		end
+		game_obj:saveScore()
 	end,
 	draw=function(this)
 		this.spr=118+(frames/5)%3

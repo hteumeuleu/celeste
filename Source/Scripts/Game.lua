@@ -179,7 +179,12 @@ function Game:save()
 	if playdate.isSimulator then
 		prettyPrint = true
 	end
-	playdate.datastore.write(self:serialize(), "game", prettyPrint)
+	local serialized = self:serialize()
+	if (serialized.room.x >= 6 and serialized.room.y == 3) then
+		playdate.datastore.delete("game")
+	else
+		playdate.datastore.write(serialized, "game", prettyPrint)
+	end
 
 end
 
@@ -202,6 +207,35 @@ function Game:load()
 		self.options.usedAssistMode = false
 		self:scale(2)
 	end
+
+end
+
+-- saveScore()
+--
+function Game:saveScore()
+
+	local serialized = self:serialize()
+	-- Create new entry
+	local save = {}
+	save.fruits = 0
+	for i=1, #serialized.fruits do
+		if serialized.fruits[i] == true then
+			save.fruits += 1
+		end
+	end
+	save.deaths = serialized.deaths
+	save.minutes = serialized.minutes
+	save.seconds = serialized.seconds
+	save.assist = serialized.assist
+	save.date = playdate.epochFromTime(playdate.getTime())
+	-- Load previous scores
+	local scores = playdate.datastore.read("scores")
+	if scores then
+		table.insert(scores, save)
+	else
+		scores = {save}
+	end
+	playdate.datastore.write(scores, "scores")
 
 end
 
