@@ -106,9 +106,11 @@ function Game:scale(n)
 	local diffX = kDrawOffsetX - kDrawOffsetXBefore
 	local diffY = kDrawOffsetY - kDrawOffsetYBefore
 
-	playdate.graphics.sprite.performOnAllSprites(function(s)
-		s:moveBy(diffX, diffY)
-	end)
+	if kDrawOffsetXBefore ~= 0 and kDrawOffsetYBefore ~= 0 then
+		playdate.graphics.sprite.performOnAllSprites(function(s)
+			s:moveBy(diffX, diffY)
+		end)
+	end
 
 	if data.cache ~= nil then
 		data.cache:moveTo(kDisplayOffsetX, kDisplayOffsetY)
