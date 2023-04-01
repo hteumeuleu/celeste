@@ -257,6 +257,9 @@ function Game:updatePauseScreen()
 	local is_start_screen = (status.room.x == 7 and status.room.y == 3)
 	local scores = playdate.datastore.read("scores")
 	local has_scores = (scores ~= nil)
+	if not self:isFullScreen() then
+		offset = 100
+	end
 	GFX.pushContext(image)
 		-- Draw dark overlay
 		local overlay <const> = GFX.image.new(400, 240, GFX.kColorBlack)
