@@ -99,8 +99,16 @@ function Game:scale(n)
 	playdate.display.setScale(n)
 	local kDisplayOffsetX = playdate.display.getWidth() / 2
 	local kDisplayOffsetY = playdate.display.getHeight() / 2
+	local kDrawOffsetXBefore = kDrawOffsetX
+	local kDrawOffsetYBefore = kDrawOffsetY
 	kDrawOffsetX = (playdate.display.getWidth() - 128) / 2
 	kDrawOffsetY = (playdate.display.getHeight() - 128) / 2
+	local diffX = kDrawOffsetX - kDrawOffsetXBefore
+	local diffY = kDrawOffsetY - kDrawOffsetYBefore
+
+	playdate.graphics.sprite.performOnAllSprites(function(s)
+		s:moveBy(diffX, diffY)
+	end)
 
 	if data.cache ~= nil then
 		data.cache:moveTo(kDisplayOffsetX, kDisplayOffsetY)
