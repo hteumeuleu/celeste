@@ -194,7 +194,7 @@ end
 
 local dead_particles = {}
 
-local psfx=function(num)
+psfx=function(num)
 	if sfx_timer<=0 then
 		sfx(num)
 	end
