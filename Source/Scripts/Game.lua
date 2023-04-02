@@ -280,7 +280,7 @@ function Game:updatePauseScreen()
 				local fontHeight <const> = data.font:getHeight()
 				local room_title = get_room_title()
 				if (is_start_screen and has_scores) then
-					room_title = "Best Time"
+					room_title = "Best Score"
 				end
 				GFX.drawTextInRect(room_title, 1, 4, 62, fontHeight, nil, nil, kTextAlignment.center)
 				-- Draw fruit and score
@@ -299,9 +299,8 @@ function Game:updatePauseScreen()
 					local best = scores[1]
 					if #scores > 1 then
 						for i=2, #scores do
-							print(i)
 							local current = scores[i]
-							if tonumber(current.minutes) < tonumber(best.minutes) then
+							if tonumber(current.minutes) < tonumber(best.minutes) or (best.assist == true and current.assist == false) then
 								best = current
 							elseif tonumber(current.minutes) == tonumber(best.minutes) then
 								if tonumber(current.seconds) < tonumber(best.seconds) then 
