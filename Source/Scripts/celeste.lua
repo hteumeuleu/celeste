@@ -1864,6 +1864,19 @@ function load_room(x,y)
 	level_index = room.x%8+room.y*8
 	is_title = level_index == 31
 
+	-- check that correct music is playing
+	local music_index = 0
+	if level_index == 31 then
+		music_index = 40 -- title screen
+	elseif level_index == 11 or level_index == 21 or level_index == 30 then
+		music_index = 30 -- old site, orb, summit
+	elseif level_index >= 12 and level_index <= 20 then
+		music_index = 20
+	elseif level_index >= 22 and level_index <= 29 then
+		music_index = 10
+	end
+	make_sure_music_is_playing(music_index)
+
 	-- reduce particles
 	if not playdate.isSimulator and (level_index == 3 or level_index == 6 or level_index == 17 or level_index == 20) then
 		reduce_clouds_and_particles = true

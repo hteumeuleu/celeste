@@ -205,10 +205,21 @@ function pal(c0, c1, p)
 
 end
 
+local current_music_index = 0
+
+function make_sure_music_is_playing(n)
+
+	if current_music_index ~= n then
+		pico8.music(n)
+	end
+
+end
+
 pico8.music = function(n, fade_len, channel_mask)
 
 	fade_len = fade_len or 1000
 	channel_mask = channel_mask or 1
+	current_music_index = n
 
 	if n == -1 and musicPlayer ~= nil and musicPlayer:isPlaying() then
 		musicPlayer:stop()
