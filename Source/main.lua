@@ -22,15 +22,17 @@ function playdate.update()
 
 end
 
-function playdate.crankUndocked()
+function playdate.cranked()
 
-	showFPS = true
-
-end
-
-function playdate.crankDocked()
-
-	showFPS = false
+	local ticks = playdate.getCrankTicks(1)
+	if ticks == 1 then
+		showFPS = not showFPS
+		if showFPS then
+			psfx(55)
+		else
+			psfx(5)
+		end
+	end
 
 end
 
