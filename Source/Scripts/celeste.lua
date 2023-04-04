@@ -235,6 +235,19 @@ local player =
         local on_ground=this.is_solid(0,1)
         local on_ice=this.is_ice(0,1)
 
+        -- fall_floor collisions
+		if #objects[4] > 0 then
+			local query = playdate.graphics.sprite.querySpritesInRect(kDrawOffsetX+this.x+this.hitbox.x-1, kDrawOffsetY+this.y+this.hitbox.y, this.hitbox.width+2, this.hitbox.height+1)
+			if #query > 1 then
+				for i=1, #query do
+					local other = query[i]
+					if other.type == "fall_floor" then
+						break_fall_floor(other.obj)
+					end
+				end
+			end
+		end
+
 		-- collisions
 		local _, _, collisions_at_x_y, length = this.pdspr:checkCollisions(kDrawOffsetX+this.x, kDrawOffsetY+this.y)
 		if length > 0 then
@@ -250,8 +263,6 @@ local player =
 							kill_player(this)
 						end
 					end
-				elseif col.other.type == "fall_floor" and not playerIsUnder then
-					break_fall_floor(col.other.obj)
 				elseif (col.other.type == "fruit" or col.other.type == "fly_fruit") and col.other.hit ~= nil then
 					col.other:hit(col.sprite.obj)
 				elseif col.other.type == "balloon" and col.other.hit ~= nil then
