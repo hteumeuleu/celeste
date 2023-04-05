@@ -47,6 +47,7 @@ local start_game = false
 local start_game_flash = 0
 local game_just_restarted = false
 local restartTimer = nil
+local addRestartButtonTimer = nil
 local frames=0
 local deaths=0
 local max_djump=1
@@ -107,6 +108,10 @@ end
 
 function _init(game)
 	game_obj = game
+	if addRestartButtonTimer ~= nil then
+		addRestartButtonTimer:remove()
+		addRestartButtonTimer = nil
+	end
 	title_screen()
 end
 
@@ -1479,7 +1484,7 @@ flag = {
 				layers.score:setImage(pdimg)
 			end
 			layers.score:add()
-			playdate.timer.performAfterDelay(2000, add_restart_button)
+			addRestartButtonTimer = playdate.timer.performAfterDelay(2000, add_restart_button)
 		elseif this.collide(player,0,0) ~= nil then
 			psfx(55)
 			sfx_timer=30
