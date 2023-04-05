@@ -2,7 +2,7 @@
 
 # Celeste Classic
 
-A port of Celeste Classic from PICO-8 to Playdate. The game is currently in beta.
+A port of Celeste Classic from PICO-8 to Playdate.
 
 ## How to play
 
@@ -10,7 +10,15 @@ A port of Celeste Classic from PICO-8 to Playdate. The game is currently in beta
 2. Get the `Celeste.pdx.zip ` file.
 3. Sideload it to your Playdate device. (You can refer to the official [Sideloading Playdate games](https://help.play.date/games/sideloading/) documentation.)
 
-If you don’t own a Playdate, you can play in the [Playdate Simulator](https://help.play.date/manual/simulator/) on Windows, macOS or Linux. Download and install the [Playdate SDK](https://play.date/dev/).
+If you don’t own a Playdate, you can play in the [Playdate Simulator](https://help.play.date/manual/simulator/) on Windows, macOS or Linux. Download and install the [Playdate SDK](https://play.date/dev/). Place the `.pdx` file in the `PlaydateSDK/Disk/Games/` folder.
+
+### Compilation
+
+The `.pdx` available for download has been compiled on macOS. If you play on another system, you’ll need to recompile the game. You can do this by cloning this repository and executing the following command from the root of the project.
+
+```sh
+pdc ./Source Celeste.pdx
+```
 
 ## Changes
 
@@ -32,7 +40,7 @@ Playdate is a registered trademark of [Panic](https://panic.com/).
 
 The Playdate port was done by [Rémi Parmentier](https://github.com/HTeuMeuLeu).
 
-Thanks to [Alex Larioza](https://github.com/SHiLLySiT) for help and tips on performance optimizations.
+Thanks to [Alex Larioza](https://github.com/SHiLLySiT) for help and tips on performance optimizations. And thanks to the wonderful people on Discord (_orkn, Grhmhome, Drew-Lo, Gamma, Kiwi, Tristianski, jeffamphetamines, PizzaDev, Kucromy, Guv_Bubbs, NickSr, Andrew, DoctorMikeReddy, natch, rasith, Braillynn, fnc12_) for their feedback.
 
 ## License
 
