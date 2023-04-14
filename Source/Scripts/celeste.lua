@@ -1497,23 +1497,41 @@ flag = {
 }
 types[flag.tile] = flag
 
-function add_restart_button()
+local function get_restart_button_image()
 
 	local img <const> = GFX.image.new(33, 11, GFX.kColorClear)
 	GFX.pushContext(img)
+		local circledText = "a"
+		if restartTimer ~= nil then
+			local steps = 3
+			local stepMinThreshold = 300
+			local stepDuration = math.floor((restartTimer.duration - stepMinThreshold) / steps)
+			local currentStep = math.max(1, steps - math.floor((restartTimer.currentTime - stepMinThreshold) / stepDuration))
+			if restartTimer.currentTime > stepMinThreshold then
+				circledText = currentStep .. ""
+			end
+		end
 		GFX.setColor(GFX.kColorWhite)
 		GFX.fillCircleInRect(1, 1, 9, 9)
 		GFX.setColor(GFX.kColorBlack)
 		GFX.fillCircleInRect(2, 2, 7, 7)
 		GFX.setImageDrawMode(GFX.kDrawModeNXOR)
-			GFX.drawText("a", 4, 3)
+			GFX.drawText(circledText, 4, 3)
 			GFX.drawText("reset", 12, 3)
 		GFX.setImageDrawMode(GFX.kDrawModeCopy)
 	GFX.popContext()
-	local button <const> = GFX.sprite.new(img)
+	return img
+
+end
+
+function add_restart_button()
+
+	local button <const> = GFX.sprite.new(get_restart_button_image())
+	button:setSize(33, 11)
 	button:setCenter(0,0)
 	button:moveTo(200-button.width, 120-button.height)
 	button:setZIndex(100)
+	button:setUpdatesEnabled(false)
 	button:add()
 	layers.restart = button
 
@@ -1521,13 +1539,17 @@ function add_restart_button()
 		AButtonDown = function()
 			game_just_restarted = false
 			if restartTimer == nil then
-				shake = 30
-				restartTimer = playdate.timer.performAfterDelay(1000, function()
+				local restartTimerDuration = 2000
+				shake = 30 * (restartTimerDuration / 1000)
+				restartTimer = playdate.timer.performAfterDelay(restartTimerDuration, function()
 					game_just_restarted = true
 					game_obj:restart()
 					restartTimer = nil
 					shake = 1
 				end)
+				restartTimer.updateCallback = function()
+					layers.restart:setImage(get_restart_button_image())
+				end
 			end
 		end,
 		AButtonUp = function()
@@ -1537,6 +1559,7 @@ function add_restart_button()
 			if restartTimer ~= nil then
 				restartTimer:remove()
 				restartTimer = nil
+				layers.restart:setImage(get_restart_button_image())
 			end
 			shake = 1
 			game_just_restarted = false
