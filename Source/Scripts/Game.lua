@@ -1,3 +1,4 @@
+import "Scripts/Libraries/LDtk"
 import "Scripts/data.lua"
 import "Scripts/globals.lua"
 import "Scripts/pico-8.lua"
@@ -8,27 +9,29 @@ class("Game").extends()
 
 local GFX = playdate.graphics
 local data = g_data
+local ldtk <const> = LDtk
+ldtk.load("Levels/celeste-classic.ldtk", false)
 
 function Game:init()
 
 	Game.super.init(self)
-	self._init = _init
-	self._update = _update
-	self._draw = _draw
-	self:initOptions()
-	self:_init(self)
-	self:load()
-	self:addMenuItems()
+	-- self._init = _init
+	-- self._update = _update
+	-- self._draw = _draw
+	-- self:initOptions()
+	-- self:_init(self)
+	-- self:load()
+	-- self:addMenuItems()
 	return self
 
 end
 
 function Game:update()
 
-	if not self.isPaused then
-		self:_update()
-		self:_draw()
-	end
+	-- if not self.isPaused then
+	-- 	self:_update()
+	-- 	self:_draw()
+	-- end
 
 end
 
