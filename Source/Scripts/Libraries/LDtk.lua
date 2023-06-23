@@ -517,6 +517,7 @@ end
 
 function _.load_tileset_imagetable(path, flipped)
 	local id = path
+	local onebit = false
 	if flipped then
 		id = id.."[flipped]"
 	end
@@ -526,16 +527,28 @@ function _.load_tileset_imagetable(path, flipped)
 		return _imageTables[id].image
 	end
 
-	local image_filepath
+	local image_filepath, onebit_image_filepath
 	if flipped then
 		local filename = path:match("^.+/(.+)$")
 		local tileset_folder = path:sub(0, -#filename-1)
 		image_filepath = _ldtk_folder..tileset_folder.."flipped-"..filename
 	else
 		image_filepath = _ldtk_folder..path
+		onebit_image_filepath = _ldtk_folder.."1bit-"..path
 	end
 
-	local image = playdate.graphics.imagetable.new(image_filepath)
+	local image
+	if onebit_image_filepath then
+		image = playdate.graphics.imagetable.new(onebit_image_filepath)
+		if not image then
+			error( "LDtk cannot load tileset "..onebit_image_filepath..". 1-bit file error.", 3)
+		else
+			onebit = true
+		end
+	end
+	if not onebit then
+		image = playdate.graphics.imagetable.new(image_filepath)
+	end
 	if not image then
 		if flipped then
 			error( "LDtk cannot load tileset "..image_filepath..". Tileset requires a flipped version of the image: flipped-filename-table-w-h.png", 3)

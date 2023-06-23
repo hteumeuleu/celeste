@@ -1,20 +1,19 @@
-import "Scripts/Libraries/LDtk"
 import "Scripts/data.lua"
 import "Scripts/globals.lua"
 import "Scripts/pico-8.lua"
 import "Scripts/celeste.lua"
 import "Scripts/Options"
+import "Scripts/Room"
 
 class("Game").extends()
 
 local GFX = playdate.graphics
 local data = g_data
-local ldtk <const> = LDtk
-ldtk.load("Levels/celeste-classic.ldtk", false)
 
 function Game:init()
 
 	Game.super.init(self)
+	local r = Room()
 	-- self._init = _init
 	-- self._update = _update
 	-- self._draw = _draw
