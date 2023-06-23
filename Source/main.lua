@@ -7,7 +7,7 @@ import "CoreLibs/crank"
 
 import "Scripts/Game"
 local g = Game()
-local showFPS = false
+local showFPS = true
 
 -- playdate.update()
 --

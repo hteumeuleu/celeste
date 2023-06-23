@@ -2095,7 +2095,7 @@ function _draw()
 		if reduce_clouds_and_particles then
 			clouds_number = math.floor(clouds_number / 2)
 		end
-		for i=1, clouds_number do
+		for x=1, clouds_number do
 			local c = clouds[i]
 			c.x += c.spd
 			c.spr:moveTo(kDrawOffsetX+c.x, kDrawOffsetY+c.y)
