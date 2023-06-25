@@ -70,30 +70,16 @@ function Room:load()
 		end
 	end
 
-	-- Level outer walls
-	-- gfx.sprite.addEmptyCollisionSprite(0, 0, 400, 10)
-	-- gfx.sprite.addEmptyCollisionSprite(0, 230, 400, 10)
-	-- gfx.sprite.addEmptyCollisionSprite(0, 10, 10, 220)
-	-- gfx.sprite.addEmptyCollisionSprite(390, 10, 10, 220)
+	-- Room outer walls
+	local topCollisionSprite <const> = gfx.sprite.addEmptyCollisionSprite(0, -10, 400, 10)
+	local bottomCollisionSprite <const> = gfx.sprite.addEmptyCollisionSprite(0, 240, 400, 10)
 
 	-- Entities
-	-- for index, entity in ipairs(LDtk.get_entities(level_name)) do
-	-- 	if entity.name == "Light" then
-	-- 		local light = Light(entity.position.x + offset.x, entity.position.y + offset.y)
-	-- 		self.total += 1
-	-- 		light:attachLevel(self)
-	-- 	elseif entity.name == "Battery" then
-	-- 		self.battery = Battery(entity.position.x + offset.x, entity.position.y + offset.y)
-	-- 	elseif entity.name == "Crate" then
-	-- 		Crate(entity.position.x + offset.x, entity.position.y + offset.y)
-	-- 	elseif entity.name == "Player" then
-	-- 		self.player = Player(entity.position.x + offset.x, entity.position.y + offset.y)
-	-- 		self.player:attachLevel(self)
-	-- 	elseif entity.name == "Text" then
-	-- 		local offGridOffset = playdate.geometry.point.new(tonumber(entity.fields.offsetX), tonumber(entity.fields.offsetY))
-	-- 		Text(entity.position.x + offset.x + offGridOffset.x, entity.position.y + offset.y + offGridOffset.y, entity.size.width, entity.size.height, entity.fields.text, tonumber(entity.fields.alignment))
-	-- 	end
-	-- end
+	for index, entity in ipairs(LDtk.get_entities(level_name)) do
+		if entity.name == "Player" then
+			self.player = Player(entity.position.x + offset.x, entity.position.y + offset.y)
+		end
+	end
 
 	-- White flash effect
 	local animator = playdate.graphics.animator.new(500, 1, 0,  playdate.easingFunctions.outQuad, 200)

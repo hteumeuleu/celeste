@@ -9,6 +9,8 @@ import "Scripts/Game"
 local g = Game()
 local showFPS = true
 
+playdate.display.setRefreshRate(50)
+
 -- playdate.update()
 --
 function playdate.update()
