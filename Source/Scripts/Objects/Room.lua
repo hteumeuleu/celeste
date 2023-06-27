@@ -1,6 +1,10 @@
 import "Scripts/Libraries/LDtk"
-import "Scripts/Cloud"
-import "Scripts/Particle"
+import "Scripts/Objects/Player"
+import "Scripts/Objects/FakeWall"
+import "Scripts/Objects/Cloud"
+import "Scripts/Objects/Particle"
+import "Scripts/Objects/Smoke"
+import "Scripts/Objects/Fruit"
 
 class('Room').extends()
 
@@ -80,6 +84,11 @@ function Room:load()
 	for index, entity in ipairs(LDtk.get_entities(level_name)) do
 		if entity.name == "Player" then
 			self.player = Player(entity.position.x + offset.x, entity.position.y + offset.y)
+		elseif entity.name == "FakeWall" then
+			local fw <const> = FakeWall(entity.position.x + offset.x, entity.position.y + offset.y)
+			-- pd.timer.performAfterDelay(1000, function()
+			-- 	fw:hit(nil)
+			-- end)
 		end
 	end
 

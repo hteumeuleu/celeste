@@ -45,3 +45,11 @@ function flip(flip_x, flip_y)
 	return flip
 
 end
+
+function maybe()
+	return (math.random()*1)<0.5
+end
+
+function sin(angle)
+	return math.sin(math.rad(angle * -1 * 360.0))
+end
