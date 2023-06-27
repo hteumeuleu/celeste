@@ -1,12 +1,14 @@
 import "Scripts/Libraries/LDtk"
 import "Scripts/Cloud"
+import "Scripts/Particle"
 
 class('Room').extends()
 
-local gfx <const> = playdate.graphics
+local pd <const> = playdate
+local gfx <const> = pd.graphics
 local ldtk <const> = LDtk
 ldtk.load("Levels/celeste-classic.ldtk", false)
-local offset <const> = playdate.geometry.point.new(-8, -8)
+local offset <const> = pd.geometry.point.new(-8, -8)
 
 -- Room
 --
@@ -98,17 +100,33 @@ function Room:load()
 	-- Clouds
 	self:initClouds()
 
+	-- Particles
+	self:initParticles()
+
 end
 
 function Room:initClouds()
 
-	local max_clouds = 4
-	if playdate.isSimulator then
-		max_clouds = 16
+	local max_clouds = 16
+	if not pd.isSimulator then
+		max_clouds = 8
 	end
 	self.clouds = {}
 	for i=0, max_clouds do
 		table.insert(self.clouds, Cloud())
+	end
+
+end
+
+function Room:initParticles()
+
+	local max_particles = 24
+	if not pd.isSimulator then
+		max_particles = 18
+	end
+	self.particles = {}
+	for i=0, max_particles do
+		table.insert(self.particles, Particle())
 	end
 
 end
