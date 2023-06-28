@@ -34,10 +34,10 @@ function Smoke:update()
 	if self.spr >= 32 then
 		self:remove()
 		gfx.sprite.addDirtyRect(self.x, self.y, self.width, self.height)
+	else
+		local img <const> = imageTable:getImage(math.floor(self.spr) + 1)
+		self:setImage(img, flip(self.flip.x, self.flip.y))
 	end
-	-- Draw
-	local img <const> = imageTable:getImage(math.floor(self.spr) + 1)
-	self:setImage(img, flip(self.flip.x, self.flip.y))
 
 end
 
