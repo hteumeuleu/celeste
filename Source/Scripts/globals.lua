@@ -53,3 +53,7 @@ end
 function sin(angle)
 	return math.sin(math.rad(angle * -1 * 360.0))
 end
+
+function sign(v)
+	return v>0 and 1 or v<0 and -1 or 0
+end
