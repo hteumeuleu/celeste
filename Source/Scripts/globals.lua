@@ -57,3 +57,9 @@ end
 function sign(v)
 	return v>0 and 1 or v<0 and -1 or 0
 end
+
+function appr(val, target, amount)
+	return val > target 
+		and math.max(val - amount, target) 
+		or math.min(val + amount, target)
+end
