@@ -241,6 +241,7 @@ function Player:_draw()
 
 	local img <const> = imageTable:getImage(math.floor(self.spr))
 	self:setImage(img, flip(self.flip.x, self.flip.y))
+	self:moveTo(self.pos.x-2, self.pos.y-2)
 
 end
 
