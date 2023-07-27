@@ -63,7 +63,7 @@ function Player:_update()
 		self:kill()
 	end
 
-	local on_ground = true -- TODO
+	local on_ground = self:is_solid(0, 1)--true -- TODO
 	local on_ice = false -- TODO
 
 	-- Smoke particles
@@ -186,38 +186,30 @@ end
 
 function Player:_move_x(amount, start)
 
-	if self.solids then
-		local step = sign(amount)
-		for i=start, math.abs(amount) do
-			if not self:is_solid(step, 0) then
-				self.pos.x += step
-			else
-				self.spd.x = 0
-				self.rem.x = 0
-				break
-			end
+	local step = sign(amount)
+	for i=start, math.abs(amount) do
+		if not self:is_solid(step, 0) then
+			self.pos.x += step
+		else
+			self.spd.x = 0
+			self.rem.x = 0
+			break
 		end
-	else
-		self.pos.x += amount
 	end
 
 end
 
 function Player:_move_y(amount, start)
 
-	if self.solids then
-		local step = sign(amount)
-		for i=0, math.abs(amount) do
-			if not self:is_solid(0, step) then
-				self.pos.y += step
-			else
-				self.spd.y = 0
-				self.rem.y = 0
-				break
-			end
+	local step = sign(amount)
+	for i=0, math.abs(amount) do
+		if not self:is_solid(0, step) then
+			self.pos.y += step
+		else
+			self.spd.y = 0
+			self.rem.y = 0
+			break
 		end
-	else
-		self.pos.y += amount
 	end
 
 end
@@ -239,9 +231,14 @@ end
 
 function Player:_draw()
 
+	if self.pos.x < 0 or self.pos.x > 384 then 
+		self.pos.x = clamp(self.pos.x, 0, 384)
+		self.spd.x = 0
+	end
+
 	local img <const> = imageTable:getImage(math.floor(self.spr))
 	self:setImage(img, flip(self.flip.x, self.flip.y))
-	self:moveTo(self.pos.x-2, self.pos.y-2)
+	self:moveTo(self.pos.x - 2, self.pos.y - 2)
 
 end
 

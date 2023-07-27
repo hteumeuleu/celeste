@@ -67,10 +67,14 @@ function Room:load()
 			layerSprite:setZIndex(layer.zIndex)
 			layerSprite:add()
 
+			-- Wall sprites
 			if layer_name == "Foreground" then
 				local emptyTiles = ldtk.get_empty_tileIDs(level_name, "Solid", layer_name)
 				if emptyTiles then
-					gfx.sprite.addWallSprites(tilemap, emptyTiles, layer.rect.x + offset.x, layer.rect.y + offset.y)
+					local wallSprites <const> = gfx.sprite.addWallSprites(tilemap, emptyTiles, layer.rect.x + offset.x, layer.rect.y + offset.y)
+					for index, wallSprite in ipairs(wallSprites) do
+						wallSprite.is_solid = true
+					end
 				end
 			end
 		end
