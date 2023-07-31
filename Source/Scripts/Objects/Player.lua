@@ -135,6 +135,86 @@ function Player:_update()
 			gravity *= 0.5
 		end
 
+		-- Wall slide
+		-- TODO
+
+		if not on_ground then
+			self.spd.y = appr(self.spd.y, maxfall, gravity)
+		end
+
+		-- Jump
+		if self.jbuffer > 0 then
+			if self.grace > 0 then
+				-- Normal jump
+				-- psfx(1) -- TODO
+				self.jbuffer = 0
+				self.grace = 0
+				self.spd.y = -2
+				-- init_object(smoke,this.x,this.y+4) -- TODO
+			else
+				-- Wall jump
+				local wall_dir = (self:is_solid(-3,0) and -1 or self:is_solid(3,0) and 1 or 0)
+				if wall_dir ~= 0 then
+					-- psfx(2) -- TODO
+					self.jbuffer = 0
+					self.spd.y = -2
+					self.spd.x = -wall_dir * (maxrun + 1)
+					if not self:is_ice(wall_dir*3,0) then
+						-- init_object(smoke,this.x+wall_dir*6,this.y) -- TODO
+					end
+				end
+			end
+		end
+
+		-- Dash
+		local d_full = 5
+		local d_half = d_full * 0.70710678118
+		
+		if self.djump > 0 and dash then
+			-- init_object(smoke,this.x,this.y) -- TODO
+			self.djump -= 1
+			self.dash_time = 4
+			has_dashed = true
+			self.dash_effect_time = 10
+			local v_input = (btn(k_up) and -1 or (btn(k_down) and 1 or 0))
+			if input ~= 0 then
+				if v_input ~= 0 then
+					self.spd.x = input * d_half
+					self.spd.y = v_input * d_half
+				else
+					self.spd.x = input * d_full
+					self.spd.y = 0
+				end
+			elseif v_input ~= 0 then
+				self.spd.x = 0
+				self.spd.y = v_input * d_full
+			else
+				self.spd.x = (self.flip.x and -1 or 1)
+				self.spd.y = 0
+			end
+
+			-- psfx(3) -- TODO
+			freeze = 2
+			shake = 6
+			self.dash_target.x = 2*sign(self.spd.x)
+			self.dash_target.y = 2*sign(self.spd.y)
+			self.dash_accel.x = 1.5
+			self.dash_accel.y = 1.5
+			
+			if self.spd.y < 0 then
+				self.dash_target.y *= .75
+			end
+            
+			if self.spd.y ~= 0 then
+				self.dash_accel.x *= 0.70710678118
+			end
+			if self.spd.x ~= 0 then
+				self.dash_accel.y *= 0.70710678118
+			end  
+		elseif dash and self.djump<=0 then
+			-- psfx(9) -- TODO
+			-- init_object(smoke,this.x,this.y) -- TODO
+		end
 	end
 
 	-- Animation
@@ -225,6 +305,12 @@ function Player:is_solid(ox, oy)
 			end
 		end
 	end
+	return false
+
+end
+
+function Player:is_ice(ox, oy)
+
 	return false
 
 end
