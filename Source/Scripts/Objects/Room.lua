@@ -73,6 +73,8 @@ function Room:load()
 				if emptyTiles then
 					local wallSprites <const> = gfx.sprite.addWallSprites(tilemap, emptyTiles, layer.rect.x + offset.x, layer.rect.y + offset.y)
 					for index, wallSprite in ipairs(wallSprites) do
+						wallSprite:setCenter(0, 0)
+						wallSprite:moveBy((wallSprite.width/2)*-1, (wallSprite.height/2)*-1)
 						wallSprite.is_solid = true
 					end
 				end

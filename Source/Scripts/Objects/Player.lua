@@ -216,7 +216,7 @@ end
 
 function Player:is_solid(ox, oy)
 
-	local rect = self:getCollideRect():offsetBy(self.pos.x+ox, self.pos.y+oy)
+	local rect = self:getCollideRect():offsetBy(self.x+ox*2, self.y+oy*2)
 	local spritesInRect = playdate.graphics.sprite.querySpritesInRect(rect)
 	if #spritesInRect > 0 then
 		for _, s in ipairs(spritesInRect) do
@@ -239,6 +239,9 @@ function Player:_draw()
 	local img <const> = imageTable:getImage(math.floor(self.spr))
 	self:setImage(img, flip(self.flip.x, self.flip.y))
 	self:moveTo(self.pos.x - 2, self.pos.y - 2)
+
+	self.pos.x = self.x + 2 
+	self.pos.y = self.y + 2
 
 end
 
