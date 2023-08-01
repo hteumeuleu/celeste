@@ -21,7 +21,7 @@ function Smoke:init(x, y)
 	self:setImage(img)
 	self:setCenter(0, 0)
 	self:moveTo(x, y)
-	self:setZIndex(30)
+	self:setZIndex(0)
 	self:add()
 	return self
 

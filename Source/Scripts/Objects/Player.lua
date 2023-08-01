@@ -97,7 +97,7 @@ function Player:_update()
 
 	self.dash_effect_time -= 1
 	if self.dash_time > 0 then
-		-- init_object(smoke,self.pos.x,self.pos.y) -- TODO
+		Smoke(self.pos.x, self.pos.y)
 		self.dash_time -= 1
 		self.spd.x = appr(self.spd.x, self.dash_target.x, self.dash_accel.x)
 		self.spd.y = appr(self.spd.y, self.dash_target.y, self.dash_accel.y)
@@ -146,21 +146,21 @@ function Player:_update()
 		if self.jbuffer > 0 then
 			if self.grace > 0 then
 				-- Normal jump
-				-- psfx(1) -- TODO
+				psfx(1)
 				self.jbuffer = 0
 				self.grace = 0
 				self.spd.y = -2
-				-- init_object(smoke,this.x,this.y+4) -- TODO
+				Smoke(self.pos.x, self.pos.y+8)
 			else
 				-- Wall jump
 				local wall_dir = (self:is_solid(-3,0) and -1 or self:is_solid(3,0) and 1 or 0)
 				if wall_dir ~= 0 then
-					-- psfx(2) -- TODO
+					psfx(2)
 					self.jbuffer = 0
 					self.spd.y = -2
 					self.spd.x = -wall_dir * (maxrun + 1)
 					if not self:is_ice(wall_dir*3,0) then
-						-- init_object(smoke,this.x+wall_dir*6,this.y) -- TODO
+						Smoke(self.pos.x+wall_dir*6, self.pos.y)
 					end
 				end
 			end
@@ -171,7 +171,7 @@ function Player:_update()
 		local d_half = d_full * 0.70710678118
 		
 		if self.djump > 0 and dash then
-			-- init_object(smoke,this.x,this.y) -- TODO
+			Smoke(self.pos.x, self.pos.y)
 			self.djump -= 1
 			self.dash_time = 4
 			has_dashed = true
@@ -193,7 +193,7 @@ function Player:_update()
 				self.spd.y = 0
 			end
 
-			-- psfx(3) -- TODO
+			psfx(3)
 			freeze = 2
 			shake = 6
 			self.dash_target.x = 2*sign(self.spd.x)
@@ -212,19 +212,19 @@ function Player:_update()
 				self.dash_accel.y *= 0.70710678118
 			end  
 		elseif dash and self.djump<=0 then
-			-- psfx(9) -- TODO
-			-- init_object(smoke,this.x,this.y) -- TODO
+			psfx(9)
+			Smoke(self.pos.x, self.pos.y)
 		end
 	end
 
 	-- Animation
 	self.spr_off+=0.25
 	if not on_ground then
-		-- if self:is_solid(input, 0) then
-		-- 	self.spr = 5
-		-- else
-		-- 	self.spr = 3
-		-- end
+		if self:is_solid(input, 0) then
+			self.spr = 5
+		else
+			self.spr = 3
+		end
 	elseif btn(k_down) then
 		-- Crouching down
 		self.spr=6
@@ -325,9 +325,6 @@ function Player:_draw()
 	local img <const> = imageTable:getImage(math.floor(self.spr))
 	self:setImage(img, flip(self.flip.x, self.flip.y))
 	self:moveTo(self.pos.x - 2, self.pos.y - 2)
-
-	self.pos.x = self.x + 2 
-	self.pos.y = self.y + 2
 
 end
 
