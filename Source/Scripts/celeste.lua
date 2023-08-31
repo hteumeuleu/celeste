@@ -948,7 +948,7 @@ fruit={
 			this.pdspr:setGroups({4})
 			this.pdspr:setZIndex(20)
 			this.pdspr:setCollideRect(this.hitbox:offsetBy(1,1))
-			this.pdspr.hit=function(player)
+			this.pdspr.hit=function(fruit, player)
 				-- collect
 				if player~=nil then
 					player.djump=max_djump
@@ -988,7 +988,7 @@ fly_fruit={
 			this.pdspr:setZIndex(20)
 			this.pdspr:setCollideRect(this.hitbox:offsetBy(11,1))
 			this.pdspr:setGroups({4})
-			this.pdspr.hit=function(player)
+			this.pdspr.hit=function(fruit, player)
 				-- collect
 				if player~=nil then
 					player.djump=max_djump
