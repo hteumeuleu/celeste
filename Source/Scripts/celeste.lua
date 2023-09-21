@@ -227,6 +227,7 @@ local player =
 		this.was_on_ground=false
 		if this.pdspr ~= nil then
 			this.pdspr.type = "player"
+			this.pdspr.collisionResponse = playdate.graphics.sprite.kCollisionTypeOverlap
 			this.pdspr:setCollideRect(this.hitbox:offsetBy(1,1))
 			this.pdspr:setCollidesWithGroups({2,3,4,5,6})
 			this.pdspr:setZIndex(20)
