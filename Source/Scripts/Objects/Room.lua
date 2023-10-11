@@ -87,36 +87,36 @@ function Room:load()
 	local bottomCollisionSprite <const> = gfx.sprite.addEmptyCollisionSprite(0, 240, 400, 10)
 
 	-- Entities
-	for index, entity in ipairs(LDtk.get_entities(level_name)) do
-		if entity.name == "Player" then
-			self.player = Player(entity.position.x + offset.x, entity.position.y + offset.y)
-		elseif entity.name == "FakeWall" then
-			local fw <const> = FakeWall(entity.position.x + offset.x, entity.position.y + offset.y)
-			-- pd.timer.performAfterDelay(1000, function()
-			-- 	fw:hit(nil)
-			-- end)
-		end
-	end
+	-- for index, entity in ipairs(LDtk.get_entities(level_name)) do
+	-- 	if entity.name == "Player" then
+	-- 		self.player = Player(entity.position.x + offset.x, entity.position.y + offset.y)
+	-- 	elseif entity.name == "FakeWall" then
+	-- 		local fw <const> = FakeWall(entity.position.x + offset.x, entity.position.y + offset.y)
+	-- 		-- pd.timer.performAfterDelay(1000, function()
+	-- 		-- 	fw:hit(nil)
+	-- 		-- end)
+	-- 	end
+	-- end
 
 	-- White flash effect
-	local animator = playdate.graphics.animator.new(500, 1, 0,  playdate.easingFunctions.outQuad, 200)
-	local white = gfx.image.new(400, 240, gfx.kColorWhite)
-	local flash = gfx.sprite.new(white)
-	flash:setCenter(0, 0)
-	flash:moveTo(0, 0)
-	flash:setZIndex(999)
-	flash:add()
-	flash.update = function(that)
-		if not animator:ended() then
-			that:setImage(white:fadedImage(animator:currentValue(), gfx.image.kDitherTypeAtkinson))
-		end
-	end
+	-- local animator = playdate.graphics.animator.new(500, 1, 0,  playdate.easingFunctions.outQuad, 200)
+	-- local white = gfx.image.new(400, 240, gfx.kColorWhite)
+	-- local flash = gfx.sprite.new(white)
+	-- flash:setCenter(0, 0)
+	-- flash:moveTo(0, 0)
+	-- flash:setZIndex(999)
+	-- flash:add()
+	-- flash.update = function(that)
+	-- 	if not animator:ended() then
+	-- 		that:setImage(white:fadedImage(animator:currentValue(), gfx.image.kDitherTypeAtkinson))
+	-- 	end
+	-- end
 
 	-- Clouds
-	self:initClouds()
+	-- self:initClouds()
 
 	-- Particles
-	self:initParticles()
+	-- self:initParticles()
 
 end
 
