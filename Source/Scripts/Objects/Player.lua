@@ -32,18 +32,18 @@ function Player:init(x, y)
 	self.flip = {}
 	self.flip.x = false
 	self.flip.y = false
-	self.hitbox = pd.geometry.rect.new(2,6,12,10)
+	self.hitbox = pd.geometry.rect.new(1,3,6,5)
 	self.spd = pd.geometry.vector2D.new(0, 0)
 	self.rem = pd.geometry.vector2D.new(0, 0)
 	self.pos = pd.geometry.point.new(x, y)
 	self.solids = true
 	self:setCenter(0, 0)
 	self:setZIndex(20)
-	self:setCollideRect(self.hitbox:offsetBy(2,2))
+	self:setCollideRect(self.hitbox:offsetBy(1,1))
 	self:setCollidesWithGroups({2,3,4,5,6})
 	self:setZIndex(20)
 	self:setGroups({1})
-	self:moveTo(x-2, y-2)
+	self:moveTo(x-1, y-1)
 	self:add()
 	return self
 

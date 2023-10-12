@@ -13,6 +13,7 @@ local data = g_data
 function Game:init()
 
 	Game.super.init(self)
+	self:scale(2)
 	local r = Room()
 	-- self._init = _init
 	-- self._update = _update
@@ -98,39 +99,39 @@ end
 function Game:scale(n)
 
 	self._scaleValue = n
-	playdate.display.setScale(n)
-	local kDisplayOffsetX = playdate.display.getWidth() / 2
-	local kDisplayOffsetY = playdate.display.getHeight() / 2
-	local kDrawOffsetXBefore = kDrawOffsetX
-	local kDrawOffsetYBefore = kDrawOffsetY
-	kDrawOffsetX = (playdate.display.getWidth() - 128) / 2
-	kDrawOffsetY = (playdate.display.getHeight() - 128) / 2
-	local diffX = kDrawOffsetX - kDrawOffsetXBefore
-	local diffY = kDrawOffsetY - kDrawOffsetYBefore
+	playdate.display.setScale(2)
+	-- local kDisplayOffsetX = playdate.display.getWidth() / 2
+	-- local kDisplayOffsetY = playdate.display.getHeight() / 2
+	-- local kDrawOffsetXBefore = kDrawOffsetX
+	-- local kDrawOffsetYBefore = kDrawOffsetY
+	-- kDrawOffsetX = (playdate.display.getWidth() - 128) / 2
+	-- kDrawOffsetY = (playdate.display.getHeight() - 128) / 2
+	-- local diffX = kDrawOffsetX - kDrawOffsetXBefore
+	-- local diffY = kDrawOffsetY - kDrawOffsetYBefore
 
-	if kDrawOffsetXBefore ~= 0 and kDrawOffsetYBefore ~= 0 then
-		playdate.graphics.sprite.performOnAllSprites(function(s)
-			s:moveBy(diffX, diffY)
-		end)
-	end
+	-- if kDrawOffsetXBefore ~= 0 and kDrawOffsetYBefore ~= 0 then
+	-- 	playdate.graphics.sprite.performOnAllSprites(function(s)
+	-- 		s:moveBy(diffX, diffY)
+	-- 	end)
+	-- end
 
-	if data.cache ~= nil then
-		data.cache:moveTo(kDisplayOffsetX, kDisplayOffsetY)
-	end
-	if self.options ~= nil then
-		self.options:moveTo(kDisplayOffsetX, kDisplayOffsetY)
-	end
-	if data.frame ~= nil and n == 1 then
-		data.frame:moveTo(kDisplayOffsetX, kDisplayOffsetY)
-		data.frame:add()
-	elseif data.frame ~= nil then
-		data.frame:remove()
-	end
-	for i, layer in ipairs(layers) do
-		if layers[layer] ~= nil then
-			layers[layer]:moveTo(kDisplayOffsetX, kDisplayOffsetY)
-		end
-	end
+	-- if data.cache ~= nil then
+	-- 	data.cache:moveTo(kDisplayOffsetX, kDisplayOffsetY)
+	-- end
+	-- if self.options ~= nil then
+	-- 	self.options:moveTo(kDisplayOffsetX, kDisplayOffsetY)
+	-- end
+	-- if data.frame ~= nil and n == 1 then
+	-- 	data.frame:moveTo(kDisplayOffsetX, kDisplayOffsetY)
+	-- 	data.frame:add()
+	-- elseif data.frame ~= nil then
+	-- 	data.frame:remove()
+	-- end
+	-- for i, layer in ipairs(layers) do
+	-- 	if layers[layer] ~= nil then
+	-- 		layers[layer]:moveTo(kDisplayOffsetX, kDisplayOffsetY)
+	-- 	end
+	-- end
 
 end
 

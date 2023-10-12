@@ -7,7 +7,7 @@ class('FakeWall').extends(gfx.sprite)
 function FakeWall:init(x, y)
 
 	FakeWall.super.init(self)
-	self.hitbox = pd.geometry.rect.new(-2,-2,36,36)
+	self.hitbox = pd.geometry.rect.new(-1,-1,18,18)
 	self:setImage(img)
 	self:setCenter(0, 0)
 	self:setCollideRect(self.hitbox)
@@ -18,11 +18,11 @@ function FakeWall:init(x, y)
 
 end
 
--- function FakeWall:update()
+function FakeWall:update()
 
--- 	FakeWall.super.update(self)
+	FakeWall.super.update(self)
 
--- end
+end
 
 function FakeWall:hit(trigger)
 
@@ -30,10 +30,10 @@ function FakeWall:hit(trigger)
 	self:remove()
 	gfx.sprite.addDirtyRect(self.x, self.y, self.width, self.height)
     Smoke(self.x, self.y)
-    Smoke(self.x + 16, self.y)
-    Smoke(self.x, self.y + 16)
-    Smoke(self.x + 16, self.y + 16)
-    Fruit(self.x + 8, self.y + 8)
+    Smoke(self.x + 8, self.y)
+    Smoke(self.x, self.y + 8)
+    Smoke(self.x + 8, self.y + 8)
+    Fruit(self.x + 4, self.y + 4)
 
 end
 

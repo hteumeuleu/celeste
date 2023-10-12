@@ -10,12 +10,12 @@ function Fruit:init(x, y)
 	Fruit.super.init(self)
 	self.start = y
 	self.off = 0
-	self.hitbox = pd.geometry.rect.new(0, 0, 16, 16)
+	self.hitbox = pd.geometry.rect.new(0, 0, 8, 8)
 	self:setImage(img)
 	self:setCenter(0, 0)
 	self:setGroups({4})
-	self:setCollideRect(self.hitbox:offsetBy(2,2))
-	self:moveTo(x - 2, y)
+	self:setCollideRect(self.hitbox:offsetBy(1,1))
+	self:moveTo(x - 1, y)
 	self:setZIndex(20)
 	self:add()
 	return self
@@ -26,7 +26,7 @@ function Fruit:update()
 
 	Fruit.super.update(self)
 	self.off += 1
-	self:moveTo(self.x, self.start + sin(self.off/40) * 2.5 - 2)
+	self:moveTo(self.x, self.start + sin(self.off/40) * 2.5 - 1)
 
 end
 

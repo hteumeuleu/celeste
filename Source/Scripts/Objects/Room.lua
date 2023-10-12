@@ -54,8 +54,7 @@ function Room:load()
 					-- This creates visual depth and shows the background is in front of the clouds.
 					tilemapImage:invertedImage():draw(0, 0)
 					-- Then we draw the tilemap with the diagonal line effect.
-					-- The fade is done at 0.5x scale to match the original game’s size and get a better visual (in my opinion).
-					tilemapImage:scaledImage(0.5):fadedImage(0.3, gfx.image.kDitherTypeDiagonalLine):scaledImage(2):draw(0,0)
+					tilemapImage:fadedImage(0.3, gfx.image.kDitherTypeDiagonalLine):draw(0,0)
 				gfx.popContext()
 				layerSprite:setImage(stylizedImage)
 			else
@@ -87,16 +86,16 @@ function Room:load()
 	local bottomCollisionSprite <const> = gfx.sprite.addEmptyCollisionSprite(0, 240, 400, 10)
 
 	-- Entities
-	-- for index, entity in ipairs(LDtk.get_entities(level_name)) do
-	-- 	if entity.name == "Player" then
-	-- 		self.player = Player(entity.position.x + offset.x, entity.position.y + offset.y)
-	-- 	elseif entity.name == "FakeWall" then
-	-- 		local fw <const> = FakeWall(entity.position.x + offset.x, entity.position.y + offset.y)
-	-- 		-- pd.timer.performAfterDelay(1000, function()
-	-- 		-- 	fw:hit(nil)
-	-- 		-- end)
-	-- 	end
-	-- end
+	for index, entity in ipairs(LDtk.get_entities(level_name)) do
+		if entity.name == "Player" then
+			self.player = Player(entity.position.x + offset.x, entity.position.y + offset.y)
+		elseif entity.name == "FakeWall" then
+			local fw <const> = FakeWall(entity.position.x + offset.x, entity.position.y + offset.y)
+			pd.timer.performAfterDelay(1000, function()
+				fw:hit(nil)
+			end)
+		end
+	end
 
 	-- White flash effect
 	-- local animator = playdate.graphics.animator.new(500, 1, 0,  playdate.easingFunctions.outQuad, 200)
@@ -113,10 +112,10 @@ function Room:load()
 	-- end
 
 	-- Clouds
-	-- self:initClouds()
+	self:initClouds()
 
 	-- Particles
-	-- self:initParticles()
+	self:initParticles()
 
 end
 
