@@ -10,6 +10,8 @@ local g = Game()
 local showFPS = true
 
 playdate.display.setRefreshRate(50)
+playdate.display.setScale(2)
+playdate.graphics.clear(playdate.graphics.kColorBlack)
 
 -- playdate.update()
 --
@@ -26,15 +28,15 @@ end
 
 function playdate.cranked()
 
-	local ticks = playdate.getCrankTicks(1)
-	if ticks == 1 then
-		showFPS = not showFPS
-		if showFPS then
-			psfx(55)
-		else
-			psfx(5)
-		end
-	end
+	-- local ticks = playdate.getCrankTicks(1)
+	-- if ticks == 1 then
+	-- 	showFPS = not showFPS
+	-- 	if showFPS then
+	-- 		psfx(55)
+	-- 	else
+	-- 		psfx(5)
+	-- 	end
+	-- end
 
 end
 
@@ -42,7 +44,7 @@ end
 --
 function playdate.gameWillTerminate()
 
-	g:save()
+	-- g:save()
 
 end
 
@@ -50,7 +52,7 @@ end
 --
 function playdate.deviceWillSleep()
 
-	g:save()
+	-- g:save()
 
 end
 
@@ -58,7 +60,7 @@ end
 --
 function playdate.gameWillPause()
 
-	g:updatePauseScreen()
+	-- g:updatePauseScreen()
 
 end
 
@@ -66,8 +68,8 @@ end
 --
 function playdate.keyPressed(key)
 
-	if key == "m" then
-		g:toggleOptions()
-	end
+	-- if key == "m" then
+	-- 	g:toggleOptions()
+	-- end
 
 end

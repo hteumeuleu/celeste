@@ -7,9 +7,9 @@ class('Particle').extends(gfx.sprite)
 function Particle:init()
 
 	Particle.super.init(self)
-	local x <const> = math.random()*400
-	local y <const> = math.random()*240
-	self.size = 2 + math.floor((math.random() * 5) / 4) * 2
+	local x <const> = math.random() * 200
+	local y <const> = math.random() * 120
+	self.size = 1 + math.floor((math.random() * 5) / 4)
 	self.speed = 0.25 + (math.random() * 5)
 	self.offset = math.random() * 1
 	self.inc = math.min(0.05, self.speed / 32)
@@ -29,9 +29,9 @@ function Particle:update()
 	local x = self.x + self.speed
 	local y = self.y + sin(self.offset)
 	self.offset += self.inc
-	if self.x > (400 + 4) then
+	if self.x > (200 + 4) then
 		x = -4
-		y = math.random() * 400
+		y = math.random() * 200
 	end
 	self:moveTo(x, y)
 

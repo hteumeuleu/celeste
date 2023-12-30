@@ -12,7 +12,7 @@ local pd <const> = playdate
 local gfx <const> = pd.graphics
 local ldtk <const> = LDtk
 ldtk.load("Levels/celeste-classic.ldtk", false)
-local offset <const> = pd.geometry.point.new(-8, -8)
+local offset <const> = pd.geometry.point.new(-4, -4)
 
 -- Room
 --
@@ -55,7 +55,7 @@ function Room:load()
 					tilemapImage:invertedImage():draw(0, 0)
 					-- Then we draw the tilemap with the diagonal line effect.
 					-- The fade is done at 0.5x scale to match the original game’s size and get a better visual (in my opinion).
-					tilemapImage:scaledImage(0.5):fadedImage(0.3, gfx.image.kDitherTypeDiagonalLine):scaledImage(2):draw(0,0)
+					tilemapImage:fadedImage(0.3, gfx.image.kDitherTypeDiagonalLine):draw(0,0)
 				gfx.popContext()
 				layerSprite:setImage(stylizedImage)
 			else
@@ -83,8 +83,8 @@ function Room:load()
 	end
 
 	-- Room outer walls
-	local topCollisionSprite <const> = gfx.sprite.addEmptyCollisionSprite(0, -10, 400, 10)
-	local bottomCollisionSprite <const> = gfx.sprite.addEmptyCollisionSprite(0, 240, 400, 10)
+	local topCollisionSprite <const> = gfx.sprite.addEmptyCollisionSprite(0, -8, 200, 8)
+	local bottomCollisionSprite <const> = gfx.sprite.addEmptyCollisionSprite(0, 120, 200, 8)
 
 	-- Entities
 	for index, entity in ipairs(LDtk.get_entities(level_name)) do
@@ -95,20 +95,6 @@ function Room:load()
 			-- pd.timer.performAfterDelay(1000, function()
 			-- 	fw:hit(nil)
 			-- end)
-		end
-	end
-
-	-- White flash effect
-	local animator = playdate.graphics.animator.new(500, 1, 0,  playdate.easingFunctions.outQuad, 200)
-	local white = gfx.image.new(400, 240, gfx.kColorWhite)
-	local flash = gfx.sprite.new(white)
-	flash:setCenter(0, 0)
-	flash:moveTo(0, 0)
-	flash:setZIndex(999)
-	flash:add()
-	flash.update = function(that)
-		if not animator:ended() then
-			that:setImage(white:fadedImage(animator:currentValue(), gfx.image.kDitherTypeAtkinson))
 		end
 	end
 
