@@ -41,8 +41,9 @@ function Player:init(x, y)
 	self:setZIndex(20)
 	self:setCollideRect(self.hitbox:offsetBy(1,1))
 	self:setCollidesWithGroups({2,3,4,5,6})
-	self:setZIndex(20)
 	self:setGroups({1})
+	self.collisionResponse = gfx.sprite.kCollisionTypeOverlap
+	self:setZIndex(20)
 	self:moveTo(x-1, y-1)
 	self:add()
 	return self
@@ -68,7 +69,7 @@ function Player:_update()
 
 	-- Smoke particles
 	if on_ground and not self.was_on_ground then
-		-- TODO
+		Smoke(self.pos.x, self.pos.y + 4)
 	end
 
 	-- Jump
@@ -150,7 +151,7 @@ function Player:_update()
 				self.jbuffer = 0
 				self.grace = 0
 				self.spd.y = -2
-				Smoke(self.pos.x, self.pos.y+8)
+				Smoke(self.pos.x, self.pos.y+4)
 			else
 				-- Wall jump
 				local wall_dir = (self:is_solid(-3,0) and -1 or self:is_solid(3,0) and 1 or 0)
@@ -296,7 +297,7 @@ end
 
 function Player:is_solid(ox, oy)
 
-	local rect = self:getCollideRect():offsetBy(self.x+ox*2, self.y+oy*2)
+	local rect = self:getCollideRect():offsetBy(self.pos.x+ox, self.pos.y+oy)
 	local spritesInRect = playdate.graphics.sprite.querySpritesInRect(rect)
 	if #spritesInRect > 0 then
 		for _, s in ipairs(spritesInRect) do
@@ -317,14 +318,14 @@ end
 
 function Player:_draw()
 
-	if self.pos.x < 0 or self.pos.x > 384 then 
-		self.pos.x = clamp(self.pos.x, 0, 384)
+	if self.pos.x < 0 or self.pos.x > 192 then 
+		self.pos.x = clamp(self.pos.x, 0, 192)
 		self.spd.x = 0
 	end
 
 	local img <const> = imageTable:getImage(math.floor(self.spr))
 	self:setImage(img, flip(self.flip.x, self.flip.y))
-	self:moveTo(self.pos.x - 2, self.pos.y - 2)
+	self:moveTo(self.pos.x - 1, self.pos.y - 1)
 
 end
 

@@ -1,16 +1,19 @@
 local pd <const> = playdate
 local gfx <const> = pd.graphics
 local img <const> = gfx.image.new("Assets/fake-wall")
+local sign = function(v) return v>0 and 1 or v<0 and -1 or 0 end
 
 class('FakeWall').extends(gfx.sprite)
 
 function FakeWall:init(x, y)
 
 	FakeWall.super.init(self)
-	self.hitbox = pd.geometry.rect.new(-1,-1,18,18)
+	self.hitbox = pd.geometry.rect.new(0,0,16,16)
+	self.is_solid = true
 	self:setImage(img)
 	self:setCenter(0, 0)
 	self:setCollideRect(self.hitbox)
+	self:setCollidesWithGroups({1})
 	self:moveTo(x, y)
 	self:setZIndex(20)
 	self:add()
@@ -18,14 +21,25 @@ function FakeWall:init(x, y)
 
 end
 
--- function FakeWall:update()
+function FakeWall:update()
 
--- 	FakeWall.super.update(self)
+	FakeWall.super.update(self)
+	local _, _, collisions, length = self:checkCollisions(0, 0)
+	if length == 1 then
+		local other = collisions[1].other
+		if other.dash_effect_time > 0 then
+			other.spd.x=-sign(other.spd.x)*1.5
+			other.spd.y=-1.5
+			other.dash_time=-1
+			self:hit()
+		end
+	end
 
--- end
+end
 
-function FakeWall:hit(trigger)
+function FakeWall:hit()
 
+	sfx_timer=20
 	sfx(16)
 	self:remove()
 	gfx.sprite.addDirtyRect(self.x, self.y, self.width, self.height)
