@@ -9,7 +9,7 @@ import "Scripts/Game"
 local g = Game()
 local showFPS = true
 
-playdate.display.setRefreshRate(50)
+playdate.display.setRefreshRate(30)
 playdate.display.setScale(2)
 playdate.graphics.clear(playdate.graphics.kColorBlack)
 
