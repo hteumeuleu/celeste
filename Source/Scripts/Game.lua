@@ -3,6 +3,7 @@ import "Scripts/globals.lua"
 import "Scripts/pico-8.lua"
 import "Scripts/celeste.lua"
 import "Scripts/Options"
+import "Scripts/Objects/Object"
 import "Scripts/Objects/Room"
 
 class("Game").extends()

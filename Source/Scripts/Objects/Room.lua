@@ -75,7 +75,7 @@ function Room:load()
 					for index, wallSprite in ipairs(wallSprites) do
 						wallSprite:setCenter(0, 0)
 						wallSprite:moveBy((wallSprite.width/2)*-1, (wallSprite.height/2)*-1)
-						wallSprite.is_solid = true
+						wallSprite.solid = true
 					end
 				end
 			end

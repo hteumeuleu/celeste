@@ -8,7 +8,6 @@ local k_up <const> = pd.kButtonUp
 local k_down <const> = pd.kButtonDown
 local k_jump <const> = pd.kButtonA
 local k_dash <const> = pd.kButtonB
-local max_djump <const> = 1
 local sqrt_one_half <const> = 0.70710678118
 local btn = function(i) return pd.buttonIsPressed(i) end
 local appr = function(val, target, amount) return val > target and math.max(val - amount, target) or math.min(val + amount, target) end
@@ -25,18 +24,20 @@ local flip = function(flip_x, flip_y)
 	return image_flip
 end
 
-class('Player').extends(gfx.sprite)
+class('Player').extends(ParentObject)
 
 -- Player
 --
 function Player:init(x, y)
 
-	Player.super.init(self)
+	Player.super.init(self, x, y)
+
+	self.max_djump = 1
 	self.p_jump = false
 	self.p_dash = false
 	self.grace = 0
 	self.jbuffer = 0
-	self.djump = max_djump
+	self.djump = self.max_djump
 	self.dash_time = 0
 	self.dash_effect_time = 0
 	self.dash_target = pd.geometry.vector2D.new(0, 0)
@@ -47,18 +48,17 @@ function Player:init(x, y)
 	self.flip.x = false
 	self.flip.y = false
 	self.hitbox = pd.geometry.rect.new(1,3,6,5)
-	self.spd = pd.geometry.vector2D.new(0, 0)
-	self.rem = pd.geometry.vector2D.new(0, 0)
 	self.pos = pd.geometry.point.new(x, y)
 	self.solids = true
+
+	self.collisionResponse = gfx.sprite.kCollisionTypeOverlap
 	self:setCenter(0, 0)
 	self:setZIndex(20)
 	self:setCollideRect(self.hitbox:offsetBy(1,1))
 	self:setCollidesWithGroups({2,3,4,5,6})
 	self:setGroups({1})
-	self.collisionResponse = gfx.sprite.kCollisionTypeOverlap
-	self:moveTo(self.pos.x, self.pos.y)
 	self:add()
+
 	return self
 
 end
@@ -71,7 +71,7 @@ function Player:_update()
 	local on_ice = self:is_ice(0, 1)
 
 	-- TODO: `Fall Floor` collisions
-	-- local query = playdate.graphics.sprite.querySpritesInRect(self.x + self.hitbox.x - 1, self.y + self.hitbox.y, self.hitbox.width + 2, self.hitbox.height + 1)
+	-- local query = playdate.graphics.sprite.querySpritesInRect(self.pos.x + self.hitbox.x - 1, self.pos.y + self.hitbox.y, self.hitbox.width + 2, self.hitbox.height + 1)
 	-- if #query > 1 then
 	-- 	for i=1, #query do
 	-- 		local other = query[i]
@@ -80,10 +80,9 @@ function Player:_update()
 	-- 		end
 	-- 	end
 	-- end
-	print(self.pos)
 
 	-- Collisions
-	local _, _, collisions_at_x_y, length = self:checkCollisions(self.x, self.y)
+	local _, _, collisions_at_x_y, length = self:checkCollisions(self.pos.x, self.pos.y)
 	if length > 0 then
 		for i=1, #collisions_at_x_y do
 			local col = collisions_at_x_y[i]
@@ -115,7 +114,7 @@ function Player:_update()
 
 	-- Smoke particles
 	if on_ground and not self.was_on_ground then
-		Smoke(self.x, self.y + 4)
+		Smoke(self.pos.x, self.pos.y + 4)
 	end
 
 	-- Jump
@@ -134,9 +133,9 @@ function Player:_update()
 	-- Grace
 	if on_ground then
 		self.grace = 6
-		if self.djump < max_djump then
+		if self.djump < self.max_djump then
 			psfx(54)
-			self.djump = max_djump
+			self.djump = self.max_djump
 		end
 	elseif self.grace > 0 then
 		self.grace -= 1
@@ -145,7 +144,7 @@ function Player:_update()
 	self.dash_effect_time -= 1
 	-- Player just dashed
 	if self.dash_time > 0 then
-		Smoke(self.x, self.y)
+		Smoke(self.pos.x, self.pos.y)
 		self.dash_time -= 1
 		self.spd.x = appr(self.spd.x, self.dash_target.x, self.dash_accel.x)
 		self.spd.y = appr(self.spd.y, self.dash_target.y, self.dash_accel.y)
@@ -187,12 +186,8 @@ function Player:_update()
 		if input ~= 0 and self:is_solid(input, 0) and not self:is_ice(input, 0) then
 			maxfall = 0.4
 			if (math.random() * 10) < 2 then
-				Smoke(self.x + input * 6, self.y)
+				Smoke(self.pos.x + input * 6, self.pos.y)
 			end
-		end
-
-		if not on_ground then
-			self.spd.y = appr(self.spd.y, maxfall, gravity)
 		end
 
 		if not on_ground then
@@ -207,7 +202,7 @@ function Player:_update()
 				self.jbuffer = 0
 				self.grace = 0
 				self.spd.y = -2
-				Smoke(self.x, self.y + 4)
+				Smoke(self.pos.x, self.pos.y + 4)
 			else
 				-- Wall jump
 				local wall_dir = (self:is_solid(-3, 0) and -1 or self:is_solid(3, 0) and 1 or 0)
@@ -217,7 +212,7 @@ function Player:_update()
 					self.spd.y = -2
 					self.spd.x = -wall_dir * (maxrun + 1)
 					if not self:is_ice(wall_dir * 3, 0) then
-						Smoke(self.x + wall_dir * 6, self.y)
+						Smoke(self.pos.x + wall_dir * 6, self.pos.y)
 					end
 				end
 			end
@@ -228,7 +223,7 @@ function Player:_update()
 		local d_half = d_full * sqrt_one_half
 		
 		if self.djump > 0 and dash then
-			Smoke(self.x, self.y)
+			Smoke(self.pos.x, self.pos.y)
 			self.djump -= 1
 			self.dash_time = 4
 			has_dashed = true
@@ -270,7 +265,7 @@ function Player:_update()
 			end  
 		elseif dash and self.djump <= 0 then
 			psfx(9)
-			Smoke(self.x, self.y)
+			Smoke(self.pos.x, self.pos.y)
 		end
 	end
 
@@ -308,129 +303,6 @@ function Player:_update()
 
 end
 
-function Player:_move(ox, oy)
-
-	-- [x] get move amount
-	if ox ~= 0 then
-		self.rem.x += ox
-		local amount = math.floor(self.rem.x + 0.5)
-		self.rem.x -= amount
-		self:_move_x(amount, 0)
-	end
-
-	-- [y] get move amount
-	if oy ~= 0 then
-		self.rem.y += oy
-		local amount = math.floor(self.rem.y + 0.5)
-		self.rem.y -= amount
-		self:_move_y(amount)
-	end
-
-end
-
-function Player:_move_x(amount, start)
-
-
-	if self.solids then
-		local step = 0
-		if amount > 0 then
-			step = 1
-		elseif amount < 0 then
-			step = -1
-		end
-
-		local count = amount
-		if count < 0 then
-			count = count * -1
-		end
-
-		for i=start, count do
-			if not self:is_solid(step, 0) then
-				self.pos.x += step
-			else
-				self.spd.x = 0
-				self.rem.x = 0
-				break
-			end
-		end
-	else
-		self.x += amount
-	end
-
-end
-
-function Player:_move_y(amount, start)
-
-	local step <const> = sign(amount)
-	local count <const> = math.abs(amount)
-	for i=0, count do
-		if not self:is_solid(0, step) then
-			self.pos.y += step
-		else
-			self.spd.y = 0
-			self.rem.y = 0
-			break
-		end
-	end
-
-end
-
-function Player:is_solid(ox, oy)
-
-	-- local rect = self:getCollideRect():offsetBy(self.x + ox, self.y + oy)
-	-- local spritesInRect = playdate.graphics.sprite.querySpritesInRect(rect)
-	-- if #spritesInRect > 0 then
-	-- 	for _, s in ipairs(spritesInRect) do
-	-- 		if s ~= self and s.is_solid then
-	-- 			return true
-	-- 		end
-	-- 	end
-	-- end
-	-- return false
-
-	-- TODO: special case for levels with platform
-	-- if (#objects[platform.type_id] > 0) and (oy>0) then
-	-- 	local collide_at_ox_0 = false
-	-- 	local collide_at_ox_oy = false
-	-- 	-- equivalent to obj.collide(platform,ox,oy) ~= nil
-	-- 	local r <const> = playdate.geometry.rect.new(obj.x+obj.hitbox.x+ox+kDrawOffsetX, obj.y+obj.hitbox.y+oy+kDrawOffsetY, obj.hitbox.w, obj.hitbox.h)
-	-- 	local sprites_in_rect = GFX.sprite.querySpritesInRect(r)
-	-- 	for i=1, #sprites_in_rect do
-	-- 		local s = sprites_in_rect[i]
-	-- 		if s.type == "platform" then
-	-- 			collide_at_ox_oy = true
-	-- 		end
-	-- 	end
-	-- 	-- equivalent to obj.collide(platform,ox,0) ~= nil
-	-- 	sprites_in_rect = GFX.sprite.querySpritesInRect(r:offsetBy(0, oy * -1))
-	-- 	for i=1, #sprites_in_rect do
-	-- 		local s = sprites_in_rect[i]
-	-- 			if s.type == "platform" then
-	-- 			collide_at_ox_0 = true
-	-- 		end
-	-- 	end
-	-- 	if not collide_at_ox_0 and collide_at_ox_oy then
-	-- 		return true
-	-- 	end
-	-- end
-	local r <const> = playdate.geometry.rect.new(self.pos.x + self.hitbox.x + ox, self.pos.y + self.hitbox.y + oy, self.hitbox.width, self.hitbox.height)
-	local sprites_in_rect <const> = gfx.sprite.querySpritesInRect(r)
-	for i=1, #sprites_in_rect do
-		local s = sprites_in_rect[i]
-		if s.is_solid == true then
-			return true
-		end
-	end
-	return false
-
-end
-
-function Player:is_ice(ox, oy)
-
-	return false
-
-end
-
 function Player:_draw()
 
 	if self.pos.x < -1 or self.pos.x > 193 then 
@@ -446,24 +318,11 @@ function Player:_draw()
 
 end
 
--- update
---
-function Player:update()
-
-	Player.super.update(self)
-	if self.spd.x ~= 0 or self.spd.y ~= 0 then
-		self:_move(self.spd.x, self.spd.y)
-	end
-	self:_update()
-	self:_draw()
-
-end
-
 -- kill
 --
 function Player:kill()
 
 	-- TODO: kill_player(obj)
-	self:remove()
+	self:destroy()
 
 end

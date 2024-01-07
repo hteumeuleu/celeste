@@ -3,18 +3,16 @@ local gfx <const> = pd.graphics
 local img <const> = gfx.image.new("Assets/fake-wall")
 local sign = function(v) return v>0 and 1 or v<0 and -1 or 0 end
 
-class('FakeWall').extends(gfx.sprite)
+class('FakeWall').extends(ParentObject)
 
 function FakeWall:init(x, y)
 
-	FakeWall.super.init(self)
-	self.hitbox = pd.geometry.rect.new(0,0,16,16)
-	self.is_solid = true
+	FakeWall.super.init(self, x, y)
+	self.hitbox = pd.geometry.rect.new(0, 0, 16, 16)
+	self.solid = true
 	self:setImage(img)
-	self:setCenter(0, 0)
 	self:setCollideRect(self.hitbox)
 	self:setCollidesWithGroups({1})
-	self:moveTo(x, y)
 	self:setZIndex(20)
 	self:add()
 	return self
@@ -24,16 +22,18 @@ end
 function FakeWall:update()
 
 	FakeWall.super.update(self)
+	self:setCollideRect(pd.geometry.rect.new(-1, -1, 18, 18))
 	local _, _, collisions, length = self:checkCollisions(0, 0)
 	if length == 1 then
 		local other = collisions[1].other
 		if other.dash_effect_time > 0 then
-			other.spd.x=-sign(other.spd.x)*1.5
-			other.spd.y=-1.5
-			other.dash_time=-1
+			other.spd.x = -sign(other.spd.x) * 1.5
+			other.spd.y = -1.5
+			other.dash_time = -1
 			self:hit()
 		end
 	end
+	self:setCollideRect(pd.geometry.rect.new(0, 0, 16, 16))
 
 end
 
