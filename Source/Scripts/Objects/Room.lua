@@ -5,6 +5,9 @@ import "Scripts/Objects/Cloud"
 import "Scripts/Objects/Particle"
 import "Scripts/Objects/Smoke"
 import "Scripts/Objects/Fruit"
+import "Scripts/Objects/LifeUp"
+import "Scripts/Objects/RoomTitle"
+import "Scripts/Objects/RoomTime"
 
 class('Room').extends()
 
@@ -23,7 +26,14 @@ function Room:init(index)
 	if self.index == nil or self.index < 0 or self.index > 10 then
 		self.index = 0
 	end
+	self.level = (1 + self.index) * 100
 	self.name = "Level_" .. self.index
+	self.title = self.level .. " m"
+	if self.index == 11 then
+		self.title = "old site"
+	elseif self.index == 30 then
+		self.title = "summit"
+	end
 	self:load()
 	return self
 
@@ -106,11 +116,16 @@ function Room:load()
 			self.player = Player(entity.position.x + offset.x, entity.position.y + offset.y)
 		elseif entity.name == "FakeWall" then
 			local fw <const> = FakeWall(entity.position.x + offset.x, entity.position.y + offset.y)
-			-- pd.timer.performAfterDelay(1000, function()
-			-- 	fw:hit(nil)
+			-- pd.timer.performAfterDelay(300, function()
+			-- 	LifeUp(entity.position.x + offset.x, entity.position.y + offset.y)
+			-- 	-- fw:hit(nil)
 			-- end)
 		end
 	end
+
+	-- Room Title and Timer
+	RoomTitle(self.title)
+	RoomTime("00:00:00")
 
 	-- Clouds
 	self:initClouds()

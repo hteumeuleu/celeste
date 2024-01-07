@@ -41,7 +41,7 @@ function Fruit:hit(player)
 		sfx_timer = 20
 		sfx(13)
 		-- got_fruit[1+level_index] = true
-		-- init_object(lifeup,this.x,this.y)
+		LifeUp(self.x, self.y)
 		self:destroy()
 	end
 

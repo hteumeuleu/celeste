@@ -1603,7 +1603,7 @@ room_title = {
 			GFX.pushContext(pdimg)
 				GFX.setColor(GFX.kColorWhite)
 				GFX.fillRect(0, 0, 80, 12)
-				GFX.drawRect(0, 0, 80, 12)
+				GFX.drawRect(0, 0, 80, 12) -- Useful??
 				if room.x==3 and room.y==1 then
 					_print("old site",24,4,0)
 				elseif level_index==30 then
