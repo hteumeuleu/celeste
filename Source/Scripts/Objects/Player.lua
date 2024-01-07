@@ -82,13 +82,15 @@ function Player:_update()
 	-- end
 
 	-- Collisions
-	local _, _, collisions_at_x_y, length = self:checkCollisions(self.pos.x, self.pos.y)
+	local _, _, collisions_at_x_y, length = self:checkCollisions(self.x, self.y)
 	if length > 0 then
 		for i=1, #collisions_at_x_y do
 			local col = collisions_at_x_y[i]
 			local playerIsAboveObject = col.spriteRect.y + col.spriteRect.height <= col.otherRect.y + col.otherRect.height
 			local playerIsUnder = (col.spriteRect.y >= col.otherRect.y + col.otherRect.height) and ((col.spriteRect.x + col.spriteRect.width >= col.otherRect.x) or (col.spriteRect.x <= col.otherRect.x + col.otherRect.width))
-			if col.other.type == "spikes" then
+			if col.other.spike == true then
+				print("Spike")
+				self:kill()
 				-- -- spikes collide
 				-- if game_obj.options:get("invicibility") == false then
 				-- 	if spikes_at(this.x+this.hitbox.x,this.y+this.hitbox.y,this.hitbox.width,this.hitbox.height,this.spd.x,this.spd.y) then

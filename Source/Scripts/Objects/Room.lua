@@ -67,8 +67,9 @@ function Room:load()
 			layerSprite:setZIndex(layer.zIndex)
 			layerSprite:add()
 
-			-- Wall sprites
+			-- Foreground (walls and spikes) collision sprites
 			if layer_name == "Foreground" then
+				-- Walls
 				local emptyTiles = ldtk.get_empty_tileIDs(level_name, "Solid", layer_name)
 				if emptyTiles then
 					local wallSprites <const> = gfx.sprite.addWallSprites(tilemap, emptyTiles, layer.rect.x + offset.x, layer.rect.y + offset.y)
@@ -76,6 +77,19 @@ function Room:load()
 						wallSprite:setCenter(0, 0)
 						wallSprite:moveBy((wallSprite.width/2)*-1, (wallSprite.height/2)*-1)
 						wallSprite.solid = true
+					end
+				end
+				-- Spikes
+				local spikeTiles = ldtk.get_empty_tileIDs(level_name, "SpikeUp", layer_name)
+				if spikeTiles then
+					local spikeSprites <const> = gfx.sprite.addWallSprites(tilemap, spikeTiles, layer.rect.x + offset.x, layer.rect.y + offset.y)
+					for index, spikeSprite in ipairs(spikeSprites) do
+						spikeSprite:setCenter(0, 0)
+						spikeSprite:moveBy((spikeSprite.width/2)*-1, (spikeSprite.height/2)*-1)
+						spikeSprite.spike = true
+						spikeSprite:setCollideRect(pd.geometry.rect.new(0, 5, spikeSprite.width, 3))
+						spikeSprite:setCollidesWithGroups({1})
+						spikeSprite:setGroups({5})
 					end
 				end
 			end
