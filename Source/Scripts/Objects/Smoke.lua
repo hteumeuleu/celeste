@@ -1,6 +1,8 @@
 local pd <const> = playdate
 local gfx <const> = pd.graphics
 local image_table <const> = gfx.imagetable.new("Levels/1bit-classic")
+local flip <const> = pico8.flip
+local maybe <const> = pico8.celeste.maybe
 
 class('Smoke').extends(gfx.sprite)
 

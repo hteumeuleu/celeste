@@ -529,6 +529,7 @@ function _.load_tileset_imagetable(path, flipped)
 
 	local image_filepath, onebit_image_filepath
 	if flipped then
+		print(filename, path)
 		local filename = path:match("^.+/(.+)$")
 		local tileset_folder = path:sub(0, -#filename-1)
 		image_filepath = _ldtk_folder..tileset_folder.."flipped-"..filename

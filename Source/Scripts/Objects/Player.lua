@@ -1,6 +1,5 @@
 local pd <const> = playdate
 local gfx <const> = pd.graphics
-local offset <const> = pd.geometry.point.new(-4, -4)
 local image_table <const> = gfx.imagetable.new("Assets/player")
 local dead_particle_img <const> = gfx.image.new(10, 10, gfx.kColorWhite)
 local k_left <const> = pd.kButtonLeft
@@ -10,39 +9,14 @@ local k_down <const> = pd.kButtonDown
 local k_jump <const> = pd.kButtonA
 local k_dash <const> = pd.kButtonB
 local sqrt_one_half <const> = 0.70710678118
-local btn = function(i) return pd.buttonIsPressed(i) end
-local appr = function(val, target, amount) return val > target and math.max(val - amount, target) or math.min(val + amount, target) end
-local sign = function(v) return v > 0 and 1 or v < 0 and -1 or 0 end
-local flip = function(flip_x, flip_y)
-	local image_flip =  gfx.kImageUnflipped
-	if flip_x and flip_y then
-		 image_flip = gfx.kImageFlippedXY
-	elseif flip_x then
-		 image_flip = gfx.kImageFlippedX
-	elseif flip_y then
-		 image_flip = gfx.kImageFlippedY
-	end
-	return image_flip
-end
-
-local sin = function(angle)
-	return math.sin(math.rad(angle * -1 * 360.0))
-end
-
-local cos = function(angle)
-	return math.cos(math.rad(angle * -1 * 360.0))
-end
-
-local del = function(t, value)
-
-	for i=1, #t do
-		if t[i] == value then
-			table.remove(t, i)
-			break
-		end
-	end
-
-end
+local btn <const> = pico8.btn
+local clamp <const> = pico8.celeste.clamp
+local appr <const> = pico8.celeste.appr
+local sign <const> = pico8.celeste.sign
+local flip <const> = pico8.flip
+local sin <const> = pico8.sin
+local cos <const> = pico8.cos
+local del <const> = pico8.del
 
 class('Player').extends(ParentObject)
 
@@ -64,15 +38,11 @@ function Player:init(x, y, parent)
 	self.dash_accel = pd.geometry.vector2D.new(0, 0)
 	self.spr = 3
 	self.spr_off = 0
-	self.flip = {}
-	self.flip.x = false
-	self.flip.y = false
 	self.hitbox = pd.geometry.rect.new(1,3,6,5)
 	self.pos = pd.geometry.point.new(x, y)
 	self.solids = true
 
 	self.collisionResponse = gfx.sprite.kCollisionTypeOverlap
-	self:setCenter(0, 0)
 	self:setZIndex(20)
 	self:setCollideRect(self.hitbox:offsetBy(1,1))
 	self:setCollidesWithGroups({2,3,4,5,6})
@@ -106,9 +76,11 @@ function Player:_update()
 	if length > 0 then
 		for i=1, #collisions_at_x_y do
 			local col = collisions_at_x_y[i]
+			local other = collisions_at_x_y[i].other
 			-- local playerIsAboveObject = col.spriteRect.y + col.spriteRect.height <= col.otherRect.y + col.otherRect.height
 			-- local playerIsUnder = (col.spriteRect.y >= col.otherRect.y + col.otherRect.height) and ((col.spriteRect.x + col.spriteRect.width >= col.otherRect.x) or (col.spriteRect.x <= col.otherRect.x + col.otherRect.width))
-			if col.other.spike == true then
+			print(other.className)
+			if other.spike == true then
 				print("Spike")
 				self:kill()
 				-- -- spikes collide
@@ -117,6 +89,8 @@ function Player:_update()
 				-- 		kill_player(this)
 				-- 	end
 				-- end
+			elseif other.className == "Spring" then
+				other:hit(self)
 			-- elseif (col.other.type == "fruit" or col.other.type == "fly_fruit") and col.other.hit ~= nil then
 			-- 	-- col.other:hit(col.sprite.obj)
 			-- elseif col.other.type == "balloon" and col.other.hit ~= nil then
@@ -130,7 +104,7 @@ function Player:_update()
 	local input = btn(k_right) and 1 or (btn(k_left) and -1 or 0)
 
 	-- Bottom death
-	if self.pos.y > 256 then
+	if self.pos.y > 128 then
 		self:kill()
 	end
 
@@ -313,12 +287,12 @@ function Player:_update()
 		self.spr = 1 + self.spr_off % 4
 	end
 
-	-- TODO: Next level
-	-- if self.pos.y <- 4 and level_index < 30 then
-	-- 	self.pos.y = 0
-	-- 	self.pos.x = 0
-	-- 		next_room()
-	-- end
+	-- Next level
+	if self.pos.y <- 4 and self.parent.parent.level_index < 30 then
+		self.pos.y = 0
+		self.pos.x = 0
+		self.parent.parent:nextRoom()
+	end
 
 	-- Was on the ground
 	self.was_on_ground = on_ground

@@ -1,7 +1,7 @@
 local pd <const> = playdate
 local gfx <const> = pd.graphics
 local img <const> = gfx.image.new("Assets/fake-wall")
-local sign = function(v) return v>0 and 1 or v<0 and -1 or 0 end
+local sign <const> = pico8.celeste.sign
 
 class('FakeWall').extends(ParentObject)
 

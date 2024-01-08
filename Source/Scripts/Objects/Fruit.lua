@@ -1,7 +1,8 @@
 local pd <const> = playdate
 local gfx <const> = pd.graphics
-local imageTable <const> = gfx.imagetable.new("Assets/fruit")
-local img <const> = imageTable:getImage(1)
+local image_table <const> = gfx.imagetable.new("Assets/fruit")
+local img <const> = image_table:getImage(1)
+local sin <const> = pico8.sin
 
 class('Fruit').extends(ParentObject)
 

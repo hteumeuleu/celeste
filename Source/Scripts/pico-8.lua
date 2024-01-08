@@ -1,7 +1,8 @@
+-- OLD FILE, will remove later
 local GFX = playdate.graphics
 local musicPlayer, fxPlayer
 local data = g_data
-pico8 = {}
+pico_8 = {}
 
 function pauseMusic()
 
@@ -210,12 +211,12 @@ local current_music_index = 0
 function make_sure_music_is_playing(n)
 
 	if current_music_index ~= n then
-		pico8.music(n)
+		pico_8.music(n)
 	end
 
 end
 
-pico8.music = function(n, fade_len, channel_mask)
+pico_8.music = function(n, fade_len, channel_mask)
 
 	fade_len = fade_len or 1000
 	channel_mask = channel_mask or 1

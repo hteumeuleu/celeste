@@ -1,12 +1,12 @@
 import "Scripts/Libraries/LDtk"
 
-class('Room').extends()
-
 local pd <const> = playdate
 local gfx <const> = pd.graphics
 local ldtk <const> = LDtk
 ldtk.load("Levels/celeste-classic.ldtk", false)
 local offset <const> = pd.geometry.point.new(-4, -4)
+
+class('Room').extends()
 
 -- Room
 --
@@ -98,25 +98,21 @@ function Room:load()
 		end
 	end
 
-	-- Room outer walls
-	local topCollisionSprite <const> = gfx.sprite.addEmptyCollisionSprite(0, -8, 200, 8)
-	local bottomCollisionSprite <const> = gfx.sprite.addEmptyCollisionSprite(0, 120, 200, 8)
-
 	-- Entities
 	for index, entity in ipairs(LDtk.get_entities(level_name)) do
 		if entity.name == "Player" then
 			self.player = Player(entity.position.x + offset.x, entity.position.y + offset.y, self)
 		elseif entity.name == "FakeWall" then
-			local fw <const> = FakeWall(entity.position.x + offset.x, entity.position.y + offset.y, self)
-			-- pd.timer.performAfterDelay(300, function()
-			-- 	LifeUp(entity.position.x + offset.x, entity.position.y + offset.y)
-			-- 	-- fw:hit(nil)
-			-- end)
+			FakeWall(entity.position.x + offset.x, entity.position.y + offset.y, self)
+		elseif entity.name == "Fruit" then
+			Fruit(entity.position.x + offset.x, entity.position.y + offset.y, self)
+		elseif entity.name == "Spring" then
+			Spring(entity.position.x + offset.x, entity.position.y + offset.y, self)
 		end
 	end
 
 	-- Room Title and Timer
-	self.roomTitle = RoomTitle(self.title, self)
+	RoomTitle(self.title, self)
 
 	-- Clouds
 	self:initClouds()
@@ -129,6 +125,8 @@ end
 function Room:restart()
 
 	print("Room:restart")
+	self.parent.will_restart = true
+	self.parent.delay_restart = 15
 
 end
 

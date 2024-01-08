@@ -8,7 +8,7 @@ local min = function(a, b) return math.min(a, b) end
 local max = function(a, b) return math.max(a, b) end
 local btn = function(i) return playdate.buttonIsPressed(i) end
 local mget = function(celx, cely) return data.map[celx + (cely * 128) + 1] end
-local music = pico8.music
+local music = pico_8.music
 
 -- ~celeste~
 -- maddy thorson + noel berry
@@ -2325,23 +2325,23 @@ end
 -- helper functions --
 ----------------------
 
-function clamp(val,a,b)
-	return max(a, min(b, val))
-end
+-- function clamp(val,a,b)
+-- 	return max(a, min(b, val))
+-- end
 
-function appr(val,target,amount)
-	return val > target 
-		and math.max(val - amount, target) 
-		or math.min(val + amount, target)
-end
+-- function appr(val,target,amount)
+-- 	return val > target 
+-- 		and math.max(val - amount, target) 
+-- 		or math.min(val + amount, target)
+-- end
 
-function sign(v)
-	return v>0 and 1 or v<0 and -1 or 0
-end
+-- function sign(v)
+-- 	return v>0 and 1 or v<0 and -1 or 0
+-- end
 
-function maybe()
-	return (math.random()*1)<0.5
-end
+-- function maybe()
+-- 	return (math.random()*1)<0.5
+-- end
 
 function tile_at(x,y)
 	local celx = room.x * 16 + x

@@ -1,5 +1,6 @@
 local pd <const> = playdate
 local gfx <const> = pd.graphics
+local sign <const> = pico8.celeste.sign
 
 class('ParentObject').extends(gfx.sprite)
 
@@ -155,5 +156,24 @@ function ParentObject:move_y(amount, start)
 	else
 		self.y += amount
 	end
+
+end
+
+function ParentObject:collide(type, ox, oy)
+
+	-- .collide=function(type,ox,oy)
+	-- 	local typeList = objects[type.type_id]
+	-- 	if #typeList == 0 then
+	-- 		return nil
+	-- 	end
+
+	-- 	for i=1,#typeList do
+	-- 		local other=typeList[i]
+	-- 		if other ~= nil and other.collideable and obj.hitbox:offsetBy(obj.x+ox,obj.y+oy):intersects(other.hitbox:offsetBy(other.x,other.y)) then
+	-- 			return other
+	-- 		end
+	-- 	end
+	-- 	return nil
+	-- end
 
 end

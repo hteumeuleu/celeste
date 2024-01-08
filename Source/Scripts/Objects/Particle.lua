@@ -1,6 +1,6 @@
 local pd <const> = playdate
 local gfx <const> = pd.graphics
-local sin = function(angle) return math.sin(math.rad(angle * -1 * 360.0)) end
+local sin <const> = pico8.sin
 
 class('Particle').extends(gfx.sprite)
 

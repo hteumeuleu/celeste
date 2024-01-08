@@ -1,7 +1,9 @@
 import "Scripts/Libraries/Signal"
+import "Scripts/Libraries/pico8"
 import "Scripts/Objects/Object"
 import "Scripts/Objects/Room"
 import "Scripts/Objects/Player"
+import "Scripts/Objects/PlayerSpawn"
 import "Scripts/Objects/FakeWall"
 import "Scripts/Objects/Cloud"
 import "Scripts/Objects/Particle"
@@ -10,14 +12,11 @@ import "Scripts/Objects/Fruit"
 import "Scripts/Objects/LifeUp"
 import "Scripts/Objects/RoomTitle"
 import "Scripts/Objects/RoomTitleTime"
+import "Scripts/Objects/Spring"
 
 local pd <const> = playdate
 local gfx <const> = pd.graphics
-local camera = function(x, y)
-	x = x or 0
-	y = y or 0
-	pd.display.setOffset(x, y)
-end
+local camera <const> = pico8.camera
 
 class("Game").extends(gfx.sprite)
 
@@ -29,7 +28,7 @@ function Game:init()
 	self.shake = 0
 	self.will_restart = false
 	self.delay_restart = 0
-	self.level_index = 0
+	self.level_index = 2
 	self.seconds = 0
 	self.minutes = 0
 	self.frames = 0
@@ -37,7 +36,7 @@ function Game:init()
 	self.music_timer = 0
 	self.sfx_timer = 0
 
-	local r = Room(self.level_index, self)
+	self.room = Room(self.level_index, self)
 	-- self._init = _init
 	-- self._update = _update
 	-- self._draw = _draw
@@ -101,9 +100,20 @@ function Game:update()
 		self.delay_restart -= 1
 		if self.delay_restart <= 0 then
 			self.will_restart = false
-			-- load_room(room.x,room.y)
+			self.room:load()
 		end
 	end
+
+end
+
+function Game:nextRoom()
+
+	if self.level_index < 2 then
+		self.level_index += 1
+	else
+		self.level_index = 0
+	end
+	self.room = Room(self.level_index, self)
 
 end
 
