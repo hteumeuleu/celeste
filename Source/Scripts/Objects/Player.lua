@@ -77,19 +77,11 @@ function Player:_update()
 		for i=1, #collisions_at_x_y do
 			local col = collisions_at_x_y[i]
 			local other = collisions_at_x_y[i].other
-			-- local playerIsAboveObject = col.spriteRect.y + col.spriteRect.height <= col.otherRect.y + col.otherRect.height
-			-- local playerIsUnder = (col.spriteRect.y >= col.otherRect.y + col.otherRect.height) and ((col.spriteRect.x + col.spriteRect.width >= col.otherRect.x) or (col.spriteRect.x <= col.otherRect.x + col.otherRect.width))
-			print(other.className)
 			if other.spike == true then
-				print("Spike")
 				self:kill()
-				-- -- spikes collide
-				-- if game_obj.options:get("invicibility") == false then
-				-- 	if spikes_at(this.x+this.hitbox.x,this.y+this.hitbox.y,this.hitbox.width,this.hitbox.height,this.spd.x,this.spd.y) then
-				-- 		kill_player(this)
-				-- 	end
-				-- end
 			elseif other.className == "Spring" then
+				other:hit(self)
+			elseif other.className == "Fruit" or other.className == "FlyFruit" then
 				other:hit(self)
 			-- elseif (col.other.type == "fruit" or col.other.type == "fly_fruit") and col.other.hit ~= nil then
 			-- 	-- col.other:hit(col.sprite.obj)
@@ -222,7 +214,7 @@ function Player:_update()
 			Smoke(self.pos.x, self.pos.y)
 			self.djump -= 1
 			self.dash_time = 4
-			has_dashed = true
+			self.parent.has_dashed = true
 			self.dash_effect_time = 10
 			local v_input = (btn(k_up) and -1 or (btn(k_down) and 1 or 0))
 			if input ~= 0 then

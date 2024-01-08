@@ -9,6 +9,7 @@ import "Scripts/Objects/Cloud"
 import "Scripts/Objects/Particle"
 import "Scripts/Objects/Smoke"
 import "Scripts/Objects/Fruit"
+import "Scripts/Objects/FlyFruit"
 import "Scripts/Objects/LifeUp"
 import "Scripts/Objects/RoomTitle"
 import "Scripts/Objects/RoomTitleTime"
@@ -108,7 +109,7 @@ end
 
 function Game:nextRoom()
 
-	if self.level_index < 2 then
+	if self.level_index < 3 then
 		self.level_index += 1
 	else
 		self.level_index = 0

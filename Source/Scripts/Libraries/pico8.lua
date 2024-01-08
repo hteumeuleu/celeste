@@ -31,14 +31,17 @@ pico8.cos = function(angle)
 end
 
 pico8.del = function(t, value)
-
 	for i=1, #t do
 		if t[i] == value then
 			table.remove(t, i)
 			break
 		end
 	end
+end
 
+pico8.max = function(first, second)
+	second = second or 0
+	return math.max(first, second)
 end
 
 pico8.btn = function(i)

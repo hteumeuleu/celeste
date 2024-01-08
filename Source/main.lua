@@ -78,5 +78,8 @@ function playdate.keyPressed(key)
 	-- if key == "m" then
 	-- 	g:toggleOptions()
 	-- end
+	if key == "r" then
+		CELESTE:nextRoom()
+	end
 
 end

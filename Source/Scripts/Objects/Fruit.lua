@@ -27,11 +27,6 @@ function Fruit:update()
 	Fruit.super.update(self)
 	self.off += 1
 	self:moveTo(self.x, self.start + sin(self.off/40) * 2.5)
-	local _, _, collisions, length = self:checkCollisions(0, 0)
-	if length == 1 then
-		local player = collisions[1].other
-		self:hit(player)
-	end
 
 end
 

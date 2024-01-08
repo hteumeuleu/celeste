@@ -38,6 +38,7 @@ function Room:load()
 
 	gfx.sprite.removeAll()
 
+	self.has_dashed = false
 	local level_name = self.name
 
 	for layer_name, layer in pairs(ldtk.get_layers(level_name)) do
@@ -106,6 +107,8 @@ function Room:load()
 			FakeWall(entity.position.x + offset.x, entity.position.y + offset.y, self)
 		elseif entity.name == "Fruit" then
 			Fruit(entity.position.x + offset.x, entity.position.y + offset.y, self)
+		elseif entity.name == "FlyFruit" then
+			FlyFruit(entity.position.x + offset.x, entity.position.y + offset.y, self)
 		elseif entity.name == "Spring" then
 			Spring(entity.position.x + offset.x, entity.position.y + offset.y, self)
 		end
