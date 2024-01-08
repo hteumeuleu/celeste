@@ -5,8 +5,15 @@ import "CoreLibs/timer"
 import "CoreLibs/ui"
 import "CoreLibs/crank"
 
+import "Scripts/data.lua"
+import "Scripts/globals.lua"
 import "Scripts/Game"
-local g = Game()
+
+import "Scripts/pico-8.lua" -- useful for celeste.lua, will remove later
+import "Scripts/celeste.lua" -- useful for psfx, will remove later
+-- import "Scripts/Options"
+
+local CELESTE <const> = Game()
 local showFPS = true
 
 playdate.display.setRefreshRate(30)
@@ -19,7 +26,7 @@ function playdate.update()
 
 	playdate.timer.updateTimers()
 	playdate.graphics.sprite.update()
-	g:update()
+	CELESTE:update()
 	if showFPS then
 		playdate.drawFPS(0, 0)
 	end

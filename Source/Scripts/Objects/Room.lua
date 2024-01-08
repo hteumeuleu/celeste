@@ -1,13 +1,4 @@
 import "Scripts/Libraries/LDtk"
-import "Scripts/Objects/Player"
-import "Scripts/Objects/FakeWall"
-import "Scripts/Objects/Cloud"
-import "Scripts/Objects/Particle"
-import "Scripts/Objects/Smoke"
-import "Scripts/Objects/Fruit"
-import "Scripts/Objects/LifeUp"
-import "Scripts/Objects/RoomTitle"
-import "Scripts/Objects/RoomTime"
 
 class('Room').extends()
 
@@ -19,9 +10,10 @@ local offset <const> = pd.geometry.point.new(-4, -4)
 
 -- Room
 --
-function Room:init(index)
+function Room:init(index, parent)
 
 	Room.super.init(self)
+	self.parent = parent or nil
 	self.index = index
 	if self.index == nil or self.index < 0 or self.index > 10 then
 		self.index = 0
@@ -113,9 +105,9 @@ function Room:load()
 	-- Entities
 	for index, entity in ipairs(LDtk.get_entities(level_name)) do
 		if entity.name == "Player" then
-			self.player = Player(entity.position.x + offset.x, entity.position.y + offset.y)
+			self.player = Player(entity.position.x + offset.x, entity.position.y + offset.y, self)
 		elseif entity.name == "FakeWall" then
-			local fw <const> = FakeWall(entity.position.x + offset.x, entity.position.y + offset.y)
+			local fw <const> = FakeWall(entity.position.x + offset.x, entity.position.y + offset.y, self)
 			-- pd.timer.performAfterDelay(300, function()
 			-- 	LifeUp(entity.position.x + offset.x, entity.position.y + offset.y)
 			-- 	-- fw:hit(nil)
@@ -124,8 +116,7 @@ function Room:load()
 	end
 
 	-- Room Title and Timer
-	RoomTitle(self.title)
-	RoomTime("00:00:00")
+	self.roomTitle = RoomTitle(self.title, self)
 
 	-- Clouds
 	self:initClouds()
@@ -134,6 +125,13 @@ function Room:load()
 	self:initParticles()
 
 end
+
+function Room:restart()
+
+	print("Room:restart")
+
+end
+
 
 function Room:initClouds()
 

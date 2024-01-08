@@ -5,9 +5,9 @@ local img <const> = imageTable:getImage(1)
 
 class('Fruit').extends(ParentObject)
 
-function Fruit:init(x, y)
+function Fruit:init(x, y, parent)
 
-	Fruit.super.init(self, x, y)
+	Fruit.super.init(self, x, y, parent)
 	self.start = y
 	self.off = 0
 	self:setImage(img)

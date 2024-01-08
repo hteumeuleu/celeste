@@ -5,9 +5,9 @@ local sign = function(v) return v>0 and 1 or v<0 and -1 or 0 end
 
 class('FakeWall').extends(ParentObject)
 
-function FakeWall:init(x, y)
+function FakeWall:init(x, y, parent)
 
-	FakeWall.super.init(self, x, y)
+	FakeWall.super.init(self, x, y, parent)
 	self.hitbox = pd.geometry.rect.new(0, 0, 16, 16)
 	self.solid = true
 	self:setImage(img)
@@ -47,7 +47,7 @@ function FakeWall:hit()
     Smoke(self.x + 8, self.y)
     Smoke(self.x, self.y + 8)
     Smoke(self.x + 8, self.y + 8)
-    Fruit(self.x + 4, self.y + 4)
+    Fruit(self.x + 4, self.y + 4, self)
 
 end
 

@@ -2,6 +2,7 @@ local pd <const> = playdate
 local gfx <const> = pd.graphics
 local offset <const> = pd.geometry.point.new(-4, -4)
 local image_table <const> = gfx.imagetable.new("Assets/player")
+local dead_particle_img <const> = gfx.image.new(10, 10, gfx.kColorWhite)
 local k_left <const> = pd.kButtonLeft
 local k_right <const> = pd.kButtonRight
 local k_up <const> = pd.kButtonUp
@@ -24,13 +25,32 @@ local flip = function(flip_x, flip_y)
 	return image_flip
 end
 
+local sin = function(angle)
+	return math.sin(math.rad(angle * -1 * 360.0))
+end
+
+local cos = function(angle)
+	return math.cos(math.rad(angle * -1 * 360.0))
+end
+
+local del = function(t, value)
+
+	for i=1, #t do
+		if t[i] == value then
+			table.remove(t, i)
+			break
+		end
+	end
+
+end
+
 class('Player').extends(ParentObject)
 
 -- Player
 --
-function Player:init(x, y)
+function Player:init(x, y, parent)
 
-	Player.super.init(self, x, y)
+	Player.super.init(self, x, y, parent)
 
 	self.max_djump = 1
 	self.p_jump = false
@@ -86,8 +106,8 @@ function Player:_update()
 	if length > 0 then
 		for i=1, #collisions_at_x_y do
 			local col = collisions_at_x_y[i]
-			local playerIsAboveObject = col.spriteRect.y + col.spriteRect.height <= col.otherRect.y + col.otherRect.height
-			local playerIsUnder = (col.spriteRect.y >= col.otherRect.y + col.otherRect.height) and ((col.spriteRect.x + col.spriteRect.width >= col.otherRect.x) or (col.spriteRect.x <= col.otherRect.x + col.otherRect.width))
+			-- local playerIsAboveObject = col.spriteRect.y + col.spriteRect.height <= col.otherRect.y + col.otherRect.height
+			-- local playerIsUnder = (col.spriteRect.y >= col.otherRect.y + col.otherRect.height) and ((col.spriteRect.x + col.spriteRect.width >= col.otherRect.x) or (col.spriteRect.x <= col.otherRect.x + col.otherRect.width))
 			if col.other.spike == true then
 				print("Spike")
 				self:kill()
@@ -97,12 +117,12 @@ function Player:_update()
 				-- 		kill_player(this)
 				-- 	end
 				-- end
-			elseif (col.other.type == "fruit" or col.other.type == "fly_fruit") and col.other.hit ~= nil then
-				-- col.other:hit(col.sprite.obj)
-			elseif col.other.type == "balloon" and col.other.hit ~= nil then
-				-- col.other:hit(col.sprite.obj)
-			elseif col.other.type == "platform" and col.other.hit ~= nil and on_ground and playerIsAboveObject then
-				-- col.other:hit(col.sprite.obj)
+			-- elseif (col.other.type == "fruit" or col.other.type == "fly_fruit") and col.other.hit ~= nil then
+			-- 	-- col.other:hit(col.sprite.obj)
+			-- elseif col.other.type == "balloon" and col.other.hit ~= nil then
+			-- 	-- col.other:hit(col.sprite.obj)
+			-- elseif col.other.type == "platform" and col.other.hit ~= nil and on_ground and playerIsAboveObject then
+			-- 	-- col.other:hit(col.sprite.obj)
 			end
 		end
 	end
@@ -248,8 +268,8 @@ function Player:_update()
 			end
 
 			psfx(3)
-			freeze = 2
-			shake = 6
+			self.parent.parent.freeze = 2
+			self.parent.parent.shake = 6
 			self.dash_target.x = 2 * sign(self.spd.x)
 			self.dash_target.y = 2 * sign(self.spd.y)
 			self.dash_accel.x = 1.5
@@ -312,11 +332,40 @@ function Player:_draw()
 		self.spd.x = 0
 	end
 
-	local img <const> = image_table:getImage(math.floor(self.spr))
-	-- TODO: has_orb_effect
+	local img = image_table:getImage(math.floor(self.spr))
+	
+	-- Orb effect or dash effect
+	local has_orb_effect = (self.djump >= 2 and math.floor((self.parent.parent.frames / 3) % 2) == 0)
+	-- if reduce_flashing then
+	-- 	has_orb_effect = false
+	-- end
+	if self.djump == 0 or has_orb_effect then
+		local newimg = img:copy()
+		newimg:clear(gfx.kColorClear)
+		gfx.pushContext(newimg)
+			gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+			img:draw(0,0)
+			local overlay_index_increment = 3*7
+			local overlay <const> = image_table:getImage(math.floor(self.spr) + overlay_index_increment)
+			gfx.setImageDrawMode(gfx.kDrawModeCopy)
+			overlay:draw(0,0)
+		gfx.popContext()
+		img = newimg
+	end
+
 	self:setImage(img, flip(self.flip.x, self.flip.y))
 	self:moveTo(self.pos.x - 1, self.pos.y - 1)
 	-- TODO: draw_hair()
+
+end
+
+function Player:destroy()
+
+	Player.super.destroy(self)
+	-- TODO: remove hair
+	-- if layers.hair ~= nil then
+	-- 	layers.hair:remove()
+	-- end
 
 end
 
@@ -324,7 +373,46 @@ end
 --
 function Player:kill()
 
-	-- TODO: kill_player(obj)
+	self.parent.parent.sfx_timer = 12
+	sfx(0)
+	self.parent.parent.deaths += 1
+	self.parent.parent.shake = 10
 	self:destroy()
+	self:addDeadParticles()
+	self.parent:restart()
+
+end
+
+function Player:addDeadParticles()
+
+	local dir
+	for dir = 0, 7 do
+		local angle = (dir / 8)
+		local particle = {
+			x = self.pos.x + 4,
+			y = math.min(self.pos.y + 4, 120),
+			t = 10,
+			spd = {
+				x = sin(angle) * 3,
+				y = cos(angle) * 3
+			},
+			spr = gfx.sprite.new(dead_particle_img)
+		}
+		particle.spr:setZIndex(30)
+		particle.spr:add()
+		particle.spr:moveTo(particle.x, particle.y)
+		particle.spr.update = function()
+			particle.x += particle.spd.x
+			particle.y += particle.spd.y
+			particle.t -= 1
+			if particle.t <= 0 then
+				particle.spr:remove()
+			else
+				local new_t <const> = math.floor(particle.t / 5) + 1
+				particle.spr:setSize(new_t, new_t)
+				particle.spr:moveTo(particle.x, particle.y)
+			end
+		end
+	end
 
 end

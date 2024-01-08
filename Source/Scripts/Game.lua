@@ -1,20 +1,43 @@
-import "Scripts/data.lua"
-import "Scripts/globals.lua"
-import "Scripts/pico-8.lua"
-import "Scripts/celeste.lua"
-import "Scripts/Options"
+import "Scripts/Libraries/Signal"
 import "Scripts/Objects/Object"
 import "Scripts/Objects/Room"
+import "Scripts/Objects/Player"
+import "Scripts/Objects/FakeWall"
+import "Scripts/Objects/Cloud"
+import "Scripts/Objects/Particle"
+import "Scripts/Objects/Smoke"
+import "Scripts/Objects/Fruit"
+import "Scripts/Objects/LifeUp"
+import "Scripts/Objects/RoomTitle"
+import "Scripts/Objects/RoomTitleTime"
 
-class("Game").extends()
+local pd <const> = playdate
+local gfx <const> = pd.graphics
+local camera = function(x, y)
+	x = x or 0
+	y = y or 0
+	pd.display.setOffset(x, y)
+end
 
-local GFX = playdate.graphics
-local data = g_data
+class("Game").extends(gfx.sprite)
 
 function Game:init()
 
 	Game.super.init(self)
-	local r = Room()
+
+	self.freeze = 0
+	self.shake = 0
+	self.will_restart = false
+	self.delay_restart = 0
+	self.level_index = 0
+	self.seconds = 0
+	self.minutes = 0
+	self.frames = 0
+	self.deaths = 0
+	self.music_timer = 0
+	self.sfx_timer = 0
+
+	local r = Room(self.level_index, self)
 	-- self._init = _init
 	-- self._update = _update
 	-- self._draw = _draw
@@ -26,12 +49,61 @@ function Game:init()
 
 end
 
+function Game:getTime()
+
+    local s = self.seconds
+    local m = self.minutes % 60
+    local h = math.floor(self.minutes / 60)
+	return (h<10 and "0"..h or h)..":"..(m<10 and "0"..m or m)..":"..(s<10 and "0"..s or s)
+
+end
+
 function Game:update()
 
-	-- if not self.isPaused then
-	-- 	self:_update()
-	-- 	self:_draw()
-	-- end
+	self.frames = ((self.frames + 1) % 30)
+
+	-- Timers
+	if self.frames == 0 and self.level_index < 30 then
+		self.seconds = ((self.seconds + 1) % 60)
+		if self.seconds == 0 then
+			self.minutes += 1
+		end
+	end
+
+	if self.music_timer > 0 then
+		self.music_timer -= 1
+		if self.music_timer <= 0 then
+			music(10,0,7)
+		end
+	end
+
+	if self.sfx_timer > 0 then
+		self.sfx_timer -= 1
+	end
+
+	-- Cancel if freeze
+	if self.freeze > 0 then
+		self.freeze -= 1
+		return
+	end
+
+	-- Screenshake
+	if self.shake > 0 then
+		self.shake -= 1
+		camera()
+		if self.shake > 0 then
+			camera(-2 + (math.random() * 5), -2 + (math.random() * 5))
+		end
+	end
+
+	-- Restart (soon)
+	if self.will_restart and self.delay_restart > 0 then
+		self.delay_restart -= 1
+		if self.delay_restart <= 0 then
+			self.will_restart = false
+			-- load_room(room.x,room.y)
+		end
+	end
 
 end
 
@@ -256,7 +328,7 @@ end
 --
 function Game:updatePauseScreen()
 
-	-- local image <const> = GFX.image.new(400, 240)
+	-- local image <const> = gfx.image.new(400, 240)
 	-- local offset = 72
 	-- local status = self:serialize()
 	-- local is_start_screen = (status.room.x == 7 and status.room.y == 3)
@@ -265,27 +337,27 @@ function Game:updatePauseScreen()
 	-- if not self:isFullScreen() then
 	-- 	offset = 100
 	-- end
-	-- GFX.pushContext(image)
+	-- gfx.pushContext(image)
 	-- 	-- Draw dark overlay
-	-- 	local overlay <const> = GFX.image.new(400, 240, GFX.kColorBlack)
-	-- 	overlay:drawFaded(0, 0, 0.5, GFX.image.kDitherTypeBayer2x2)
+	-- 	local overlay <const> = gfx.image.new(400, 240, gfx.kColorBlack)
+	-- 	overlay:drawFaded(0, 0, 0.5, gfx.image.kDitherTypeBayer2x2)
 	-- 	if (not is_start_screen and not (status.room.x == 6 and status.room.y == 3)) or (is_start_screen and has_scores) then
-	-- 		local boxImage <const> = GFX.image.new(64, 50)
-	-- 		GFX.pushContext(boxImage)
+	-- 		local boxImage <const> = gfx.image.new(64, 50)
+	-- 		gfx.pushContext(boxImage)
 	-- 			-- Draw box
 	-- 			local box = playdate.geometry.rect.new(0, 0, 64, 42)
-	-- 			GFX.setColor(GFX.kColorWhite)
-	-- 			GFX.fillRect(box)
+	-- 			gfx.setColor(gfx.kColorWhite)
+	-- 			gfx.fillRect(box)
 	-- 			local inside = playdate.geometry.rect.new(box.x + 1, box.y + 13, box.width - 2, box.height - 14)
-	-- 			GFX.setColor(GFX.kColorBlack)
-	-- 			GFX.fillRect(inside)
+	-- 			gfx.setColor(gfx.kColorBlack)
+	-- 			gfx.fillRect(inside)
 	-- 			-- Draw room title
 	-- 			local fontHeight <const> = data.font:getHeight()
 	-- 			local room_title = get_room_title()
 	-- 			if (is_start_screen and has_scores) then
 	-- 				room_title = "Best Score"
 	-- 			end
-	-- 			GFX.drawTextInRect(room_title, 1, 4, 62, fontHeight, nil, nil, kTextAlignment.center)
+	-- 			gfx.drawTextInRect(room_title, 1, 4, 62, fontHeight, nil, nil, kTextAlignment.center)
 	-- 			-- Draw fruit and score
 	-- 			local fruit = data.imagetables.fruit:getImage(1)
 	-- 			fruit:draw(23, 15)
@@ -325,18 +397,18 @@ function Game:updatePauseScreen()
 	-- 				assist = best.assist
 	-- 				time = get_time(tonumber(best.minutes), tonumber(best.seconds))
 	-- 			end
-	-- 			GFX.setImageDrawMode(GFX.kDrawModeFillWhite)
-	-- 				GFX.drawText("x" .. score, 33, 19)
-	-- 				GFX.drawTextInRect(time, 2, 27, 60, fontHeight, nil, nil, kTextAlignment.center)
-	-- 				GFX.drawTextInRect("deaths:"..deaths, 2, 34, 60, fontHeight, nil, nil, kTextAlignment.center)
-	-- 			GFX.setImageDrawMode(GFX.kDrawModeCopy)
+	-- 			gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+	-- 				gfx.drawText("x" .. score, 33, 19)
+	-- 				gfx.drawTextInRect(time, 2, 27, 60, fontHeight, nil, nil, kTextAlignment.center)
+	-- 				gfx.drawTextInRect("deaths:"..deaths, 2, 34, 60, fontHeight, nil, nil, kTextAlignment.center)
+	-- 			gfx.setImageDrawMode(gfx.kDrawModeCopy)
 	-- 			if assist then
 	-- 				local assistBox = playdate.geometry.rect.new(0, 42, 64, 6)
-	-- 				GFX.setColor(GFX.kColorWhite)
-	-- 				GFX.fillRect(assistBox)
-	-- 				GFX.drawTextInRect("+assist mode", 8, 42, 49, fontHeight, nil, nil, kTextAlignment.center)
+	-- 				gfx.setColor(gfx.kColorWhite)
+	-- 				gfx.fillRect(assistBox)
+	-- 				gfx.drawTextInRect("+assist mode", 8, 42, 49, fontHeight, nil, nil, kTextAlignment.center)
 	-- 			end
-	-- 		GFX.popContext()
+	-- 		gfx.popContext()
 	-- 		if (is_start_screen and has_scores) then
 	-- 			offset = 100
 	-- 		end
@@ -344,7 +416,7 @@ function Game:updatePauseScreen()
 	-- 	else
 	-- 		offset = 100
 	-- 	end
-	-- GFX.popContext()
+	-- gfx.popContext()
 	-- playdate.setMenuImage(image, offset)
 
 end

@@ -4,9 +4,9 @@ local img <const> = gfx.image.new(80, 12)
 
 class('RoomTitle').extends(ParentObject)
 
-function RoomTitle:init(title)
+function RoomTitle:init(title, parent)
 
-	RoomTitle.super.init(self, 60, 58)
+	RoomTitle.super.init(self, 60, 58, parent)
 
 	self.delay = 5
 	self.title = title or ""
@@ -20,6 +20,8 @@ function RoomTitle:init(title)
 	self:setImage(img)
 	self:setZIndex(20)
 	self:add()
+
+	self.roomTitleTime = RoomTitleTime(self.parent)
 
 	return self
 
@@ -37,7 +39,7 @@ end
 function RoomTitle:destroy()
 
 	RoomTitle.super.destroy(self)
-	-- layers.time:remove()
+	self.roomTitleTime:destroy()
 	-- if layers.assist and game_obj then
 	-- 	layers.assist:remove()
 	-- end

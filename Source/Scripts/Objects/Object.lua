@@ -5,9 +5,10 @@ class('ParentObject').extends(gfx.sprite)
 
 -- ParentObject
 --
-function ParentObject:init(x, y)
+function ParentObject:init(x, y, parent)
 
 	ParentObject.super.init(self)
+	self.parent = parent or nil
 
 	-- TODO: don’t create fruit if it's been collected
 	-- if type.if_not_fruit~=nil and got_fruit[1+level_index()] then

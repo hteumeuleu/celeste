@@ -2,11 +2,23 @@ local pd <const> = playdate
 local gfx <const> = pd.graphics
 local img <const> = gfx.image.new(33, 7)
 
-class('RoomTime').extends(ParentObject)
+class('RoomTitleTime').extends(ParentObject)
 
-function RoomTime:init(time)
+function RoomTitleTime:init(parent)
 
-	RoomTime.super.init(self, 40, 8)
+	RoomTitleTime.super.init(self, 40, 8, parent)
+
+	self:clearCollideRect()
+	self:setZIndex(40)
+	self:add()
+	
+	return self
+
+end
+
+function RoomTitleTime:_draw()
+
+	local time <const> = self.parent.parent:getTime()
 
 	gfx.pushContext(img)
 		gfx.setColor(gfx.kColorBlack)
@@ -15,11 +27,6 @@ function RoomTime:init(time)
 		gfx.drawText(time, 1, 1)
 		gfx.setImageDrawMode(gfx.kDrawModeCopy)
 	gfx.popContext()
-	self:clearCollideRect()
 	self:setImage(img)
-	self:setZIndex(40)
-	self:add()
-	
-	return self
 
 end
