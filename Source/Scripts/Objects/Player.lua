@@ -332,27 +332,17 @@ function Player:_draw()
 		self.spd.x = 0
 	end
 
-	local img = image_table:getImage(math.floor(self.spr))
-	
 	-- Orb effect or dash effect
+	local spr_offset = 0
 	local has_orb_effect = (self.djump >= 2 and math.floor((self.parent.parent.frames / 3) % 2) == 0)
 	-- if reduce_flashing then
 	-- 	has_orb_effect = false
 	-- end
 	if self.djump == 0 or has_orb_effect then
-		local newimg = img:copy()
-		newimg:clear(gfx.kColorClear)
-		gfx.pushContext(newimg)
-			gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-			img:draw(0,0)
-			local overlay_index_increment = 3*7
-			local overlay <const> = image_table:getImage(math.floor(self.spr) + overlay_index_increment)
-			gfx.setImageDrawMode(gfx.kDrawModeCopy)
-			overlay:draw(0,0)
-		gfx.popContext()
-		img = newimg
+		spr_offset = 7
 	end
 
+	local img = image_table:getImage(math.floor(self.spr + spr_offset))
 	self:setImage(img, flip(self.flip.x, self.flip.y))
 	self:moveTo(self.pos.x - 1, self.pos.y - 1)
 	-- TODO: draw_hair()
