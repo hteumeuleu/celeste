@@ -111,6 +111,8 @@ function Room:load()
 			FlyFruit(entity.position.x + offset.x, entity.position.y + offset.y, self)
 		elseif entity.name == "Spring" then
 			Spring(entity.position.x + offset.x, entity.position.y + offset.y, self)
+		elseif entity.name == "Tree" then
+			Tree(entity.position.x + offset.x, entity.position.y + offset.y)
 		end
 	end
 

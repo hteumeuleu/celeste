@@ -14,6 +14,7 @@ import "Scripts/Objects/LifeUp"
 import "Scripts/Objects/RoomTitle"
 import "Scripts/Objects/RoomTitleTime"
 import "Scripts/Objects/Spring"
+import "Scripts/Objects/Tree"
 
 local pd <const> = playdate
 local gfx <const> = pd.graphics
