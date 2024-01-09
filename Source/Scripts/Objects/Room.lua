@@ -85,7 +85,9 @@ function Room:load()
 					end
 				end
 				-- Spikes
-				local spikeTiles = ldtk.get_empty_tileIDs(level_name, "SpikeUp", layer_name)
+				local spikeTiles
+				-- Spikes Pointing Up
+				spikeTiles = ldtk.get_empty_tileIDs(level_name, "SpikeUp", layer_name)
 				if spikeTiles then
 					local spikeSprites <const> = gfx.sprite.addWallSprites(tilemap, spikeTiles, layer.rect.x + offset.x, layer.rect.y + offset.y)
 					for index, spikeSprite in ipairs(spikeSprites) do
@@ -93,6 +95,45 @@ function Room:load()
 						spikeSprite:moveBy((spikeSprite.width/2)*-1, (spikeSprite.height/2)*-1)
 						spikeSprite.spike = true
 						spikeSprite:setCollideRect(pd.geometry.rect.new(0, 5, spikeSprite.width, 3))
+						spikeSprite:setCollidesWithGroups({1})
+						spikeSprite:setGroups({5})
+					end
+				end
+				-- Spikes Pointing Down
+				spikeTiles = ldtk.get_empty_tileIDs(level_name, "SpikeDown", layer_name)
+				if spikeTiles then
+					local spikeSprites <const> = gfx.sprite.addWallSprites(tilemap, spikeTiles, layer.rect.x + offset.x, layer.rect.y + offset.y)
+					for index, spikeSprite in ipairs(spikeSprites) do
+						spikeSprite:setCenter(0, 0)
+						spikeSprite:moveBy((spikeSprite.width/2)*-1, (spikeSprite.height/2)*-1)
+						spikeSprite.spike = true
+						spikeSprite:setCollideRect(pd.geometry.rect.new(0, 0, spikeSprite.width, 3))
+						spikeSprite:setCollidesWithGroups({1})
+						spikeSprite:setGroups({5})
+					end
+				end
+				-- Spikes Pointing Right
+				spikeTiles = ldtk.get_empty_tileIDs(level_name, "SpikeRight", layer_name)
+				if spikeTiles then
+					local spikeSprites <const> = gfx.sprite.addWallSprites(tilemap, spikeTiles, layer.rect.x + offset.x, layer.rect.y + offset.y)
+					for index, spikeSprite in ipairs(spikeSprites) do
+						spikeSprite:setCenter(0, 0)
+						spikeSprite:moveBy((spikeSprite.width/2)*-1, (spikeSprite.height/2)*-1)
+						spikeSprite.spike = true
+						spikeSprite:setCollideRect(pd.geometry.rect.new(0, 0, 3, spikeSprite.height))
+						spikeSprite:setCollidesWithGroups({1})
+						spikeSprite:setGroups({5})
+					end
+				end
+				-- Spikes Pointing Left
+				spikeTiles = ldtk.get_empty_tileIDs(level_name, "SpikeLeft", layer_name)
+				if spikeTiles then
+					local spikeSprites <const> = gfx.sprite.addWallSprites(tilemap, spikeTiles, layer.rect.x + offset.x, layer.rect.y + offset.y)
+					for index, spikeSprite in ipairs(spikeSprites) do
+						spikeSprite:setCenter(0, 0)
+						spikeSprite:moveBy((spikeSprite.width/2)*-1, (spikeSprite.height/2)*-1)
+						spikeSprite.spike = true
+						spikeSprite:setCollideRect(pd.geometry.rect.new(5, 0, 3, spikeSprite.height))
 						spikeSprite:setCollidesWithGroups({1})
 						spikeSprite:setGroups({5})
 					end
@@ -117,6 +158,8 @@ function Room:load()
 			FlyFruit(x, y, self)
 		elseif entity.name == "Spring" then
 			Spring(x, y, self)
+		elseif entity.name == "Balloon" then
+			Balloon(x, y, self)
 		elseif entity.name == "Chest" and not self.got_fruit then
 			Chest(x, y, self)
 		elseif entity.name == "Key" and not self.got_fruit then

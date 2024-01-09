@@ -37,7 +37,7 @@ function FallFloor:_update()
 	-- invisible, waiting to reset
 	elseif self.state == 2 then
 		self.delay -= 1
-		if self.delay <= 0 and not self.collide(player,0,0) ~= nil then
+		if self.delay <= 0 and not self:collide(self.parent.player, 0, 0) ~= nil then
 			psfx(7)
 			self.state = 0
 			self.collideable = true

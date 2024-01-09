@@ -57,8 +57,8 @@ function PlayerSpawn:_update()
 		self.delay -= 1
 		self.spr = 6
 		if self.delay < 0 then
-			self:destroy()
 			self.parent.player = Player(self.pos.x, self.pos.y, self.parent)
+			self:destroy()
 		end
 	end
 

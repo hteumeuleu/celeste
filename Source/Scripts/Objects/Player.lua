@@ -85,6 +85,8 @@ function Player:_update()
 				other:hit(self)
 			elseif other.className == "FallFloor" then
 				other:hit(self)
+			elseif other.className == "Balloon" then
+				other:hit(self)
 			elseif other.className == "Key" then
 				other:hit(self)
 			-- elseif col.other.type == "balloon" and col.other.hit ~= nil then

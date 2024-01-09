@@ -18,6 +18,7 @@ import "Scripts/Objects/Tree"
 import "Scripts/Objects/FallFloor"
 import "Scripts/Objects/Chest"
 import "Scripts/Objects/Key"
+import "Scripts/Objects/Balloon"
 
 local pd <const> = playdate
 local gfx <const> = pd.graphics
@@ -33,8 +34,8 @@ function Game:init()
 	self.shake = 0
 	self.will_restart = false
 	self.delay_restart = 0
-	self.level_index = 4
-	self.level_total = 4
+	self.level_index = 5
+	self.level_total = 5
 	self.seconds = 0
 	self.minutes = 0
 	self.frames = 0
