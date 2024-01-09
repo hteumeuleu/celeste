@@ -36,7 +36,7 @@ function Fruit:hit(player)
 		player.djump = player.max_djump
 		sfx_timer = 20
 		sfx(13)
-		-- got_fruit[1+level_index] = true
+		self.parent.got_fruit = true
 		LifeUp(self.x, self.y)
 		self:destroy()
 	end

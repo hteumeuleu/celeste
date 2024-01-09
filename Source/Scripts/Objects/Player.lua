@@ -85,8 +85,8 @@ function Player:_update()
 				other:hit(self)
 			elseif other.className == "FallFloor" then
 				other:hit(self)
-			-- elseif (col.other.type == "fruit" or col.other.type == "fly_fruit") and col.other.hit ~= nil then
-			-- 	-- col.other:hit(col.sprite.obj)
+			elseif other.className == "Key" then
+				other:hit(self)
 			-- elseif col.other.type == "balloon" and col.other.hit ~= nil then
 			-- 	-- col.other:hit(col.sprite.obj)
 			-- elseif col.other.type == "platform" and col.other.hit ~= nil and on_ground and playerIsAboveObject then

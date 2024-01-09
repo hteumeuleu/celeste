@@ -16,6 +16,8 @@ import "Scripts/Objects/RoomTitleTime"
 import "Scripts/Objects/Spring"
 import "Scripts/Objects/Tree"
 import "Scripts/Objects/FallFloor"
+import "Scripts/Objects/Chest"
+import "Scripts/Objects/Key"
 
 local pd <const> = playdate
 local gfx <const> = pd.graphics

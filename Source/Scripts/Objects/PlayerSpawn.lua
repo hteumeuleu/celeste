@@ -11,7 +11,6 @@ function PlayerSpawn:init(x, y, parent)
 
 	PlayerSpawn.super.init(self, x, y, parent)
 
-
 	sfx(4)
 	self.spr = 3
 	self.target = pd.geometry.point.new(self.pos.x, self.pos.y)
@@ -59,7 +58,7 @@ function PlayerSpawn:_update()
 		self.spr = 6
 		if self.delay < 0 then
 			self:destroy()
-			Player(self.pos.x, self.pos.y, self.parent)
+			self.parent.player = Player(self.pos.x, self.pos.y, self.parent)
 		end
 	end
 

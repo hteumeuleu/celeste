@@ -26,6 +26,7 @@ function Room:init(index, parent)
 	elseif self.index == 30 then
 		self.title = "summit"
 	end
+	self.got_fruit = false
 	self:load()
 	return self
 
@@ -38,6 +39,7 @@ function Room:load()
 
 	gfx.sprite.removeAll()
 
+	self.has_key = false
 	self.has_dashed = false
 	local level_name = self.name
 
@@ -115,6 +117,10 @@ function Room:load()
 			FlyFruit(x, y, self)
 		elseif entity.name == "Spring" then
 			Spring(x, y, self)
+		elseif entity.name == "Chest" and not self.got_fruit then
+			Chest(x, y, self)
+		elseif entity.name == "Key" and not self.got_fruit then
+			Key(x, y, self)
 		elseif entity.name == "Tree" then
 			Tree(x, y)
 		end
@@ -133,7 +139,6 @@ end
 
 function Room:restart()
 
-	print("Room:restart")
 	self.parent.will_restart = true
 	self.parent.delay_restart = 15
 

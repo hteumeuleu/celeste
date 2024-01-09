@@ -44,6 +44,15 @@ pico8.max = function(first, second)
 	return math.max(first, second)
 end
 
+pico8.rnd = function(arg)
+	arg = arg or 1.0
+	if type(arg) == "table" then
+		return arg[math.random(1, #arg)]
+	else
+		return math.random() * arg
+	end
+end
+
 pico8.btn = function(i)
 	return pd.buttonIsPressed(i)
 end

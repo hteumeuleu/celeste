@@ -11,11 +11,6 @@ function ParentObject:init(x, y, parent)
 	ParentObject.super.init(self)
 	self.parent = parent or nil
 
-	-- TODO: don’t create fruit if it's been collected
-	-- if type.if_not_fruit~=nil and got_fruit[1+level_index()] then
-	-- 	return
-	-- end
-
 	self.collideable = true
 	self.solids = true
 
@@ -159,21 +154,11 @@ function ParentObject:move_y(amount, start)
 
 end
 
-function ParentObject:collide(type, ox, oy)
+function ParentObject:collide(other, ox, oy)
 
-	-- .collide=function(type,ox,oy)
-	-- 	local typeList = objects[type.type_id]
-	-- 	if #typeList == 0 then
-	-- 		return nil
-	-- 	end
-
-	-- 	for i=1,#typeList do
-	-- 		local other=typeList[i]
-	-- 		if other ~= nil and other.collideable and obj.hitbox:offsetBy(obj.x+ox,obj.y+oy):intersects(other.hitbox:offsetBy(other.x,other.y)) then
-	-- 			return other
-	-- 		end
-	-- 	end
-	-- 	return nil
-	-- end
+	if other ~= nil and other.collideable and self.hitbox:offsetBy(self.pos.x + ox, self.pos.y + oy):intersects(other.hitbox:offsetBy(other.pos.x, other.pos.y)) then
+		return other
+	end
+	return nil
 
 end

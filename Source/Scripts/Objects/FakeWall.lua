@@ -47,7 +47,7 @@ function FakeWall:hit()
     Smoke(self.x + 8, self.y)
     Smoke(self.x, self.y + 8)
     Smoke(self.x + 8, self.y + 8)
-    Fruit(self.x + 4, self.y + 4, self)
+    Fruit(self.x + 4, self.y + 4, self.parent)
 
 end
 
