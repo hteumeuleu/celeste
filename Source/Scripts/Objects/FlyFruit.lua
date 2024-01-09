@@ -30,7 +30,6 @@ end
 
 function FlyFruit:_update()
 
-	print("FlyFruit")
 	-- Fly away
 	if self.fly then
 		if self.sfx_delay > 0 then

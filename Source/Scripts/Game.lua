@@ -15,6 +15,7 @@ import "Scripts/Objects/RoomTitle"
 import "Scripts/Objects/RoomTitleTime"
 import "Scripts/Objects/Spring"
 import "Scripts/Objects/Tree"
+import "Scripts/Objects/FallFloor"
 
 local pd <const> = playdate
 local gfx <const> = pd.graphics
@@ -30,7 +31,7 @@ function Game:init()
 	self.shake = 0
 	self.will_restart = false
 	self.delay_restart = 0
-	self.level_index = 2
+	self.level_index = 3
 	self.seconds = 0
 	self.minutes = 0
 	self.frames = 0

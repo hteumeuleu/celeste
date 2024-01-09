@@ -60,28 +60,30 @@ function Player:_update()
 	local on_ground = self:is_solid(0, 1)
 	local on_ice = self:is_ice(0, 1)
 
-	-- TODO: `Fall Floor` collisions
-	-- local query = playdate.graphics.sprite.querySpritesInRect(self.pos.x + self.hitbox.x - 1, self.pos.y + self.hitbox.y, self.hitbox.width + 2, self.hitbox.height + 1)
-	-- if #query > 1 then
-	-- 	for i=1, #query do
-	-- 		local other = query[i]
-	-- 		if other.type == "fall_floor" then
-	-- 			-- break_fall_floor(other.obj) -- TODO
-	-- 		end
-	-- 	end
-	-- end
+	-- Fall Floor collisions
+	local query = playdate.graphics.sprite.querySpritesInRect(self.pos.x + self.hitbox.x - 1, self.pos.y + self.hitbox.y, self.hitbox.width + 2, self.hitbox.height + 1)
+	if #query > 1 then
+		for i=1, #query do
+			local other = query[i]
+			if other.className == "FallFloor" then
+				other:hit(self)
+			end
+		end
+	end
 
 	-- Collisions
 	local _, _, collisions_at_x_y, length = self:checkCollisions(self.x, self.y)
 	if length > 0 then
 		for i=1, #collisions_at_x_y do
 			local col = collisions_at_x_y[i]
-			local other = collisions_at_x_y[i].other
+			local other = col.other
 			if other.spike == true then
 				self:kill()
 			elseif other.className == "Spring" then
 				other:hit(self)
 			elseif other.className == "Fruit" or other.className == "FlyFruit" then
+				other:hit(self)
+			elseif other.className == "FallFloor" then
 				other:hit(self)
 			-- elseif (col.other.type == "fruit" or col.other.type == "fly_fruit") and col.other.hit ~= nil then
 			-- 	-- col.other:hit(col.sprite.obj)

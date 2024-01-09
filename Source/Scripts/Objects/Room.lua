@@ -101,18 +101,22 @@ function Room:load()
 
 	-- Entities
 	for index, entity in ipairs(LDtk.get_entities(level_name)) do
+		local x <const> = entity.position.x + offset.x
+		local y <const> = entity.position.y + offset.y
 		if entity.name == "Player" then
-			self.player = PlayerSpawn(entity.position.x + offset.x, entity.position.y + offset.y, self)
+			self.player = PlayerSpawn(x, y, self)
 		elseif entity.name == "FakeWall" then
-			FakeWall(entity.position.x + offset.x, entity.position.y + offset.y, self)
+			FakeWall(x, y, self)
+		elseif entity.name == "FallFloor" then
+			FallFloor(x, y, self)
 		elseif entity.name == "Fruit" then
-			Fruit(entity.position.x + offset.x, entity.position.y + offset.y, self)
+			Fruit(x, y, self)
 		elseif entity.name == "FlyFruit" then
-			FlyFruit(entity.position.x + offset.x, entity.position.y + offset.y, self)
+			FlyFruit(x, y, self)
 		elseif entity.name == "Spring" then
-			Spring(entity.position.x + offset.x, entity.position.y + offset.y, self)
+			Spring(x, y, self)
 		elseif entity.name == "Tree" then
-			Tree(entity.position.x + offset.x, entity.position.y + offset.y)
+			Tree(x, y)
 		end
 	end
 
