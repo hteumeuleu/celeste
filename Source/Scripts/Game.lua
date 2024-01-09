@@ -35,7 +35,7 @@ function Game:init()
 	self.will_restart = false
 	self.delay_restart = 0
 	self.level_index = 5
-	self.level_total = 5
+	self.level_total = 11
 	self.seconds = 0
 	self.minutes = 0
 	self.frames = 0
