@@ -31,7 +31,8 @@ function Game:init()
 	self.shake = 0
 	self.will_restart = false
 	self.delay_restart = 0
-	self.level_index = 3
+	self.level_index = 4
+	self.level_total = 4
 	self.seconds = 0
 	self.minutes = 0
 	self.frames = 0
@@ -111,7 +112,7 @@ end
 
 function Game:nextRoom()
 
-	if self.level_index < 3 then
+	if self.level_index < self.level_total then
 		self.level_index += 1
 	else
 		self.level_index = 0
