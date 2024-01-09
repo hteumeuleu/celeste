@@ -102,7 +102,7 @@ function Room:load()
 	-- Entities
 	for index, entity in ipairs(LDtk.get_entities(level_name)) do
 		if entity.name == "Player" then
-			self.player = Player(entity.position.x + offset.x, entity.position.y + offset.y, self)
+			self.player = PlayerSpawn(entity.position.x + offset.x, entity.position.y + offset.y, self)
 		elseif entity.name == "FakeWall" then
 			FakeWall(entity.position.x + offset.x, entity.position.y + offset.y, self)
 		elseif entity.name == "Fruit" then

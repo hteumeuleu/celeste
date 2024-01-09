@@ -22,6 +22,7 @@ function PlayerSpawn:init(x, y, parent)
 	self.solids = false
 	-- create_hair(this) -- TODO
 
+	self:setUpdatesEnabled(true)
 	self:setZIndex(20)
 	self:clearCollideRect()
 	self:add()
@@ -32,7 +33,6 @@ function PlayerSpawn:_update()
 
 	-- Jumping up
 	if self.state == 0 then
-		print("--", self.y, self.pos.y, self.target.y + 16)
 		if self.pos.y < self.target.y + 16 then
 			self.state = 1
 			self.delay = 3
@@ -67,7 +67,6 @@ end
 
 function PlayerSpawn:_draw()
 
-	-- print("PlayerSpawn", self.state, self.target, self.pos)
 	local img <const> = image_table:getImage(math.floor(self.spr))
 	self:setImage(img, flip(self.flip.x, self.flip.y))
 	self:moveTo(self.pos.x - 1, self.pos.y - 1)

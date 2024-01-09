@@ -154,7 +154,7 @@ function ParentObject:move_y(amount, start)
 			end
 		end
 	else
-		self.y += amount
+		self.pos.y += amount
 	end
 
 end
