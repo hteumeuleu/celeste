@@ -30,6 +30,11 @@ end
 
 function PlayerSpawn:_update()
 
+	if self.should_destroy == true then
+		self:destroy()
+		return
+	end
+
 	-- Jumping up
 	if self.state == 0 then
 		if self.pos.y < self.target.y + 16 then
@@ -58,7 +63,7 @@ function PlayerSpawn:_update()
 		self.spr = 6
 		if self.delay < 0 then
 			self.parent.player = Player(self.pos.x, self.pos.y, self.parent)
-			self:destroy()
+			self.should_destroy = true
 		end
 	end
 
