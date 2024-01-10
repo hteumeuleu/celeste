@@ -81,7 +81,9 @@ function Room:load()
 					for index, wallSprite in ipairs(wallSprites) do
 						wallSprite:setCenter(0, 0)
 						wallSprite:moveBy((wallSprite.width/2)*-1, (wallSprite.height/2)*-1)
-						wallSprite.solid = true
+						wallSprite:setCollidesWithGroups({1})
+						wallSprite:setGroups({5})
+						wallSprite.is_solid_sprite = true
 					end
 				end
 				-- Spikes
@@ -160,6 +162,10 @@ function Room:load()
 			Spring(x, y, self)
 		elseif entity.name == "Balloon" then
 			Balloon(x, y, self)
+		elseif entity.name == "PlatformLeft" then
+			Platform(x, y, -1, self)
+		elseif entity.name == "PlatformRight" then
+			Platform(x, y, 1, self)
 		elseif entity.name == "Chest" and not self.got_fruit then
 			Chest(x, y, self)
 		elseif entity.name == "Key" and not self.got_fruit then

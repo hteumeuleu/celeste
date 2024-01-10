@@ -44,3 +44,4 @@ luac.out
 *.psd
 Support/audio
 *.sublime-*
+Source/Levels/celeste-classic/*

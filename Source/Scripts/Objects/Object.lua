@@ -61,7 +61,7 @@ function ParentObject:is_solid(ox, oy)
 	local sprites_in_rect <const> = gfx.sprite.querySpritesInRect(rect)
 	for i=1, #sprites_in_rect do
 		local s = sprites_in_rect[i]
-		if s ~= self and s.solid == true then
+		if s ~= self and s.is_solid_sprite == true then
 			return true
 		end
 	end
@@ -160,5 +160,11 @@ function ParentObject:collide(other, ox, oy)
 		return other
 	end
 	return nil
+
+end
+
+function ParentObject:check(other, ox, oy)
+
+	return self:collide(other, ox, oy) ~= nil
 
 end
