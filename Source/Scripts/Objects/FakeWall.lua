@@ -9,7 +9,7 @@ function FakeWall:init(x, y, parent)
 
 	FakeWall.super.init(self, x, y, parent)
 	self.hitbox = pd.geometry.rect.new(0, 0, 16, 16)
-	self.solid = true
+	self.is_solid_sprite = true
 	self:setImage(img)
 	self:setCollideRect(self.hitbox)
 	self:setCollidesWithGroups({1})

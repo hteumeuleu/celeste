@@ -14,7 +14,7 @@ function Platform:init(x, y, dir, parent)
 	self.dir = dir or 1
 	self.x -= 4
 	self.solids = false
-	self.hitbox = playdate.geometry.rect.new(1, 1, 16, 4)
+	self.hitbox = pd.geometry.rect.new(1, 1, 16, 4)
 	self.last = self.pos.x
 
 	self.collisionResponse = gfx.sprite.kCollisionTypeOverlap
@@ -36,12 +36,20 @@ function Platform:_update()
 		self.pos.x = x_min
 	end
 
-	-- if not self:check(self.parent.player, 0, 0) then
-	-- 	local hit = self:collide(self.parent.player, 0, -1)
-	-- 	if hit ~= nil then
-	-- 		hit:move_x(self.pos.x - self.last, 1)
-	-- 	end
-	-- end
+	self.diff = self.pos.x - self.last
+	if self.diff > 1 or self.diff < -1 then
+		self.diff = 0
+	end
+
+	if self.parent.player ~= nil then
+		local player_bottom_y = self.parent.player.y + self.parent.player.hitbox.y + self.parent.player.hitbox.height
+		local platform_top_y = self.y + self.hitbox.y
+		if player_bottom_y < platform_top_y then
+			self.is_solid_sprite = true
+		else
+			self.is_solid_sprite = false
+		end
+	end
 		
 	self.last = self.pos.x
 

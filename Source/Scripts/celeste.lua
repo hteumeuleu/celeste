@@ -237,10 +237,10 @@ local player =
 	update=function(this)
 		if (pause_player) then return end
 
-        local on_ground=this.is_solid(0,1)
-        local on_ice=this.is_ice(0,1)
+		local on_ground=this.is_solid(0,1)
+		local on_ice=this.is_ice(0,1)
 
-        -- fall_floor collisions
+		-- fall_floor collisions
 		if #objects[4] > 0 then
 			local query = playdate.graphics.sprite.querySpritesInRect(kDrawOffsetX+this.x+this.hitbox.x-1, kDrawOffsetY+this.y+this.hitbox.y, this.hitbox.width+2, this.hitbox.height+1)
 			if #query > 1 then
@@ -441,7 +441,7 @@ local player =
 		-- animation
 		this.spr_off+=0.25
 		if not on_ground then
-            if this.is_solid(input,0) then
+			if this.is_solid(input,0) then
 				this.spr=5
 			else
 				this.spr=3
@@ -1665,12 +1665,12 @@ function init_object(type,x,y)
 
 	obj.is_solid=function(ox,oy)
 
-        if (#objects[platform.type_id] > 0) and (oy>0) then
-        	local collide_at_ox_0 = false
-        	local collide_at_ox_oy = false
-        	-- equivalent to obj.collide(platform,ox,oy) ~= nil
+		if (#objects[platform.type_id] > 0) and (oy>0) then
+			local collide_at_ox_0 = false
+			local collide_at_ox_oy = false
+			-- equivalent to obj.collide(platform,ox,oy) ~= nil
 			local r <const> = playdate.geometry.rect.new(obj.x+obj.hitbox.x+ox+kDrawOffsetX, obj.y+obj.hitbox.y+oy+kDrawOffsetY, obj.hitbox.w, obj.hitbox.h)
-        	local sprites_in_rect = GFX.sprite.querySpritesInRect(r)
+			local sprites_in_rect = GFX.sprite.querySpritesInRect(r)
 			for i=1, #sprites_in_rect do
 				local s = sprites_in_rect[i]
 				if s.type == "platform" then
@@ -1681,14 +1681,14 @@ function init_object(type,x,y)
 			sprites_in_rect = GFX.sprite.querySpritesInRect(r:offsetBy(0, oy * -1))
 			for i=1, #sprites_in_rect do
 				local s = sprites_in_rect[i]
- 				if s.type == "platform" then
+				if s.type == "platform" then
 					collide_at_ox_0 = true
 				end
 			end
 			if not collide_at_ox_0 and collide_at_ox_oy then
-            	return true
+				return true
 			end
-        end
+		end
 		local r <const> = playdate.geometry.rect.new(obj.x+obj.hitbox.x+ox+kDrawOffsetX, obj.y+obj.hitbox.y+oy+kDrawOffsetY, obj.hitbox.w, obj.hitbox.h)
 		local sprites_in_rect <const> = GFX.sprite.querySpritesInRect(r)
 		for i=1, #sprites_in_rect do

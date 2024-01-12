@@ -60,8 +60,11 @@ function Player:_update()
 	local on_ground = self:is_solid(0, 1)
 	local on_ice = self:is_ice(0, 1)
 
-	-- Fall Floor collisions
-	local query = playdate.graphics.sprite.querySpritesInRect(self.pos.x + self.hitbox.x - 1, self.pos.y + self.hitbox.y, self.hitbox.width + 2, self.hitbox.height + 1)
+	-- FallFloor collisions
+	-- We check if the player hits a FallFloor horizontally or from the bottom.
+	-- So we set a rectangle that's 2px wider than the player and 1px taller.
+	local rect = pd.geometry.rect.new(self.pos.x + self.hitbox.x - 1, self.pos.y + self.hitbox.y, self.hitbox.width + 2, self.hitbox.height + 1)
+	local query = gfx.sprite.querySpritesInRect(rect)
 	if #query > 1 then
 		for i=1, #query do
 			local other = query[i]
@@ -70,6 +73,20 @@ function Player:_update()
 			end
 		end
 	end
+
+	-- Platform collisions
+	self:setCollidesWithGroups({4})
+	local _, _, collisions_at_x_y_plus_1, length = self:checkCollisions(self.x, self.y + 1)
+	if length > 0 then
+		for i=1, #collisions_at_x_y_plus_1 do
+			local col = collisions_at_x_y_plus_1[i]
+			local other = col.other
+			if other.className == "Platform" then
+				other:hit(self)
+			end
+		end
+	end
+	self:setCollidesWithGroups({2,3,4,5,6})
 
 	-- Collisions
 	local _, _, collisions_at_x_y, length = self:checkCollisions(self.x, self.y)
@@ -82,8 +99,6 @@ function Player:_update()
 			elseif other.className == "Spring" then
 				other:hit(self)
 			elseif other.className == "Fruit" or other.className == "FlyFruit" then
-				other:hit(self)
-			elseif other.className == "FallFloor" then
 				other:hit(self)
 			elseif other.className == "Balloon" then
 				other:hit(self)

@@ -10,7 +10,7 @@ function FallFloor:init(x, y, parent)
 
 	self.state = 0
 	self.previous_state = 0
-	self.solid = true
+	self.is_solid_sprite = true
 	self.spr = 24
 	self.delay = 0
 	local img <const> = image_table:getImage(math.floor(self.spr))
