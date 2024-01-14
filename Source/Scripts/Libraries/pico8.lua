@@ -57,6 +57,43 @@ pico8.btn = function(i)
 	return pd.buttonIsPressed(i)
 end
 
+pico8.rectfill = function(x0, y0, x1, y1, col)
+
+	local left <const> = math.min(x0, x1)
+	local top <const> = math.min(y0, y1)
+	local width <const> = math.max(x0, x1) - left + 1
+	local height <const> = math.max(y0, y1) - top + 1
+	if col == nil then
+		gfx.setColor(gfx.kColorBlack)
+	else
+		gfx.setColor(gfx.kColorWhite)
+	end
+	gfx.fillRect(left, top, width, height)
+
+end
+
+pico8.sub = function(str, pos0, pos1)
+	pos0 = pos0 or 1
+	if pos1 ~= nil and type(pos1) ~= "number" then
+		pos1 = pos0 + 1
+	else
+		pos1 = pos1 or #str
+	end
+	return string.sub(str, pos0, pos1)
+end
+
+pico8._print = function(text, x, y, color)
+	x = x or 0
+	y = y or 0
+	if color == 0 then
+		gfx.setImageDrawMode(gfx.kDrawModeFillBlack)
+	else
+		gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+	end
+	gfx.drawText(text, x, y)
+	gfx.setImageDrawMode(gfx.kDrawModeCopy)
+end
+
 pico8.celeste.clamp = function(val, a, b)
 	return math.max(a, math.min(b, val))
 end

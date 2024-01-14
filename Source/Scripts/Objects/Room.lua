@@ -15,7 +15,7 @@ function Room:init(index, parent)
 	Room.super.init(self)
 	self.parent = parent or nil
 	self.index = index
-	if self.index == nil or self.index < 0 or self.index > 10 then
+	if self.index == nil or self.index < 0 or self.index >= self.parent.level_total then
 		self.index = 0
 	end
 	self.level = (1 + self.index) * 100
@@ -74,6 +74,19 @@ function Room:load()
 
 			-- Foreground (walls and spikes) collision sprites
 			if layer_name == "Foreground" then
+				-- Ice
+				local emptyTiles = ldtk.get_empty_tileIDs(level_name, "Ice", layer_name)
+				if emptyTiles then
+					local iceSprites <const> = gfx.sprite.addWallSprites(tilemap, emptyTiles, layer.rect.x + offset.x, layer.rect.y + offset.y)
+					for index, iceSprite in ipairs(iceSprites) do
+						iceSprite:setCenter(0, 0)
+						iceSprite:moveBy((iceSprite.width/2)*-1, (iceSprite.height/2)*-1)
+						iceSprite:setCollidesWithGroups({1})
+						iceSprite:setGroups({5})
+						iceSprite.is_solid_sprite = true
+						iceSprite.is_ice_sprite = true
+					end
+				end
 				-- Walls
 				local emptyTiles = ldtk.get_empty_tileIDs(level_name, "Solid", layer_name)
 				if emptyTiles then
@@ -165,11 +178,13 @@ function Room:load()
 		elseif entity.name == "PlatformLeft" then
 			Platform(x, y, -1, self)
 		elseif entity.name == "PlatformRight" then
-			Platform(x, y, 1, self)
+			Platform(x - 8, y, 1, self)
 		elseif entity.name == "Chest" and not self.got_fruit then
 			Chest(x, y, self)
 		elseif entity.name == "Key" and not self.got_fruit then
 			Key(x, y, self)
+		elseif entity.name == "Message" then
+			Message(x, y, self)
 		elseif entity.name == "Tree" then
 			Tree(x, y)
 		end

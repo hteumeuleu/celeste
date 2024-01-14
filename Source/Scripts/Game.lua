@@ -20,6 +20,9 @@ import "Scripts/Objects/Chest"
 import "Scripts/Objects/Key"
 import "Scripts/Objects/Balloon"
 import "Scripts/Objects/Platform"
+import "Scripts/Objects/Message"
+import "Scripts/Objects/BigChest"
+import "Scripts/Objects/Orb"
 
 local pd <const> = playdate
 local gfx <const> = pd.graphics
@@ -35,8 +38,8 @@ function Game:init()
 	self.shake = 0
 	self.will_restart = false
 	self.delay_restart = 0
-	self.level_index = 6
-	self.level_total = 11
+	self.level_index = 18
+	self.level_total = 24
 	self.seconds = 0
 	self.minutes = 0
 	self.frames = 0
@@ -116,9 +119,8 @@ end
 
 function Game:nextRoom()
 
-	if self.level_index < self.level_total then
-		self.level_index += 1
-	else
+	self.level_index += 1
+	if self.level_index > self.level_total then
 		self.level_index = 0
 	end
 	self.room = Room(self.level_index, self)

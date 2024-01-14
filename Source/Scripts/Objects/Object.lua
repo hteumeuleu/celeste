@@ -75,7 +75,7 @@ function ParentObject:is_ice(ox, oy)
 	local sprites_in_rect <const> = gfx.sprite.querySpritesInRect(rect)
 	for i=1, #sprites_in_rect do
 		local s = sprites_in_rect[i]
-		if s ~= self and s.ice == true then
+		if s ~= self and s.is_ice_sprite == true then
 			return true
 		end
 	end

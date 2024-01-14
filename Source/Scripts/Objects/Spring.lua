@@ -53,6 +53,12 @@ function Spring:_update()
 
 end
 
+function Spring:_break()
+
+	self.hide_in = 15
+
+end
+
 function Spring:hit(player)
 
 	if player ~= nil and self.spr == 18 then
