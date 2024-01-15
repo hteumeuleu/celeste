@@ -65,7 +65,7 @@ function Spring:hit(player)
 	if player ~= nil and self.spr == 18 then
 		if player.spd.y >= 0 then
 			self.spr = 19
-			player.pos.y = self.pos.y - 4
+			player.pos:offset(0, -4)
 			player.spd.x *= 0.2
 			player.spd.y = -3
 			player.djump = self.parent.parent.max_djump
