@@ -6,19 +6,24 @@ import "CoreLibs/ui"
 import "CoreLibs/crank"
 
 import "Scripts/data.lua"
-import "Scripts/globals.lua"
 import "Scripts/Game"
 
 import "Scripts/pico-8.lua" -- useful for celeste.lua, will remove later
 import "Scripts/celeste.lua" -- useful for psfx, will remove later
 -- import "Scripts/Options"
 
+local pd <const> = playdate
+local gfx <const> = pd.graphics
+
+math.randomseed(pd.getSecondsSinceEpoch())
+pd.setCrankSoundsDisabled(true)
+pd.display.setRefreshRate(30)
+pd.display.setScale(2)
+gfx.setBackgroundColor(gfx.kColorBlack)
+gfx.setFont(gfx.font.new("Assets/pico"))
+
 local CELESTE <const> = Game()
 local showFPS = true
-
-playdate.display.setRefreshRate(30)
-playdate.display.setScale(2)
-playdate.graphics.clear(playdate.graphics.kColorBlack)
 
 -- playdate.update()
 --
