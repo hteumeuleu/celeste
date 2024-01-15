@@ -185,6 +185,8 @@ function Room:load()
 			Key(x, y, self)
 		elseif entity.name == "Message" then
 			Message(x, y, self)
+		elseif entity.name == "BigChest" then
+			BigChest(x, y, self)
 		elseif entity.name == "Tree" then
 			Tree(x, y)
 		end

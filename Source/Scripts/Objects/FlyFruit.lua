@@ -87,7 +87,7 @@ end
 function FlyFruit:hit(player)
 
 	if player ~= nil then
-		player.djump = player.max_djump
+		player.djump = self.parent.parent.max_djump
 		sfx_timer = 20
 		sfx(13)
 		-- got_FlyFruit[1+level_index] = true

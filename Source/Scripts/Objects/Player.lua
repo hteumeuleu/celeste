@@ -26,12 +26,11 @@ function Player:init(x, y, parent)
 
 	Player.super.init(self, x, y, parent)
 
-	self.max_djump = 1
 	self.p_jump = false
 	self.p_dash = false
 	self.grace = 0
 	self.jbuffer = 0
-	self.djump = self.max_djump
+	self.djump = self.parent.parent.max_djump
 	self.dash_time = 0
 	self.dash_effect_time = 0
 	self.dash_target = pd.geometry.vector2D.new(0, 0)
@@ -140,9 +139,9 @@ function Player:_update()
 	-- Grace
 	if on_ground then
 		self.grace = 6
-		if self.djump < self.max_djump then
+		if self.djump < self.parent.parent.max_djump then
 			psfx(54)
-			self.djump = self.max_djump
+			self.djump = self.parent.parent.max_djump
 		end
 	elseif self.grace > 0 then
 		self.grace -= 1

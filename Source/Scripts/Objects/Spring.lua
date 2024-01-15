@@ -67,7 +67,7 @@ function Spring:hit(player)
 			player.pos.y = self.pos.y - 4
 			player.spd.x *= 0.2
 			player.spd.y = -3
-			player.djump = player.max_djump
+			player.djump = self.parent.parent.max_djump
 			self.delay = 10
 			Smoke(self.pos.x, self.pos.y)
 

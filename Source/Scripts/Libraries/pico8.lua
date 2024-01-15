@@ -58,7 +58,6 @@ pico8.btn = function(i)
 end
 
 pico8.rectfill = function(x0, y0, x1, y1, col)
-
 	local left <const> = math.min(x0, x1)
 	local top <const> = math.min(y0, y1)
 	local width <const> = math.max(x0, x1) - left + 1
@@ -69,7 +68,16 @@ pico8.rectfill = function(x0, y0, x1, y1, col)
 		gfx.setColor(gfx.kColorWhite)
 	end
 	gfx.fillRect(left, top, width, height)
+end
 
+pico8.circfill = function(x, y, r, col)
+	local r = r or 4
+	if col == nil then
+		gfx.setColor(gfx.kColorBlack)
+	elseif col == 7 then
+		gfx.setColor(gfx.kColorWhite)
+	end
+	gfx.fillCircleAtPoint(x, y, r)
 end
 
 pico8.sub = function(str, pos0, pos1)
@@ -92,6 +100,21 @@ pico8._print = function(text, x, y, color)
 	end
 	gfx.drawText(text, x, y)
 	gfx.setImageDrawMode(gfx.kDrawModeCopy)
+end
+
+local _line_last_x0 = 0
+local _line_last_y0 = 0
+pico8.line = function(x0, y0, x1, y1, col)
+	x1 = x1 or 1
+	y1 = y1 or 1
+	_line_last_x0 = x0
+	_line_last_y0 = y0
+	if col == nil then
+		gfx.setColor(gfx.kColorBlack)
+	elseif col == 7 then
+		gfx.setColor(gfx.kColorWhite)
+	end
+	gfx.drawLine(x0, y0, x1, y1)
 end
 
 pico8.celeste.clamp = function(val, a, b)

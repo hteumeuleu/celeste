@@ -38,7 +38,7 @@ function Game:init()
 	self.shake = 0
 	self.will_restart = false
 	self.delay_restart = 0
-	self.level_index = 18
+	self.level_index = 21
 	self.level_total = 24
 	self.seconds = 0
 	self.minutes = 0
@@ -46,6 +46,7 @@ function Game:init()
 	self.deaths = 0
 	self.music_timer = 0
 	self.sfx_timer = 0
+	self.max_djump = 1
 
 	self.room = Room(self.level_index, self)
 	-- self._init = _init
@@ -83,7 +84,7 @@ function Game:update()
 	if self.music_timer > 0 then
 		self.music_timer -= 1
 		if self.music_timer <= 0 then
-			music(10,0,7)
+			-- music(10,0,7)
 		end
 	end
 

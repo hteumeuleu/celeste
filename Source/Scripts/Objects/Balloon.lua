@@ -68,10 +68,10 @@ end
 
 function Balloon:hit(player)
 
-	if player ~= nil and player.djump ~= nil and player.djump < player.max_djump then
+	if player ~= nil and player.djump ~= nil and player.djump < self.parent.parent.max_djump then
 		psfx(6)
 		Smoke(self.pos.x, self.pos.y)
-		player.djump = player.max_djump
+		player.djump = self.parent.parent.max_djump
 		self.spr = 0
 		self.timer = 60
 	end
