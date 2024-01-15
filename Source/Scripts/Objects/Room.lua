@@ -39,6 +39,10 @@ function Room:load()
 
 	gfx.sprite.removeAll()
 
+	self.obj = {}
+	for i = 1, 19 do
+		self.obj[i] = {}
+	end
 	self.has_key = false
 	self.has_dashed = false
 	local level_name = self.name

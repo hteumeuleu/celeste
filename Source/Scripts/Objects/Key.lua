@@ -11,6 +11,7 @@ function Key:init(x, y, parent)
 
 	Key.super.init(self, x, y, parent)
 
+	self.type_id = 10
 	self.spr = 8
 
 	self.collisionResponse = gfx.sprite.kCollisionTypeOverlap

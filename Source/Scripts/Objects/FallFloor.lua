@@ -8,6 +8,7 @@ function FallFloor:init(x, y, parent)
 
 	FallFloor.super.init(self, x, y, parent)
 
+	self.type_id = 4
 	self.state = 0
 	self.previous_state = 0
 	self.is_solid_sprite = true

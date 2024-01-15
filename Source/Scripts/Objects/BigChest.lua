@@ -10,6 +10,7 @@ class('BigChest').extends(ParentObject)
 function BigChest:init(x, y, parent)
 
 	BigChest.super.init(self, x, y, parent)
+	self.type_id = 14
 	self.state = 0
 	self.hitbox = pd.geometry.rect.new(0, 0, 16, 8)
 

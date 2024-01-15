@@ -11,6 +11,7 @@ function Message:init(x, y, parent)
 
 	Message.super.init(self, x, y, parent)
 
+	self.type_id = 13
 	self.text = "-- celeste mountain --#this memorial to those# perished on the climb"
 	self.index = 0
 	self.last = 0

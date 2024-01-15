@@ -8,6 +8,7 @@ class('FakeWall').extends(ParentObject)
 function FakeWall:init(x, y, parent)
 
 	FakeWall.super.init(self, x, y, parent)
+	self.type_id = 9
 	self.hitbox = pd.geometry.rect.new(0, 0, 16, 16)
 	self.is_solid_sprite = true
 	self:setImage(img)
@@ -19,9 +20,8 @@ function FakeWall:init(x, y, parent)
 
 end
 
-function FakeWall:update()
+function FakeWall:_update()
 
-	FakeWall.super.update(self)
 	self:setCollideRect(pd.geometry.rect.new(-1, -1, 18, 18))
 	local _, _, collisions, length = self:checkCollisions(0, 0)
 	if length == 1 then

@@ -9,6 +9,7 @@ class('Fruit').extends(ParentObject)
 function Fruit:init(x, y, parent)
 
 	Fruit.super.init(self, x, y, parent)
+	self.type_id = 6
 	self.start = y
 	self.off = 0
 	self:setImage(img)
@@ -22,9 +23,8 @@ function Fruit:init(x, y, parent)
 
 end
 
-function Fruit:update()
+function Fruit:_update()
 
-	Fruit.super.update(self)
 	self.off += 1
 	self:moveTo(self.x, self.start + sin(self.off/40) * 2.5)
 
@@ -37,7 +37,7 @@ function Fruit:hit(player)
 		sfx_timer = 20
 		sfx(13)
 		self.parent.got_fruit = true
-		LifeUp(self.x, self.y)
+		LifeUp(self.x, self.y, self.parent)
 		self:destroy()
 	end
 

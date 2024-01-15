@@ -12,6 +12,7 @@ function PlayerSpawn:init(x, y, parent)
 	PlayerSpawn.super.init(self, x, y, parent)
 
 	sfx(4)
+	self.type_id = 1
 	self.spr = 3
 	self.target = pd.geometry.point.new(self.pos.x, self.pos.y)
 	self.pos.y = 128

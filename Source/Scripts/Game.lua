@@ -38,7 +38,7 @@ function Game:init()
 	self.shake = 0
 	self.will_restart = false
 	self.delay_restart = 0
-	self.level_index = 21
+	self.level_index = 0
 	self.level_total = 24
 	self.seconds = 0
 	self.minutes = 0
@@ -70,6 +70,13 @@ function Game:getTime()
 end
 
 function Game:update()
+
+	self:_update()
+	self:_draw()
+
+end
+
+function Game:_update()
 
 	self.frames = ((self.frames + 1) % 30)
 
@@ -113,6 +120,43 @@ function Game:update()
 		if self.delay_restart <= 0 then
 			self.will_restart = false
 			self.room:load()
+		end
+	end
+
+	-- Update each object
+	if self.room.obj and #self.room.obj > 0 then
+		for i=1, #self.room.obj do
+			for j=1, #self.room.obj[i] do
+				local obj = self.room.obj[i][j]
+				if obj then
+					if obj.spd.x ~= 0 or obj.spd.y ~= 0 then
+						obj:move(obj.spd.x, obj.spd.y)
+					end
+					if obj._update ~= nil then
+						obj:_update()
+					end
+				end
+			end
+		end
+	end
+
+end
+
+function Game:_draw()
+
+	if self.freeze > 0 then
+		return
+	end
+
+	-- Draw objects
+	if self.room.obj and #self.room.obj > 0 then
+		for i=1, #self.room.obj do
+			for j=1, #self.room.obj[i] do
+				local obj = self.room.obj[i][j]
+				if obj and obj._draw ~= nil then
+					obj:_draw()
+				end
+			end
 		end
 	end
 

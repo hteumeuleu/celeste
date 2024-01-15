@@ -13,6 +13,7 @@ class('FlyFruit').extends(ParentObject)
 function FlyFruit:init(x, y, parent)
 
 	FlyFruit.super.init(self, x, y, parent)
+	self.type_id = 7
 	self.start = y
 	self.fly = false
 	self.step = 0.5
@@ -91,7 +92,7 @@ function FlyFruit:hit(player)
 		sfx_timer = 20
 		sfx(13)
 		-- got_FlyFruit[1+level_index] = true
-		LifeUp(self.x, self.y)
+		LifeUp(self.x, self.y, self.parent)
 		self:destroy()
 	end
 

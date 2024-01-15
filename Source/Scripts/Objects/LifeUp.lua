@@ -4,10 +4,11 @@ local img <const> = gfx.image.new("Assets/life-up")
 
 class('LifeUp').extends(ParentObject)
 
-function LifeUp:init(x, y)
+function LifeUp:init(x, y, parent)
 
-	LifeUp.super.init(self, x, y)
+	LifeUp.super.init(self, x, y, parent)
 
+	self.type_id = 8
 	self.spd.y = -0.25
 	self.duration = 30
 	self.x -= 2
@@ -39,6 +40,6 @@ function LifeUp:_draw()
 	else
 		self:setImageDrawMode(gfx.kDrawModeCopy)
 	end
-	self:moveTo(self.x, self.y)
+	self:moveTo(self.pos.x, self.pos.y)
 
 end

@@ -8,6 +8,7 @@ function RoomTitleTime:init(parent)
 
 	RoomTitleTime.super.init(self, 40, 8, parent)
 
+	self.type_id = 19
 	self:clearCollideRect()
 	self:setZIndex(40)
 	self:add()

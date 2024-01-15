@@ -11,6 +11,7 @@ function Platform:init(x, y, dir, parent)
 
 	Platform.super.init(self, x, y, parent)
 
+	self.type_id = 12
 	self.dir = dir or 1
 	self.x -= 4
 	self.solids = false

@@ -9,6 +9,7 @@ function Chest:init(x, y, parent)
 
 	Chest.super.init(self, x, y, parent)
 
+	self.type_id = 11
 	self.pos.x -= 5
 	self.start = self.pos.x
 	self.timer = 20

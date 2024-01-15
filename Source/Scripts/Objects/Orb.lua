@@ -12,6 +12,7 @@ class('Orb').extends(ParentObject)
 function Orb:init(x, y, parent)
 
 	Orb.super.init(self, x, y, parent)
+	self.type_id = 16
 	self.spd.y =- 4
 	self.solids = false
 

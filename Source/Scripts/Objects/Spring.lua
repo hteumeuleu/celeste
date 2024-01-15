@@ -10,6 +10,7 @@ function Spring:init(x, y, parent)
 
 	Spring.super.init(self, x, y, parent)
 
+	self.type_id = 2
 	self.spr = 18
 	self.hide_in = 0
 	self.hide_for = 0

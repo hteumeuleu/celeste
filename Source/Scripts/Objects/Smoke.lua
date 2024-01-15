@@ -11,6 +11,7 @@ function Smoke:init(arg_x, arg_y)
 	Smoke.super.init(self)
 	local x <const> = arg_x + -1 + math.random() * 2
 	local y <const> = arg_y + -1 + math.random() * 2
+	self.type_id = 5
 	self.spr = 29
 	self.spd = pd.geometry.vector2D.new(0, 0)
 	self.spd.y = -0.1
@@ -29,9 +30,8 @@ function Smoke:init(arg_x, arg_y)
 
 end
 
-function Smoke:update()
+function Smoke:_update()
 
-	Smoke.super.update(self)
 	self.spr += 0.2
 	if self.spr >= 32 then
 		self:remove()

@@ -13,6 +13,7 @@ function Balloon:init(x, y, parent)
 
 	Balloon.super.init(self, x, y, parent)
 
+	self.type_id = 3
 	self.offset = rnd(1)
 	self.start = self.pos.y
 	self.timer = 0

@@ -1,6 +1,7 @@
 local pd <const> = playdate
 local gfx <const> = pd.graphics
 local sign <const> = pico8.celeste.sign
+local del <const> = pico8.del
 
 class('ParentObject').extends(gfx.sprite)
 
@@ -35,14 +36,28 @@ end
 function ParentObject:update()
 
 	ParentObject.super.update(self)
-	if self.spd.x ~= 0 or self.spd.y ~= 0 then
-		self:move(self.spd.x, self.spd.y)
-	end
-	if self._update ~= nil then
-		self:_update()
-	end
-	if self._draw ~= nil then
-		self:_draw()
+	-- if self.spd.x ~= 0 or self.spd.y ~= 0 then
+	-- 	self:move(self.spd.x, self.spd.y)
+	-- end
+	-- if self._update ~= nil then
+	-- 	self:_update()
+	-- end
+	-- if self._draw ~= nil then
+	-- 	self:_draw()
+	-- end
+
+end
+
+-- add
+--
+function ParentObject:add()
+
+	ParentObject.super.add(self)
+	if self.parent ~= nil and self.type_id ~= nil then
+		if self.parent.obj[self.type_id] == nil then
+			self.parent.obj[self.type_id] = {}
+		end
+		table.insert(self.parent.obj[self.type_id], self)
 	end
 
 end
@@ -52,6 +67,9 @@ end
 function ParentObject:destroy()
 
 	self:remove()
+	if self.parent ~= nil and self.type_id ~= nil and self.parent.obj[self.type_id] ~= nil then
+		del(self.parent.obj[self.type_id], self)
+	end
 
 end
 

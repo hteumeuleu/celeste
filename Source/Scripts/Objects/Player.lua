@@ -26,6 +26,7 @@ function Player:init(x, y, parent)
 
 	Player.super.init(self, x, y, parent)
 
+	self.type_id = 18
 	self.p_jump = false
 	self.p_dash = false
 	self.grace = 0
