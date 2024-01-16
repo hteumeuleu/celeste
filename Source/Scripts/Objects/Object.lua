@@ -174,8 +174,21 @@ end
 
 function ParentObject:collide(other, ox, oy)
 
-	if other ~= nil and other.collideable and self.hitbox:offsetBy(self.pos.x + ox, self.pos.y + oy):intersects(other.hitbox:offsetBy(other.pos.x, other.pos.y)) then
-		return other
+	if type(other) == "string" then
+		local rect = pd.geometry.rect.new(self.pos.x + self.hitbox.x + ox, self.pos.y + self.hitbox.y + oy, self.hitbox.width, self.hitbox.height)
+		local query = gfx.sprite.querySpritesInRect(rect)
+		if #query > 1 then
+			for i=1, #query do
+				local otherSprite = query[i]
+				if otherSprite.className == other then
+					return otherSprite
+				end
+			end
+		end
+	else
+		if other ~= nil and other.collideable and self.hitbox:offsetBy(self.pos.x + ox, self.pos.y + oy):intersects(other.hitbox:offsetBy(other.pos.x, other.pos.y)) then
+			return other
+		end
 	end
 	return nil
 

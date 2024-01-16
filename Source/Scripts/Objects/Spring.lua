@@ -72,11 +72,11 @@ function Spring:hit(player)
 			self.delay = 10
 			Smoke(self.pos.x, self.pos.y)
 
-			-- TODO: breakable below us
-			-- local below=this.collide(fall_floor,0,1)
-			-- if below~=nil then
-			-- 	break_fall_floor(below)
-			-- end
+			-- Breakable below us
+			local below = self:collide("FallFloor", 0, 1)
+			if below ~= nil then
+				below:hit()
+			end
 
 			psfx(8)
 		end

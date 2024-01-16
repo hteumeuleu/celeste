@@ -167,7 +167,7 @@ function Room:load()
 		local y <const> = entity.position.y + offset.y
 		if entity.name == "Player" then
 			PlayerSpawn(x, y, self)
-		elseif entity.name == "FakeWall" then
+		elseif entity.name == "FakeWall" and not self.got_fruit then
 			FakeWall(x, y, self)
 		elseif entity.name == "FallFloor" then
 			FallFloor(x, y, self)

@@ -73,12 +73,11 @@ function FallFloor:hit(player)
 		self.state = 1
 		self.delay = 15 --how long until it falls
 		Smoke(self.pos.x, self.pos.y)
-		-- if (#objects[spring.type_id] > 0) then
-		-- 	local hit=obj.collide(spring,0,-1)
-		-- 	if hit~=nil then
-		-- 		break_spring(hit)
-		-- 	end
-		-- end
+
+		local above = self:collide("Spring", 0, -1)
+		if above ~= nil then
+			above:_break()
+		end
 	end
 
 end
