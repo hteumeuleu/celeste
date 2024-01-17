@@ -43,7 +43,7 @@ function FallFloor:_update()
 			self.state = 0
 			self.collideable = true
 			self:setCollisionsEnabled(true)
-			Smoke(self.pos.x, self.pos.y)
+			Smoke(self.pos.x, self.pos.y, self.parent)
 		end
 	end
 
@@ -72,7 +72,7 @@ function FallFloor:hit(player)
 		psfx(15)
 		self.state = 1
 		self.delay = 15 --how long until it falls
-		Smoke(self.pos.x, self.pos.y)
+		Smoke(self.pos.x, self.pos.y, self.parent)
 
 		local above = self:collide("Spring", 0, -1)
 		if above ~= nil then

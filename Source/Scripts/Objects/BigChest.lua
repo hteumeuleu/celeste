@@ -39,8 +39,8 @@ function BigChest:_draw()
 			hit.spd.x = 0
 			hit.spd.y = 0
 			self.state = 1
-			Smoke(self.pos.x, self.pos.y)
-			Smoke(self.pos.x + 8, self.pos.y)
+			Smoke(self.pos.x, self.pos.y, self.parent)
+			Smoke(self.pos.x + 8, self.pos.y, self.parent)
 			self.timer = 60
 			self.particles = {}
 			self.particles_sprite:add()

@@ -121,7 +121,7 @@ function Player:_update()
 
 	-- Smoke particles
 	if on_ground and not self.was_on_ground then
-		Smoke(self.pos.x, self.pos.y + 4)
+		Smoke(self.pos.x, self.pos.y + 4, self.parent)
 	end
 
 	-- Jump
@@ -151,7 +151,7 @@ function Player:_update()
 	self.dash_effect_time -= 1
 	-- Player just dashed
 	if self.dash_time > 0 then
-		Smoke(self.pos.x, self.pos.y)
+		Smoke(self.pos.x, self.pos.y, self.parent)
 		self.dash_time -= 1
 		self.spd.x = appr(self.spd.x, self.dash_target.x, self.dash_accel.x)
 		self.spd.y = appr(self.spd.y, self.dash_target.y, self.dash_accel.y)
@@ -193,7 +193,7 @@ function Player:_update()
 		if input ~= 0 and self:is_solid(input, 0) and not self:is_ice(input, 0) then
 			maxfall = 0.4
 			if (math.random() * 10) < 2 then
-				Smoke(self.pos.x + input * 6, self.pos.y)
+				Smoke(self.pos.x + input * 6, self.pos.y, self.parent)
 			end
 		end
 
@@ -209,7 +209,7 @@ function Player:_update()
 				self.jbuffer = 0
 				self.grace = 0
 				self.spd.y = -2
-				Smoke(self.pos.x, self.pos.y + 4)
+				Smoke(self.pos.x, self.pos.y + 4, self.parent)
 			else
 				-- Wall jump
 				local wall_dir = (self:is_solid(-3, 0) and -1 or self:is_solid(3, 0) and 1 or 0)
@@ -219,7 +219,7 @@ function Player:_update()
 					self.spd.y = -2
 					self.spd.x = -wall_dir * (maxrun + 1)
 					if not self:is_ice(wall_dir * 3, 0) then
-						Smoke(self.pos.x + wall_dir * 6, self.pos.y)
+						Smoke(self.pos.x + wall_dir * 6, self.pos.y, self.parent)
 					end
 				end
 			end
@@ -230,7 +230,7 @@ function Player:_update()
 		local d_half = d_full * sqrt_one_half
 		
 		if self.djump > 0 and dash then
-			Smoke(self.pos.x, self.pos.y)
+			Smoke(self.pos.x, self.pos.y, self.parent)
 			self.djump -= 1
 			self.dash_time = 4
 			self.parent.has_dashed = true
@@ -272,7 +272,7 @@ function Player:_update()
 			end  
 		elseif dash and self.djump <= 0 then
 			psfx(9)
-			Smoke(self.pos.x, self.pos.y)
+			Smoke(self.pos.x, self.pos.y, self.parent)
 		end
 	end
 

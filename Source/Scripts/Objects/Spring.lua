@@ -70,7 +70,7 @@ function Spring:hit(player)
 			player.spd.y = -3
 			player.djump = self.parent.parent.max_djump
 			self.delay = 10
-			Smoke(self.pos.x, self.pos.y)
+			Smoke(self.pos.x, self.pos.y, self.parent)
 
 			-- Breakable below us
 			local below = self:collide("FallFloor", 0, 1)

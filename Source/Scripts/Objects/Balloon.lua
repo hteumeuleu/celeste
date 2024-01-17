@@ -38,7 +38,7 @@ function Balloon:_update()
 		self.timer -= 1
 	else
 		psfx(7)
-		Smoke(self.pos.x, self.pos.y)
+		Smoke(self.pos.x, self.pos.y, self.parent)
 		self.spr = 22
 	end
 
@@ -71,7 +71,7 @@ function Balloon:hit(player)
 
 	if player ~= nil and player.djump ~= nil and player.djump < self.parent.parent.max_djump then
 		psfx(6)
-		Smoke(self.pos.x, self.pos.y)
+		Smoke(self.pos.x, self.pos.y, self.parent)
 		player.djump = self.parent.parent.max_djump
 		self.spr = 0
 		self.timer = 60

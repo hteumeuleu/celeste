@@ -55,7 +55,7 @@ function PlayerSpawn:_update()
 			self.state = 2
 			self.delay = 5
 			self.parent.parent.shake = 5
-			Smoke(self.pos.x, self.pos.y + 4)
+			Smoke(self.pos.x, self.pos.y + 4, self.parent)
 			sfx(5)
 		end
 	-- Landing
