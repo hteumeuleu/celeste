@@ -1,4 +1,3 @@
-import "Scripts/Libraries/Signal"
 import "Scripts/Libraries/pico8"
 import "Scripts/Objects/Object"
 import "Scripts/Objects/Room"
@@ -23,6 +22,7 @@ import "Scripts/Objects/Platform"
 import "Scripts/Objects/Message"
 import "Scripts/Objects/BigChest"
 import "Scripts/Objects/Orb"
+import "Scripts/TAS"
 
 local pd <const> = playdate
 local gfx <const> = pd.graphics
@@ -78,6 +78,7 @@ end
 
 function Game:_update()
 
+	pico8.frames += 1
 	self.frames = ((self.frames + 1) % 30)
 
 	-- Timers

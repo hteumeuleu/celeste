@@ -27,6 +27,7 @@ function Room:init(index, parent)
 		self.title = "summit"
 	end
 	self.got_fruit = false
+	-- self.tas = TAS(self.index)
 	self:load()
 	return self
 

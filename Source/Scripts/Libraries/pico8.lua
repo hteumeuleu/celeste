@@ -3,6 +3,7 @@ local gfx <const> = pd.graphics
 
 pico8 = {}
 pico8.celeste = {}
+pico8.frames = 0
 
 pico8.flip = function(flip_x, flip_y)
 	local image_flip =  gfx.kImageUnflipped

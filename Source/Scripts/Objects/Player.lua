@@ -9,7 +9,7 @@ local k_down <const> = pd.kButtonDown
 local k_jump <const> = pd.kButtonA
 local k_dash <const> = pd.kButtonB
 local sqrt_one_half <const> = 0.70710678118
-local btn <const> = pico8.btn
+-- local btn = pico8.btn
 local clamp <const> = pico8.celeste.clamp
 local appr <const> = pico8.celeste.appr
 local sign <const> = pico8.celeste.sign
@@ -48,6 +48,8 @@ function Player:init(x, y, parent)
 	self:setCollidesWithGroups({2,3,4,5,6})
 	self:setGroups({1})
 	self:add()
+
+	pico8.frames = 0
 
 	return self
 
@@ -112,7 +114,7 @@ function Player:_update()
 		end
 	end
 
-	local input = btn(k_right) and 1 or (btn(k_left) and -1 or 0)
+	local input = pico8.btn(k_right) and 1 or (pico8.btn(k_left) and -1 or 0)
 
 	-- Bottom death
 	if self.pos.y > 128 then
@@ -125,8 +127,8 @@ function Player:_update()
 	end
 
 	-- Jump
-	local jump = btn(k_jump) and not self.p_jump
-	self.p_jump = btn(k_jump)
+	local jump = pico8.btn(k_jump) and not self.p_jump
+	self.p_jump = pico8.btn(k_jump)
 	if jump then
 		self.jbuffer = 4
 	elseif self.jbuffer > 0 then
@@ -134,8 +136,8 @@ function Player:_update()
 	end
 
 	-- Dash
-	local dash = btn(k_dash) and not self.p_dash
-	self.p_dash = btn(k_dash)
+	local dash = pico8.btn(k_dash) and not self.p_dash
+	self.p_dash = pico8.btn(k_dash)
 
 	-- Grace
 	if on_ground then
@@ -235,7 +237,7 @@ function Player:_update()
 			self.dash_time = 4
 			self.parent.has_dashed = true
 			self.dash_effect_time = 10
-			local v_input = (btn(k_up) and -1 or (btn(k_down) and 1 or 0))
+			local v_input = (pico8.btn(k_up) and -1 or (pico8.btn(k_down) and 1 or 0))
 			if input ~= 0 then
 				if v_input ~= 0 then
 					self.spd.x = input * d_half
@@ -284,13 +286,13 @@ function Player:_update()
 		else
 			self.spr = 3
 		end
-	elseif btn(k_down) then
+	elseif pico8.btn(k_down) then
 		-- Crouching down
 		self.spr = 6
-	elseif btn(k_up) then
+	elseif pico8.btn(k_up) then
 		-- Looking up
 		self.spr = 7
-	elseif (self.spd.x == 0) or (not btn(k_left) and not btn(k_right)) then
+	elseif (self.spd.x == 0) or (not pico8.btn(k_left) and not pico8.btn(k_right)) then
 		-- Stale
 		self.spr = 1
 	else
