@@ -171,9 +171,9 @@ function Room:load()
 			FakeWall(x, y, self)
 		elseif entity.name == "FallFloor" then
 			FallFloor(x, y, self)
-		elseif entity.name == "Fruit" then
+		elseif entity.name == "Fruit" and not self.got_fruit then
 			Fruit(x, y, self)
-		elseif entity.name == "FlyFruit" then
+		elseif entity.name == "FlyFruit" and not self.got_fruit then
 			FlyFruit(x, y, self)
 		elseif entity.name == "Spring" then
 			Spring(x, y, self)
