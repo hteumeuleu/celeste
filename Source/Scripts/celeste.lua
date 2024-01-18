@@ -9,6 +9,9 @@ local max = function(a, b) return math.max(a, b) end
 local btn = function(i) return playdate.buttonIsPressed(i) end
 local mget = function(celx, cely) return data.map[celx + (cely * 128) + 1] end
 local music = pico8.music
+pico8 = pico8 or {}
+pico8.frames = 0
+pico8.btn = btn
 
 -- ~celeste~
 -- maddy thorson + noel berry
@@ -136,6 +139,7 @@ function begin_game(x,y)
 	local x = x or 0
 	local y = y or 0
 	frames=0
+	pico8.frames = 0
 	if x == 0 and y == 0 then
 		seconds=0
 		minutes=0
@@ -234,6 +238,7 @@ local player =
 			this.pdspr:setGroups({1})
 		end
 		create_hair(this)
+		pico8.frames = 0
 	end,
 	update=function(this)
 		if (pause_player) then return end
@@ -279,7 +284,7 @@ local player =
 			end
 		end
 
-		local input = btn(k_right) and 1 or (btn(k_left) and -1 or 0)
+		local input = pico8.btn(k_right) and 1 or (pico8.btn(k_left) and -1 or 0)
 
 		-- bottom death
 		if this.y>128 then
@@ -291,16 +296,16 @@ local player =
 			init_object(smoke,this.x,this.y+4)
 		end
 
-		local jump = btn(k_jump) and not this.p_jump
-		this.p_jump = btn(k_jump)
+		local jump = pico8.btn(k_jump) and not this.p_jump
+		this.p_jump = pico8.btn(k_jump)
 		if (jump) then
 			this.jbuffer=4
 		elseif this.jbuffer>0 then
 			this.jbuffer-=1
 		end
 
-		local dash = btn(k_dash) and not this.p_dash
-		this.p_dash = btn(k_dash)
+		local dash = pico8.btn(k_dash) and not this.p_dash
+		this.p_dash = pico8.btn(k_dash)
 
 		if on_ground then
 			this.grace=6
@@ -398,7 +403,7 @@ local player =
 				this.dash_time=4
 				has_dashed=true
 				this.dash_effect_time=10
-				local v_input=(btn(k_up) and -1 or (btn(k_down) and 1 or 0))
+				local v_input=(pico8.btn(k_up) and -1 or (pico8.btn(k_down) and 1 or 0))
 				if input~=0 then
 					if v_input~=0 then
 					   this.spd.x=input*d_half
@@ -447,11 +452,11 @@ local player =
 			else
 				this.spr=3
 			end
-		elseif btn(k_down) then
+		elseif pico8.btn(k_down) then
 			this.spr=6
-		elseif btn(k_up) then
+		elseif pico8.btn(k_up) then
 			this.spr=7
-		elseif (this.spd.x==0) or (not btn(k_left) and not btn(k_right)) then
+		elseif (this.spd.x==0) or (not pico8.btn(k_left) and not pico8.btn(k_right)) then
 			this.spr=1
 		else
 			this.spr=1+this.spr_off%4
@@ -514,7 +519,7 @@ end
 
 draw_hair=function(obj,facing)
 	local lastX = obj.x+4-facing*2
-	local lastY = obj.y+(btn(k_down) and 4 or 3)
+	local lastY = obj.y+(pico8.btn(k_down) and 4 or 3)
 	local coords={}
 	for i=1, #obj.hair do
 		local h = obj.hair[i]
@@ -1960,6 +1965,10 @@ function load_room(x,y)
 		data.frame:add()
 	end
 
+	if not is_title then
+		TAS(level_index)
+	end
+
 	-- entities
 	for tx=0,15 do
 		for ty=0,15 do
@@ -1984,6 +1993,8 @@ end
 
 function _update()
 
+	print(pico8.frames)
+	pico8.frames+=1
 	frames=((frames+1)%30)
 	if frames==0 and level_index<30 then
 		seconds=((seconds+1)%60)
@@ -2041,7 +2052,7 @@ function _update()
 
 	-- start game
 	if is_title then
-		if not start_game and not game_just_restarted and (btn(k_jump) or btn(k_dash)) then
+		if not start_game and not game_just_restarted and (pico8.btn(k_jump) or pico8.btn(k_dash)) then
 			music(-1)
 			start_game_flash=50
 			start_game=true

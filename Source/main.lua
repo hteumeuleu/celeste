@@ -5,6 +5,7 @@ import "CoreLibs/timer"
 import "CoreLibs/ui"
 import "CoreLibs/crank"
 
+import "Scripts/TAS"
 import "Scripts/Game"
 local g = Game()
 local showFPS = false
