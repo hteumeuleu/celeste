@@ -17,6 +17,7 @@ function Smoke:init(x, y, parent)
 	self.solids = false
 	self.flip.x = maybe()
 	self.flip.y = maybe()
+	self:clearCollideRect()
 	self:moveTo(self.pos.x, self.pos.y)
 	self:setZIndex(30)
 	self:add()
