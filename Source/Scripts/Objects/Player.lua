@@ -97,7 +97,12 @@ function Player:_update()
 			local col = collisions_at_x_y[i]
 			local other = col.other
 			if other.spike == true then
-				self:kill()
+				if (other.dir == "up" and self.spd.y >= 0) or 
+			   	   (other.dir == "down" and self.spd.y <= 0) or 
+			   	   (other.dir == "left" and self.spd.x >= 0) or 
+			   	   (other.dir == "right" and self.spd.x <= 0) then
+					self:kill()
+				end
 			elseif other.className == "Spring" then
 				other:hit(self)
 			elseif other.className == "Fruit" or other.className == "FlyFruit" then
