@@ -22,7 +22,11 @@ function RoomTitle:init(title, parent)
 	self:setZIndex(20)
 	self:add()
 
-	self.roomTitleTime = RoomTitleTime(self.parent)
+	if not parent.tas then
+		self.roomTitleTime = RoomTitleTime(self.parent)
+	else
+		RoomTitleTAS(self.parent)
+	end
 
 	return self
 
@@ -40,7 +44,9 @@ end
 function RoomTitle:destroy()
 
 	RoomTitle.super.destroy(self)
-	self.roomTitleTime:destroy()
+	if self.roomTitleTime then
+		self.roomTitleTime:destroy()
+	end
 	-- if layers.assist and game_obj then
 	-- 	layers.assist:remove()
 	-- end

@@ -2,7 +2,6 @@ local pd <const> = playdate
 local gfx <const> = pd.graphics
 
 pico8 = {}
-pico8.celeste = {}
 pico8.frames = 0
 
 pico8.flip = function(flip_x, flip_y)
@@ -116,22 +115,4 @@ pico8.line = function(x0, y0, x1, y1, col)
 		gfx.setColor(gfx.kColorWhite)
 	end
 	gfx.drawLine(x0, y0, x1, y1)
-end
-
-pico8.celeste.clamp = function(val, a, b)
-	return math.max(a, math.min(b, val))
-end
-
-pico8.celeste.appr = function(val,target,amount)
-	return val > target 
-		and math.max(val - amount, target) 
-		or math.min(val + amount, target)
-end
-
-pico8.celeste.sign = function(v)
-	return v > 0 and 1 or v < 0 and -1 or 0
-end
-
-pico8.celeste.maybe = function()
-	return (math.random() * 1) < 0.5
 end

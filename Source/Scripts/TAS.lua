@@ -65,7 +65,6 @@ function TAS:read()
 		end
 		local tas_keypresses = string.sub(tas_content, start_index, end_index)
 		self.keypresses = split(tas_keypresses, ',')
-		printTable(self.keypresses)
 
 		for i=1, #self.keypresses do
 			local c = self.keypresses[i]

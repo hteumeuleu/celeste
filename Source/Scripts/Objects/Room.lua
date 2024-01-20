@@ -27,7 +27,7 @@ function Room:init(index, parent)
 		self.title = "summit"
 	end
 	self.got_fruit = false
-	-- self.tas = TAS(self.index)
+	self.tas = TAS(self.index)
 	self:load()
 	return self
 
@@ -115,6 +115,7 @@ function Room:load()
 						spikeSprite:moveBy((spikeSprite.width/2)*-1, (spikeSprite.height/2)*-1)
 						spikeSprite.spike = true
 						spikeSprite.dir = "up"
+						spikeSprite.spr = 17
 						spikeSprite:setCollideRect(pd.geometry.rect.new(0, 5, spikeSprite.width, 3))
 						spikeSprite:setCollidesWithGroups({1})
 						spikeSprite:setGroups({5})
@@ -129,6 +130,7 @@ function Room:load()
 						spikeSprite:moveBy((spikeSprite.width/2)*-1, (spikeSprite.height/2)*-1)
 						spikeSprite.spike = true
 						spikeSprite.dir = "down"
+						spikeSprite.spr = 27
 						spikeSprite:setCollideRect(pd.geometry.rect.new(0, 0, spikeSprite.width, 3))
 						spikeSprite:setCollidesWithGroups({1})
 						spikeSprite:setGroups({5})
@@ -143,6 +145,7 @@ function Room:load()
 						spikeSprite:moveBy((spikeSprite.width/2)*-1, (spikeSprite.height/2)*-1)
 						spikeSprite.spike = true
 						spikeSprite.dir = "right"
+						spikeSprite.spr = 43
 						spikeSprite:setCollideRect(pd.geometry.rect.new(0, 0, 3, spikeSprite.height))
 						spikeSprite:setCollidesWithGroups({1})
 						spikeSprite:setGroups({5})
@@ -157,6 +160,7 @@ function Room:load()
 						spikeSprite:moveBy((spikeSprite.width/2)*-1, (spikeSprite.height/2)*-1)
 						spikeSprite.spike = true
 						spikeSprite.dir = "left"
+						spikeSprite.spr = 59
 						spikeSprite:setCollideRect(pd.geometry.rect.new(5, 0, 3, spikeSprite.height))
 						spikeSprite:setCollidesWithGroups({1})
 						spikeSprite:setGroups({5})

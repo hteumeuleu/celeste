@@ -92,15 +92,13 @@ function Player:_update()
 
 	-- Collisions
 	local _, _, collisions_at_x_y, length = self:checkCollisions(self.x, self.y)
+	printTable(pico8.frames, length, collisions_at_x_y)
 	if length > 0 then
 		for i=1, #collisions_at_x_y do
 			local col = collisions_at_x_y[i]
 			local other = col.other
 			if other.spike == true then
-				if (other.dir == "up" and self.spd.y >= 0) or 
-			   	   (other.dir == "down" and self.spd.y <= 0) or 
-			   	   (other.dir == "left" and self.spd.x >= 0) or 
-			   	   (other.dir == "right" and self.spd.x <= 0) then
+				if pico8.celeste.spikes_at(self.x + self.hitbox.x, self.y + self.hitbox.y, self.hitbox.width, self.hitbox.height, self.spd.x, self.spd.y, other.spr) then
 					self:kill()
 				end
 			elseif other.className == "Spring" then
@@ -111,10 +109,6 @@ function Player:_update()
 				other:hit(self)
 			elseif other.className == "Key" then
 				other:hit(self)
-			-- elseif col.other.type == "balloon" and col.other.hit ~= nil then
-			-- 	-- col.other:hit(col.sprite.obj)
-			-- elseif col.other.type == "platform" and col.other.hit ~= nil and on_ground and playerIsAboveObject then
-			-- 	-- col.other:hit(col.sprite.obj)
 			end
 		end
 	end
