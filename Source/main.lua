@@ -33,7 +33,7 @@ function playdate.update()
 	playdate.graphics.sprite.update()
 	CELESTE:update()
 	if showFPS then
-		playdate.drawFPS(0, 0)
+		playdate.drawFPS(185, 0)
 	end
 
 end

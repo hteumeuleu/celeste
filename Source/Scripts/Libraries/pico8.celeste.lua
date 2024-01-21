@@ -23,10 +23,11 @@ pico8.celeste.maybe = function()
 end
 
 pico8.celeste.spikes_at = function(x,y,w,h,xspd,yspd,tile)
+	local i, j
 	for i=math.max(0,math.floor(x/8)),math.min(15,(x+w-1)/8) do
 		for j=math.max(0,math.floor(y/8)),math.min(15,(y+h-1)/8) do
 			local tile=tile or tile_at(i,j)
-			print(tile, i, j)
+			print(tile, (y+h-1)%8, ">=6", y+h, "==", j*8+8, yspd)
 			if tile==17 and ((y+h-1)%8>=6 or y+h==j*8+8) and yspd>=0 then
 				return true
 			elseif tile==27 and y%8<=2 and yspd<=0 then
