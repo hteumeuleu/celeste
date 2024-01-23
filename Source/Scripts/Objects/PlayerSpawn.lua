@@ -20,7 +20,7 @@ function PlayerSpawn:init(x, y, parent)
 	self.state = 0
 	self.delay = 0
 	self.solids = false
-	-- create_hair(this) -- TODO
+	self.hair = Hair(self)
 
 	self:setUpdatesEnabled(true)
 	self:setZIndex(20)
@@ -76,5 +76,16 @@ function PlayerSpawn:_draw()
 	self:setImage(img, flip(self.flip.x, self.flip.y))
 	self:moveTo(self.pos.x - 1, self.pos.y - 1)
 
-	-- draw_hair(this,1) -- TODO
+	if self.hair ~= nil then
+		self.hair:_draw(self, 1)
+	end
+end
+
+function PlayerSpawn:destroy()
+
+	PlayerSpawn.super.destroy(self)
+	if self.hair ~= nil then
+		self.hair:remove()
+	end
+
 end

@@ -41,6 +41,7 @@ function Player:init(x, y, parent)
 	self.hitbox = pd.geometry.rect.new(1,3,6,5)
 	self.pos = pd.geometry.point.new(x, y)
 	self.solids = true
+	self.hair = Hair(self)
 
 	self.collisionResponse = gfx.sprite.kCollisionTypeOverlap
 	self:setZIndex(20)
@@ -48,6 +49,7 @@ function Player:init(x, y, parent)
 	self:setCollidesWithGroups({2,3,4,5,6})
 	self:setGroups({1})
 	self:add()
+
 
 	pico8.frames = 0
 
@@ -331,17 +333,19 @@ function Player:_draw()
 	local img = image_table:getImage(math.floor(self.spr + spr_offset))
 	self:setImage(img, flip(self.flip.x, self.flip.y))
 	self:moveTo(self.pos.x - 1, self.pos.y - 1)
-	-- TODO: draw_hair()
+
+	if self.hair ~= nil then
+		self.hair:_draw(self, self.flip.x and -1 or 1)
+	end
 
 end
 
 function Player:destroy()
 
 	Player.super.destroy(self)
-	-- TODO: remove hair
-	-- if layers.hair ~= nil then
-	-- 	layers.hair:remove()
-	-- end
+	if self.hair ~= nil then
+		self.hair:remove()
+	end
 
 end
 
