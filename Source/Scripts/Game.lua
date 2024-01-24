@@ -25,6 +25,7 @@ import "Scripts/Objects/Platform"
 import "Scripts/Objects/Message"
 import "Scripts/Objects/BigChest"
 import "Scripts/Objects/Orb"
+import "Scripts/Objects/Flag"
 import "Scripts/TAS"
 
 local pd <const> = playdate
@@ -41,8 +42,8 @@ function Game:init()
 	self.shake = 0
 	self.will_restart = false
 	self.delay_restart = 0
-	self.level_index = 1
-	self.level_total = 24
+	self.level_index = 30
+	self.level_total = 31
 	self.seconds = 0
 	self.minutes = 0
 	self.frames = 0

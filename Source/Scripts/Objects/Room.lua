@@ -27,7 +27,7 @@ function Room:init(index, parent)
 		self.title = "summit"
 	end
 	self.got_fruit = false
-	-- self.tas = TAS(self.index)
+	self.tas = TAS(self.index)
 	self:load()
 	return self
 
@@ -200,6 +200,8 @@ function Room:load()
 			Message(x, y, self)
 		elseif entity.name == "BigChest" then
 			BigChest(x, y, self)
+		elseif entity.name == "Flag" then
+			Flag(x, y, self)
 		elseif entity.name == "Tree" then
 			Tree(x, y)
 		end
