@@ -100,7 +100,7 @@ function Player:_update()
 			local other = col.other
 			if other.spike == true then
 				print(self.pos, self.x, self.y)
-				if pico8.celeste.spikes_at(self.x + self.hitbox.x, self.y + self.hitbox.y, self.hitbox.width, self.hitbox.height, self.spd.x, self.spd.y, other.spr) then
+				if pico8.celeste.spikes_at(self.x + self.hitbox.x, self.y + self.hitbox.y, self.hitbox.width, self.hitbox.height, self.spd.x, self.spd.y) then
 					self:kill()
 				end
 			elseif other.className == "Spring" then
