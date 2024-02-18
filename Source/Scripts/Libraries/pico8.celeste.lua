@@ -22,26 +22,40 @@ pico8.celeste.maybe = function()
 	return (math.random() * 1) < 0.5
 end
 
+debugList = {}
+-- debugDrawRect = pd.geometry.rect.new(0, 0, 1, 1)
+function playdate.debugDraw()
+
+	for _, rect in ipairs(debugList) do
+		gfx.fillRect(rect)
+	end
+	debugList = {}
+
+end
+
 pico8.celeste.spikes_at = function(x,y,w,h,xspd,yspd)
 	local i, j
-	for i=math.max(0,math.floor(x/8)),math.min(15,(x+w-1)/8) do
+	for i=math.max(0,math.floor(x/8)),math.min(25,(x+w-1)/8) do
 		for j=math.max(0,math.floor(y/8)),math.min(15,(y+h-1)/8) do
 
 			local tile = nil
-			local rect = pd.geometry.rect.new(i*8, j*8, 8, 8)
+			local rect = pd.geometry.rect.new(i*8-4, j*8-4, 8, 8)
+			-- debugDrawRect = rect
+			table.insert(debugList, rect)
+			-- print("rect:", rect)
 			local query = gfx.sprite.querySpritesInRect(rect)
 			if #query > 1 then
 				for i=1, #query do
 					local other = query[i]
 					if other.spike == true and other.spr ~= nil then
 						tile = other.spr
-					print("spr:", rect, other.spr)
+					-- print("spr:", rect, other.spr)
 					end
 					-- printTable(other)
 				end
 			end
 			-- local tile=tile or tile_at(i,j)
-			-- print(tile, (y+h-1)%8, ">=6", y+h, "==", j*8+8, yspd)
+			print(tile, (y+h-1)%8, ">=6", y+h, "==", j*8+8, yspd)
 			if tile==17 and ((y+h-1)%8>=6 or y+h==j*8+8) and yspd>=0 then
 				return true
 			elseif tile==27 and y%8<=2 and yspd<=0 then

@@ -99,7 +99,8 @@ function Player:_update()
 			local col = collisions_at_x_y[i]
 			local other = col.other
 			if other.spike == true then
-				print(self.pos, self.x, self.y)
+				print("player:", self.x, self.y)
+				print("-- spike:", other.x, other.y)
 				if pico8.celeste.spikes_at(self.x + self.hitbox.x, self.y + self.hitbox.y, self.hitbox.width, self.hitbox.height, self.spd.x, self.spd.y) then
 					self:kill()
 				end
