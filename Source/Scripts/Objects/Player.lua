@@ -92,6 +92,12 @@ function Player:_update()
 	end
 	self:setCollidesWithGroups({2,3,4,5,6})
 
+
+	-- Spikes
+	if pico8.celeste.spikes_at(self.pos.x + self.hitbox.x, self.pos.y + self.hitbox.y, self.hitbox.width, self.hitbox.height, self.spd.x, self.spd.y) then
+		self:kill()
+	end
+
 	-- Collisions
 	local _, _, collisions_at_x_y, length = self:checkCollisions(self.x, self.y)
 	if length > 0 then
@@ -99,11 +105,11 @@ function Player:_update()
 			local col = collisions_at_x_y[i]
 			local other = col.other
 			if other.spike == true then
-				print("player:", self.x, self.y)
-				print("-- spike:", other.x, other.y)
-				if pico8.celeste.spikes_at(self.x + self.hitbox.x, self.y + self.hitbox.y, self.hitbox.width, self.hitbox.height, self.spd.x, self.spd.y) then
-					self:kill()
-				end
+				-- print("player:", self.x, self.y)
+				-- print("-- spike:", other.x, other.y)
+				-- if pico8.celeste.spikes_at(self.x + self.hitbox.x, self.y + self.hitbox.y, self.hitbox.width, self.hitbox.height, self.spd.x, self.spd.y) then
+				-- 	self:kill()
+				-- end
 			elseif other.className == "Spring" then
 				other:hit(self)
 			elseif other.className == "Fruit" or other.className == "FlyFruit" then
