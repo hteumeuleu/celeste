@@ -70,7 +70,7 @@ function Room:load()
 				layerSprite:setImage(stylizedImage)
 			elseif layer_name == "Foreground" then
 				layerSprite:setTilemap(tilemap)
-				self.tilemap = tilemap
+				pico8._tilemap = tilemap
 			end
 
 			layerSprite:setCenter(0, 0)
@@ -94,6 +94,7 @@ function Room:load()
 							wallSprite.is_ice_sprite = true
 						end
 						if is_spike then
+							wallSprite.type = "spikes"
 							wallSprite.spike = true
 							wallSprite.dir = dir
 							wallSprite.spr = spr

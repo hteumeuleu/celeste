@@ -64,8 +64,16 @@ function Player:_update()
 	local input = pico8.btn(k_right) and 1 or (pico8.btn(k_left) and -1 or 0)
 
 	-- Spikes collide
-	if spikes_at(self.pos.x + self.hitbox.x, self.pos.y + self.hitbox.y, self.hitbox.width, self.hitbox.height, self.spd.x, self.spd.y) then
-		self:kill()
+	local _, _, collisions_at_x_y, length = self:checkCollisions(self.pos.x, self.pos.y)
+	if length > 0 then
+		for i=1, #collisions_at_x_y do
+			local col = collisions_at_x_y[i]
+			if col.other.type == "spikes" then
+				if spikes_at(self.pos.x + self.hitbox.x, self.pos.y + self.hitbox.y, self.hitbox.width, self.hitbox.height, self.spd.x, self.spd.y) then
+					self:kill()
+				end
+			end
+		end
 	end
 
 	-- Bottom death
