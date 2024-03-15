@@ -25,8 +25,17 @@ end
 
 function Fruit:_update()
 
+	if self:collide(self.parent.player, 0, 0) then
+		self:hit(self.parent.player)
+	end
 	self.off += 1
-	self:moveTo(self.x, self.start + sin(self.off/40) * 2.5)
+	self.pos.y = self.start + sin(self.off/40) * 2.5
+
+end
+
+function Fruit:_draw()
+
+	self:moveTo(self.pos.x, self.pos.y)
 
 end
 

@@ -34,6 +34,9 @@ function Balloon:_update()
 	if self.spr == 22 then
 		self.offset += 0.01
 		self.pos.y = self.start + sin(self.offset) * 2
+		if self:collide(self.parent.player, 0, 0) then
+			self:hit(self.parent.player)
+		end
 	elseif self.timer > 0 then
 		self.timer -= 1
 	else

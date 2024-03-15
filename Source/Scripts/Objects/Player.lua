@@ -9,7 +9,7 @@ local k_down <const> = pd.kButtonDown
 local k_jump <const> = pd.kButtonA
 local k_dash <const> = pd.kButtonB
 local sqrt_one_half <const> = 0.70710678118
--- local btn = pico8.btn
+local spikes_at <const> = pico8.celeste.spikes_at
 local clamp <const> = pico8.celeste.clamp
 local appr <const> = pico8.celeste.appr
 local sign <const> = pico8.celeste.sign
@@ -61,73 +61,20 @@ function Player:_update()
 
 	if (self.pause_player) then return end
 
-	local on_ground = self:is_solid(0, 1)
-	local on_ice = self:is_ice(0, 1)
+	local input = pico8.btn(k_right) and 1 or (pico8.btn(k_left) and -1 or 0)
 
-	-- FallFloor collisions
-	-- We check if the player hits a FallFloor horizontally or from the bottom.
-	-- So we set a rectangle that's 2px wider than the player and 1px taller.
-	local rect = pd.geometry.rect.new(self.pos.x + self.hitbox.x - 1, self.pos.y + self.hitbox.y, self.hitbox.width + 2, self.hitbox.height + 1)
-	local query = gfx.sprite.querySpritesInRect(rect)
-	if #query > 1 then
-		for i=1, #query do
-			local other = query[i]
-			if other.className == "FallFloor" then
-				other:hit(self)
-			end
-		end
-	end
-
-	-- Platform collisions
-	self:setCollidesWithGroups({4})
-	local _, _, collisions_at_x_y_plus_1, length = self:checkCollisions(self.x, self.y + 1)
-	if length > 0 then
-		for i=1, #collisions_at_x_y_plus_1 do
-			local col = collisions_at_x_y_plus_1[i]
-			local other = col.other
-			if other.className == "Platform" then
-				other:hit(self)
-			end
-		end
-	end
-	self:setCollidesWithGroups({2,3,4,5,6})
-
-
-	-- Spikes
-	if pico8.celeste.spikes_at(self.pos.x + self.hitbox.x, self.pos.y + self.hitbox.y, self.hitbox.width, self.hitbox.height, self.spd.x, self.spd.y) then
+	-- Spikes collide
+	if spikes_at(self.pos.x + self.hitbox.x, self.pos.y + self.hitbox.y, self.hitbox.width, self.hitbox.height, self.spd.x, self.spd.y) then
 		self:kill()
 	end
-
-	-- Collisions
-	local _, _, collisions_at_x_y, length = self:checkCollisions(self.x, self.y)
-	if length > 0 then
-		for i=1, #collisions_at_x_y do
-			local col = collisions_at_x_y[i]
-			local other = col.other
-			if other.spike == true then
-				-- print("player:", self.x, self.y)
-				-- print("-- spike:", other.x, other.y)
-				-- if pico8.celeste.spikes_at(self.x + self.hitbox.x, self.y + self.hitbox.y, self.hitbox.width, self.hitbox.height, self.spd.x, self.spd.y) then
-				-- 	self:kill()
-				-- end
-			elseif other.className == "Spring" then
-				other:hit(self)
-			elseif other.className == "Fruit" or other.className == "FlyFruit" then
-				other:hit(self)
-			elseif other.className == "Balloon" then
-				other:hit(self)
-			elseif other.className == "Key" then
-				other:hit(self)
-			end
-		end
-	end
-
-	local input = pico8.btn(k_right) and 1 or (pico8.btn(k_left) and -1 or 0)
 
 	-- Bottom death
 	if self.pos.y > 128 then
 		self:kill()
 	end
+	
+	local on_ground = self:is_solid(0, 1)
+	local on_ice = self:is_ice(0, 1)
 
 	-- Smoke particles
 	if on_ground and not self.was_on_ground then
@@ -317,6 +264,38 @@ function Player:_update()
 
 	-- Was on the ground
 	self.was_on_ground = on_ground
+
+end
+
+function Player:_update_collisions()
+
+	-- -- FallFloor collisions
+	-- -- We check if the player hits a FallFloor horizontally or from the bottom.
+	-- -- So we set a rectangle that's 2px wider than the player and 1px taller.
+	-- local rect = pd.geometry.rect.new(self.pos.x + self.hitbox.x - 1, self.pos.y + self.hitbox.y, self.hitbox.width + 2, self.hitbox.height + 1)
+	-- local query = gfx.sprite.querySpritesInRect(rect)
+	-- if #query > 1 then
+	-- 	for i=1, #query do
+	-- 		local other = query[i]
+	-- 		if other.className == "FallFloor" then
+	-- 			other:hit(self)
+	-- 		end
+	-- 	end
+	-- end
+
+	-- -- Platform collisions
+	-- self:setCollidesWithGroups({4})
+	-- local _, _, collisions_at_x_y_plus_1, length = self:checkCollisions(self.x, self.y + 1)
+	-- if length > 0 then
+	-- 	for i=1, #collisions_at_x_y_plus_1 do
+	-- 		local col = collisions_at_x_y_plus_1[i]
+	-- 		local other = col.other
+	-- 		if other.className == "Platform" then
+	-- 			other:hit(self)
+	-- 		end
+	-- 	end
+	-- end
+	-- self:setCollidesWithGroups({2,3,4,5,6})
 
 end
 
