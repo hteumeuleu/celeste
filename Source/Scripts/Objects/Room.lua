@@ -68,8 +68,9 @@ function Room:load()
 					tilemapImage:fadedImage(0.3, gfx.image.kDitherTypeDiagonalLine):draw(0,0)
 				gfx.popContext()
 				layerSprite:setImage(stylizedImage)
-			else
+			elseif layer_name == "Foreground" then
 				layerSprite:setTilemap(tilemap)
+				self.tilemap = tilemap
 			end
 
 			layerSprite:setCenter(0, 0)
@@ -77,95 +78,38 @@ function Room:load()
 			layerSprite:setZIndex(layer.zIndex)
 			layerSprite:add()
 
-			-- Foreground (walls and spikes) collision sprites
-			if layer_name == "Foreground" then
-				-- Ice
-				local emptyTiles = ldtk.get_empty_tileIDs(level_name, "Ice", layer_name)
-				if emptyTiles then
-					local iceSprites <const> = gfx.sprite.addWallSprites(tilemap, emptyTiles, layer.rect.x + offset.x, layer.rect.y + offset.y)
-					for index, iceSprite in ipairs(iceSprites) do
-						iceSprite:setCenter(0, 0)
-						iceSprite:moveBy((iceSprite.width/2)*-1, (iceSprite.height/2)*-1)
-						iceSprite:setCollidesWithGroups({1})
-						iceSprite:setGroups({5})
-						iceSprite.is_solid_sprite = true
-						iceSprite.is_ice_sprite = true
-					end
-				end
-				-- Walls
-				local emptyTiles = ldtk.get_empty_tileIDs(level_name, "Solid", layer_name)
+			local addWallSprites = function(tileID, is_solid, is_ice, is_spike, dir, spr)
+				local emptyTiles = ldtk.get_empty_tileIDs(level_name, tileID, layer_name)
 				if emptyTiles then
 					local wallSprites <const> = gfx.sprite.addWallSprites(tilemap, emptyTiles, layer.rect.x + offset.x, layer.rect.y + offset.y)
-					for index, wallSprite in ipairs(wallSprites) do
+					for _, wallSprite in ipairs(wallSprites) do
 						wallSprite:setCenter(0, 0)
 						wallSprite:moveBy((wallSprite.width/2)*-1, (wallSprite.height/2)*-1)
 						wallSprite:setCollidesWithGroups({1})
 						wallSprite:setGroups({5})
-						wallSprite.is_solid_sprite = true
+						if is_solid then
+							wallSprite.is_solid_sprite = true
+						end
+						if is_ice then
+							wallSprite.is_ice_sprite = true
+						end
+						if is_spike then
+							wallSprite.spike = true
+							wallSprite.dir = dir
+							wallSprite.spr = spr
+						end
 					end
 				end
-				-- Spikes
-				local spikeTiles
-				-- Spikes Pointing Up
-				spikeTiles = ldtk.get_empty_tileIDs(level_name, "SpikeUp", layer_name)
-				if spikeTiles then
-					local spikeSprites <const> = gfx.sprite.addWallSprites(tilemap, spikeTiles, layer.rect.x + offset.x, layer.rect.y + offset.y)
-					for index, spikeSprite in ipairs(spikeSprites) do
-						spikeSprite:setCenter(0, 0)
-						spikeSprite:moveBy((spikeSprite.width/2)*-1, (spikeSprite.height/2)*-1)
-						spikeSprite.spike = true
-						spikeSprite.dir = "up"
-						spikeSprite.spr = 17
-						spikeSprite:setCollideRect(pd.geometry.rect.new(0, 0, spikeSprite.width, spikeSprite.height))
-						spikeSprite:setCollidesWithGroups({1})
-						spikeSprite:setGroups({5})
-					end
-				end
-				-- Spikes Pointing Down
-				spikeTiles = ldtk.get_empty_tileIDs(level_name, "SpikeDown", layer_name)
-				if spikeTiles then
-					local spikeSprites <const> = gfx.sprite.addWallSprites(tilemap, spikeTiles, layer.rect.x + offset.x, layer.rect.y + offset.y)
-					for index, spikeSprite in ipairs(spikeSprites) do
-						spikeSprite:setCenter(0, 0)
-						spikeSprite:moveBy((spikeSprite.width/2)*-1, (spikeSprite.height/2)*-1)
-						spikeSprite.spike = true
-						spikeSprite.dir = "down"
-						spikeSprite.spr = 27
-						spikeSprite:setCollideRect(pd.geometry.rect.new(0, 0, spikeSprite.width, spikeSprite.height))
-						spikeSprite:setCollidesWithGroups({1})
-						spikeSprite:setGroups({5})
-					end
-				end
-				-- Spikes Pointing Right
-				spikeTiles = ldtk.get_empty_tileIDs(level_name, "SpikeRight", layer_name)
-				if spikeTiles then
-					local spikeSprites <const> = gfx.sprite.addWallSprites(tilemap, spikeTiles, layer.rect.x + offset.x, layer.rect.y + offset.y)
-					for index, spikeSprite in ipairs(spikeSprites) do
-						spikeSprite:setCenter(0, 0)
-						spikeSprite:moveBy((spikeSprite.width/2)*-1, (spikeSprite.height/2)*-1)
-						spikeSprite.spike = true
-						spikeSprite.dir = "right"
-						spikeSprite.spr = 43
-						spikeSprite:setCollideRect(pd.geometry.rect.new(0, 0, spikeSprite.width, spikeSprite.height))
-						spikeSprite:setCollidesWithGroups({1})
-						spikeSprite:setGroups({5})
-					end
-				end
-				-- Spikes Pointing Left
-				spikeTiles = ldtk.get_empty_tileIDs(level_name, "SpikeLeft", layer_name)
-				if spikeTiles then
-					local spikeSprites <const> = gfx.sprite.addWallSprites(tilemap, spikeTiles, layer.rect.x + offset.x, layer.rect.y + offset.y)
-					for index, spikeSprite in ipairs(spikeSprites) do
-						spikeSprite:setCenter(0, 0)
-						spikeSprite:moveBy((spikeSprite.width/2)*-1, (spikeSprite.height/2)*-1)
-						spikeSprite.spike = true
-						spikeSprite.dir = "left"
-						spikeSprite.spr = 59
-						spikeSprite:setCollideRect(pd.geometry.rect.new(0, 0, spikeSprite.width, spikeSprite.height))
-						spikeSprite:setCollidesWithGroups({1})
-						spikeSprite:setGroups({5})
-					end
-				end
+			end
+
+			-- Foreground (walls and spikes) collision sprites
+			if layer_name == "Foreground" then
+				addWallSprites("Ice", true, true, false, nil, nil)
+				addWallSprites("Solid", true, false, false, nil, nil)
+				addWallSprites("SpikeUp", false, false, true, "up", 17)
+				addWallSprites("SpikeDown", false, false, true, "down", 27)
+				addWallSprites("SpikeRight", false, false, true, "up", 43)
+				addWallSprites("SpikeLeft", false, false, true, "left", 59)
 			end
 		end
 	end
