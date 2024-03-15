@@ -4,7 +4,7 @@ local pd <const> = playdate
 local gfx <const> = pd.graphics
 local ldtk <const> = LDtk
 ldtk.load("Levels/celeste-classic.ldtk", false)
-local offset <const> = pd.geometry.point.new(-4, -4)
+local offset <const> = pd.geometry.point.new(0, 0)
 
 class('Room').extends()
 

@@ -19,6 +19,7 @@ math.randomseed(pd.getSecondsSinceEpoch())
 pd.setCrankSoundsDisabled(true)
 pd.display.setRefreshRate(30)
 pd.display.setScale(2)
+gfx.setDrawOffset(-4, -4)
 gfx.setBackgroundColor(gfx.kColorBlack)
 gfx.setFont(gfx.font.new("Assets/pico"))
 
