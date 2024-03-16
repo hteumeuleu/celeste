@@ -26,6 +26,8 @@ import "Scripts/Objects/Message"
 import "Scripts/Objects/BigChest"
 import "Scripts/Objects/Orb"
 import "Scripts/Objects/Flag"
+import "Scripts/Objects/FlagScore"
+import "Scripts/Objects/FlagRestartButton"
 import "Scripts/TAS"
 
 local pd <const> = playdate
