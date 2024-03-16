@@ -27,6 +27,14 @@ function Room:init(index, parent)
 		self.title = "summit"
 	end
 	self.got_fruit = false
+	-- For certain levels, we need to change the horizontal alignment of the level so the player can use the screen boundaries.
+	-- (Especially with TAS.)
+	-- TODO: Set this properly using a custom property within LDtk.
+	if self.index == 7 then
+		gfx.setDrawOffset(0, -4)
+	else
+		gfx.setDrawOffset(-4, -4)
+	end
 	self.tas = TAS(self.index)
 	self:load()
 	return self
