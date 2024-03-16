@@ -167,9 +167,9 @@ function Room:restart()
 
 	self.parent.will_restart = true
 	self.parent.delay_restart = 15
+	self.tas = TAS(self.index)
 
 end
-
 
 function Room:initClouds()
 

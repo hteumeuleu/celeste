@@ -15,6 +15,7 @@ local split <const> = function(s, delimiter)
 	end
 	return result
 end
+local rnd <const> = pico8.rnd
 
 class("TAS").extends(gfx.sprite)
 
@@ -56,8 +57,23 @@ function TAS:read()
 		local tas_content = tas_file:read(size)
 		tas_file:close()
 
-		local start_index = string.find(tas_content .. '', ']') + 1
-		local end_index = string.find(string.reverse(tas_content), ',')
+		local start_index, end_index
+
+		-- Balloon seeds
+		start_index = 2
+		end_index = string.find(tas_content .. '', ']') - 1
+		if end_index ~= 2 then
+			-- If the end_index is 2, this means the array is empty.
+			-- If it's not, then it means it contains an extra `,` at the end we can omit.
+			end_index -= 1
+		end
+		local tas_balloons = string.sub(tas_content, start_index, end_index)
+		self.balloon_seeds = split(tas_balloons, ',')
+		self.balloon_seeds_index = 1
+
+		-- Keypresses
+		start_index = string.find(tas_content .. '', ']') + 1
+		end_index = string.find(string.reverse(tas_content), ',')
 		if end_index == 1 then
 			end_index = #tas_content - 1
 		else
@@ -78,5 +94,19 @@ function TAS:read()
 			end
 		end
 	end
+
+end
+
+function TAS:getBalloonSeed()
+
+	local seed
+	if self.balloon_seeds ~= nil then
+		seed = self.balloon_seeds[self.balloon_seeds_index]
+		if seed ~= nil then
+			seed = tonumber(seed)
+		end
+		self.balloon_seeds_index += 1
+	end
+	return seed or rnd(1)
 
 end

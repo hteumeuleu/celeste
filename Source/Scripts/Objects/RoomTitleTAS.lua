@@ -6,7 +6,7 @@ class('RoomTitleTAS').extends(ParentObject)
 
 function RoomTitleTAS:init(parent)
 
-	RoomTitleTAS.super.init(self, 4, 4, parent)
+	RoomTitleTAS.super.init(self, 8, 8, parent)
 
 	self.type_id = 19
 	self:clearCollideRect()
@@ -39,7 +39,7 @@ function RoomTitleTAS:_draw()
 			gfx.fillRect(14, 0, 18, 9)
 			gfx.setColor(gfx.kColorBlack)
 			gfx.fillRect(15, 3, 3, 3) -- left
-			gfx.fillRect(17, 1, 3, 3) -- up
+			gfx.fillRect(17, 1, 3, 4) -- up
 			gfx.fillRect(17, 5, 3, 3) -- down
 			gfx.fillRect(19, 3, 3, 3) -- right
 			gfx.fillRect(24, 3, 3, 3) -- jump
@@ -54,7 +54,7 @@ function RoomTitleTAS:_draw()
 					gfx.drawPixel(20, 4) -- right
 				end
 				if self.parent.tas.keypresses[pico8.frames][2] then
-					gfx.drawPixel(18, 4) -- up
+					gfx.drawPixel(18, 2) -- up
 				end
 				if self.parent.tas.keypresses[pico8.frames][3] then
 					gfx.drawPixel(18, 6) -- down

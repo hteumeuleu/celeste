@@ -44,7 +44,7 @@ function Game:init()
 	self.shake = 0
 	self.will_restart = false
 	self.delay_restart = 0
-	self.level_index = 1
+	self.level_index = 6
 	self.level_total = 31
 	self.seconds = 0
 	self.minutes = 0

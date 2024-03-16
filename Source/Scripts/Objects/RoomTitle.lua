@@ -23,7 +23,9 @@ function RoomTitle:init(title, parent)
 	self:add()
 
 	if not parent.tas then
-		self.roomTitleTime = RoomTitleTime(self.parent)
+		if self.parent.parent.level_index ~= (self.parent.parent.level_total - 1) then
+			self.roomTitleTime = RoomTitleTime(self.parent)
+		end
 	else
 		RoomTitleTAS(self.parent)
 	end
