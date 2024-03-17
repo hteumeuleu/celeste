@@ -309,8 +309,9 @@ end
 
 function Player:_draw()
 
-	if self.pos.x < -1 or self.pos.x > 193 then 
-		self.pos.x = clamp(self.pos.x, -1, 193)
+	local max_x = 200 - (8 - 1) - self.parent.offset.x
+	if self.pos.x < -1 or self.pos.x > max_x then 
+		self.pos.x = clamp(self.pos.x, -1, max_x)
 		self.spd.x = 0
 	end
 

@@ -4,7 +4,6 @@ local pd <const> = playdate
 local gfx <const> = pd.graphics
 local ldtk <const> = LDtk
 ldtk.load("Levels/celeste-classic.ldtk", false)
-local offset <const> = pd.geometry.point.new(0, 0)
 
 class('Room').extends()
 
@@ -30,12 +29,14 @@ function Room:init(index, parent)
 	-- For certain levels, we need to change the horizontal alignment of the level so the player can use the screen boundaries.
 	-- (Especially with TAS.)
 	-- TODO: Set this properly using a custom property within LDtk.
+	self.offset = pd.geometry.point.new(-4, -4)
 	if self.index == 7 then
-		gfx.setDrawOffset(0, -4)
-	else
-		gfx.setDrawOffset(-4, -4)
+		self.offset = pd.geometry.point.new(0, -4)
+	elseif self.index == 9 then
+		self.offset = pd.geometry.point.new(-8, -4)
 	end
-	self.tas = TAS(self.index)
+	gfx.setDrawOffset(self.offset.x, self.offset.y)
+	-- self.tas = TAS(self.index)
 	self:load()
 	return self
 
@@ -82,14 +83,14 @@ function Room:load()
 			end
 
 			layerSprite:setCenter(0, 0)
-			layerSprite:moveTo(layer.rect.x + offset.x, layer.rect.y + offset.y)
+			layerSprite:moveTo(layer.rect.x, layer.rect.y)
 			layerSprite:setZIndex(layer.zIndex)
 			layerSprite:add()
 
 			local addWallSprites = function(tileID, is_solid, is_ice, is_spike, dir, spr)
 				local emptyTiles = ldtk.get_empty_tileIDs(level_name, tileID, layer_name)
 				if emptyTiles then
-					local wallSprites <const> = gfx.sprite.addWallSprites(tilemap, emptyTiles, layer.rect.x + offset.x, layer.rect.y + offset.y)
+					local wallSprites <const> = gfx.sprite.addWallSprites(tilemap, emptyTiles, layer.rect.x, layer.rect.y)
 					for _, wallSprite in ipairs(wallSprites) do
 						wallSprite:setCenter(0, 0)
 						wallSprite:moveBy((wallSprite.width/2)*-1, (wallSprite.height/2)*-1)
@@ -125,17 +126,17 @@ function Room:load()
 
 	-- Entities
 	for index, entity in ipairs(LDtk.get_entities(level_name)) do
-		local x <const> = entity.position.x + offset.x
-		local y <const> = entity.position.y + offset.y
+		local x <const> = entity.position.x
+		local y <const> = entity.position.y
 		if entity.name == "Player" then
 			PlayerSpawn(x, y, self)
-		elseif entity.name == "FakeWall" and not self.got_fruit then
+		elseif entity.name == "FakeWall" and not self:hasFruit() then
 			FakeWall(x, y, self)
 		elseif entity.name == "FallFloor" then
 			FallFloor(x, y, self)
-		elseif entity.name == "Fruit" and not self.got_fruit then
+		elseif entity.name == "Fruit" and not self:hasFruit() then
 			Fruit(x, y, self)
-		elseif entity.name == "FlyFruit" and not self.got_fruit then
+		elseif entity.name == "FlyFruit" and not self:hasFruit() then
 			FlyFruit(x, y, self)
 		elseif entity.name == "Spring" then
 			Spring(x, y, self)
@@ -145,9 +146,9 @@ function Room:load()
 			Platform(x, y, -1, self)
 		elseif entity.name == "PlatformRight" then
 			Platform(x - 8, y, 1, self)
-		elseif entity.name == "Chest" and not self.got_fruit then
+		elseif entity.name == "Chest" and not self:hasFruit() then
 			Chest(x, y, self)
-		elseif entity.name == "Key" and not self.got_fruit then
+		elseif entity.name == "Key" and not self:hasFruit() then
 			Key(x, y, self)
 		elseif entity.name == "Message" then
 			Message(x, y, self)
@@ -175,7 +176,9 @@ function Room:restart()
 
 	self.parent.will_restart = true
 	self.parent.delay_restart = 15
-	self.tas = TAS(self.index)
+	if self.tas ~= nil then
+		self.tas = TAS(self.index)
+	end
 
 end
 
@@ -202,5 +205,11 @@ function Room:initParticles()
 	for i=0, max_particles do
 		table.insert(self.particles, Particle())
 	end
+
+end
+
+function Room:hasFruit()
+
+	return self.got_fruit
 
 end
