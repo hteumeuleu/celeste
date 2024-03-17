@@ -192,6 +192,32 @@ function Game:_draw()
 		end
 	end
 
+	-- Black bars on final level
+	if self.level_index == (self.level_total - 1) then
+
+		if self.extraLayer == nil then
+			self.extraLayer = gfx.sprite.new(gfx.image.new(200, 128, gfx.kColorClear))
+			self.extraLayer:setCenter(0, 0)
+			self.extraLayer:moveTo(0, 0)
+			self.extraLayer:setZIndex(40)
+			self.extraLayer:setIgnoresDrawOffset(true)
+			self.extraLayer:add()
+		end
+		local img <const> = self.extraLayer:getImage()
+		img:clear(gfx.kColorClear)
+		gfx.pushContext(img)
+			local player = self.room.player
+			local diff = -16
+			if player ~= nil then
+            	diff = math.min(24, 40 - math.abs(player.pos.x + 4 - 100))
+			end
+			diff += 34
+			rectfill(0, 0, diff, 128, 0)
+			rectfill(200 - diff, 0, 200, 128, 0)
+		gfx.popContext()
+
+	end
+
 end
 
 function Game:nextRoom()

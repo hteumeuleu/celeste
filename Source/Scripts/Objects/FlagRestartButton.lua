@@ -6,7 +6,7 @@ class('FlagRestartButton').extends(ParentObject)
 function FlagRestartButton:init(x, y, parent)
 
 	FlagRestartButton.super.init(self, x, y, parent)
-	self:initImage()
+	self:updateImage()
 	self:moveTo(200 - self.width, 120 - self.height)
 	self:setZIndex(100)
 	self:setUpdatesEnabled(false)
@@ -20,34 +20,32 @@ function FlagRestartButton:addInputHandlers()
 
 	local myInputHandlers = {
 		AButtonDown = function()
-			print('AButtonDown')
-			-- game_just_restarted = false
+			self.parent.parent.just_restarted = false
 			if self.timer == nil then
-				self.timerDuration = 2000
-			-- 	shake = 30 * (self.timerDuration / 1000)
+				self.timerDuration = 3000
+				self.parent.parent.shake = 30 * (self.timerDuration / 1000)
 				self.timer = pd.timer.performAfterDelay(self.timerDuration, function()
-			-- 		game_just_restarted = true
+					self.parent.parent.just_restarted = true
 					self.parent.parent:restart()
 					self.timer = nil
-			-- 		shake = 1
+					self.parent.parent.shake = 1
 				end)
 				self.timer.updateCallback = function()
-			-- 		layers.restart:setImage(get_restart_button_image())
+					self:updateImage()
 				end
 			end
 		end,
 		AButtonUp = function()
-			print('AButtonUp')
-			-- if game_just_restarted then
-			-- 	playdate.inputHandlers.pop()
-			-- end
+			if self.parent.parent.just_restarted then
+				playdate.inputHandlers.pop()
+			end
 			if self.timer ~= nil then
 				self.timer:remove()
 				self.timer = nil
-			-- 	layers.restart:setImage(get_restart_button_image())
+				self:updateImage()
 			end
-			-- shake = 1
-			-- game_just_restarted = false
+			self.parent.parent.shake = 1
+			self.parent.parent.just_restarted = false
 		end,
 	}
 	playdate.inputHandlers.push(myInputHandlers)
@@ -61,9 +59,9 @@ function FlagRestartButton:remove()
 
 end
 
-function FlagRestartButton:initImage()
+function FlagRestartButton:updateImage()
 
-	local img <const> = gfx.image.new(33, 11, gfx.kColorClear)
+	local img <const> = gfx.image.new(33, 11, gfx.kColorBlack)
 	gfx.pushContext(img)
 		local circledText = "a"
 		if self.timer ~= nil then
