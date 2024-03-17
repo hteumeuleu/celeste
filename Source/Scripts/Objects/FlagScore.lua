@@ -10,10 +10,10 @@ function FlagScore:init(x, y, parent)
 	self:setZIndex(19)
 
 	-- TODO
-	local time = "00:00.00"
-	local deaths = "199"
-	local score = "12"
-	local usedAssistMode = false -- game_obj:usedAssistMode()
+	local time = self.parent.parent:getTime()
+	local deaths = self.parent.parent:getDeaths()
+	local score = self.parent.parent:getScore()
+	local usedAssistMode = self.parent.parent:usedAssistMode()
 
 	local img <const> = gfx.image.new(64, 40)
 	gfx.pushContext(img)

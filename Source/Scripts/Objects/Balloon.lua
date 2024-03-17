@@ -17,7 +17,6 @@ function Balloon:init(x, y, parent)
 	self.offset = rnd(1)
 	if self.parent.tas ~= nil then
 		self.offset = self.parent.tas:getBalloonSeed()
-		print(self.pos.x, self.pos.y, self.offset)
 	end
 	self.start = self.pos.y
 	self.timer = 0

@@ -6,7 +6,7 @@ class('RoomTitle').extends(ParentObject)
 
 function RoomTitle:init(title, parent)
 
-	RoomTitle.super.init(self, 60, 58, parent)
+	RoomTitle.super.init(self, 60 - parent.offset.x, 58, parent)
 
 	self.type_id = 19
 	self.delay = 5

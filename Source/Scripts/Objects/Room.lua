@@ -25,7 +25,7 @@ function Room:init(index, parent)
 	elseif self.index == 30 then
 		self.title = "summit"
 	end
-	self.got_fruit = false
+	self.got_single_fruit = false
 	-- For certain levels, we need to change the horizontal alignment of the level so the player can use the screen boundaries.
 	-- (Especially with TAS.)
 	-- TODO: Set this properly using a custom property within LDtk.
@@ -208,8 +208,15 @@ function Room:initParticles()
 
 end
 
+function Room:addFruit()
+
+	self.got_single_fruit = true
+	self.parent.got_fruit[self.index + 1] = true
+
+end
+
 function Room:hasFruit()
 
-	return self.got_fruit
+	return self.got_single_fruit
 
 end

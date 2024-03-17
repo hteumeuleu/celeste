@@ -6,7 +6,7 @@ class('RoomTitleTAS').extends(ParentObject)
 
 function RoomTitleTAS:init(parent)
 
-	RoomTitleTAS.super.init(self, 8, 8, parent)
+	RoomTitleTAS.super.init(self, 8 - parent.offset.x, 8, parent)
 
 	self.type_id = 19
 	self:clearCollideRect()

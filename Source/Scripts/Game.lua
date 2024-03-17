@@ -39,22 +39,8 @@ class("Game").extends(gfx.sprite)
 function Game:init()
 
 	Game.super.init(self)
+	self:_init()
 
-	self.freeze = 0
-	self.shake = 0
-	self.will_restart = false
-	self.delay_restart = 0
-	self.level_index = 6
-	self.level_total = 31
-	self.seconds = 0
-	self.minutes = 0
-	self.frames = 0
-	self.deaths = 0
-	self.music_timer = 0
-	self.sfx_timer = 0
-	self.max_djump = 1
-
-	self.room = Room(self.level_index, self)
 	-- self._init = _init
 	-- self._update = _update
 	-- self._draw = _draw
@@ -66,12 +52,51 @@ function Game:init()
 
 end
 
+function Game:_init()
+	self.freeze = 0
+	self.shake = 0
+	self.will_restart = false
+	self.delay_restart = 0
+	self.level_index = 30
+	self.level_total = 31
+	self.seconds = 0
+	self.minutes = 0
+	self.frames = 0
+	self.deaths = 0
+	self.music_timer = 0
+	self.sfx_timer = 0
+	self.max_djump = 1
+	self.got_fruit = {}
+    for i = 0, 29 do
+    	table.insert(self.got_fruit, false)
+    end
+	self.room = Room(self.level_index, self)
+end
+
 function Game:getTime()
 
-    local s = self.seconds
-    local m = self.minutes % 60
-    local h = math.floor(self.minutes / 60)
+	local s = self.seconds
+	local m = self.minutes % 60
+	local h = math.floor(self.minutes / 60)
 	return (h<10 and "0"..h or h)..":"..(m<10 and "0"..m or m)..":"..(s<10 and "0"..s or s)
+
+end
+
+function Game:getDeaths()
+
+	return self.deaths
+
+end
+
+function Game:getScore()
+
+	local score = 0
+	for i = 1, #self.got_fruit do
+		if self.got_fruit[i] then
+			score += 1
+		end
+	end
+	return score
 
 end
 
@@ -181,7 +206,7 @@ end
 
 function Game:restart()
 
-	self:initOptions()
+	-- self:initOptions()
 	self:_init(self)
 
 end
@@ -308,7 +333,7 @@ end
 
 function Game:usedAssistMode()
 
-	return self.options:usedAnOption()
+	return false -- self.options:usedAnOption()
 
 end
 

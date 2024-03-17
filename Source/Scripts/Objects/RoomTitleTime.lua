@@ -6,7 +6,7 @@ class('RoomTitleTime').extends(ParentObject)
 
 function RoomTitleTime:init(parent)
 
-	RoomTitleTime.super.init(self, 40, 8, parent)
+	RoomTitleTime.super.init(self, 40 - parent.offset.x, 8, parent)
 
 	self.type_id = 19
 	self:clearCollideRect()
