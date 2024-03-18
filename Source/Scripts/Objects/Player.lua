@@ -63,18 +63,6 @@ function Player:_update()
 
 	local input = pico8.btn(k_right) and 1 or (pico8.btn(k_left) and -1 or 0)
 
-	-- Spikes collide
-	local _, _, collisions_at_x_y, length = self:checkCollisions(self.pos.x, self.pos.y)
-	if length > 0 then
-		for i=1, #collisions_at_x_y do
-			local col = collisions_at_x_y[i]
-			if col.other.type == "spikes" then
-				if spikes_at(self.pos.x + self.hitbox.x, self.pos.y + self.hitbox.y, self.hitbox.width, self.hitbox.height, self.spd.x, self.spd.y) then
-					self:kill()
-				end
-			end
-		end
-	end
 
 	-- Bottom death
 	if self.pos.y > 128 then
@@ -84,6 +72,8 @@ function Player:_update()
 	local on_ground = self:is_solid(0, 1)
 	local on_ice = self:is_ice(0, 1)
 
+	self:_check_collisions()
+	
 	-- Smoke particles
 	if on_ground and not self.was_on_ground then
 		Smoke(self.pos.x, self.pos.y + 4, self.parent)
@@ -275,35 +265,39 @@ function Player:_update()
 
 end
 
-function Player:_update_collisions()
+function Player:_check_collisions()
 
-	-- -- FallFloor collisions
-	-- -- We check if the player hits a FallFloor horizontally or from the bottom.
-	-- -- So we set a rectangle that's 2px wider than the player and 1px taller.
-	-- local rect = pd.geometry.rect.new(self.pos.x + self.hitbox.x - 1, self.pos.y + self.hitbox.y, self.hitbox.width + 2, self.hitbox.height + 1)
-	-- local query = gfx.sprite.querySpritesInRect(rect)
-	-- if #query > 1 then
-	-- 	for i=1, #query do
-	-- 		local other = query[i]
-	-- 		if other.className == "FallFloor" then
-	-- 			other:hit(self)
-	-- 		end
-	-- 	end
-	-- end
+	-- Spikes collide
+	local _, _, collisions_at_x_y, length = self:checkCollisions(self.pos.x, self.pos.y)
+	if length > 0 then
+		for i=1, #collisions_at_x_y do
+			local col <const> = collisions_at_x_y[i]
+			local playerIsAboveObject <const> = col.spriteRect.y + col.spriteRect.height <= col.otherRect.y + col.otherRect.height
+			if col.other.type == "spikes" then
+				if spikes_at(self.pos.x + self.hitbox.x, self.pos.y + self.hitbox.y, self.hitbox.width, self.hitbox.height, self.spd.x, self.spd.y) then
+					self:kill()
+				end
+			elseif col.other.className == "Platform" and playerIsAboveObject then
+				col.other:hit(self)
+			end
+		end
+	end
 
-	-- -- Platform collisions
-	-- self:setCollidesWithGroups({4})
-	-- local _, _, collisions_at_x_y_plus_1, length = self:checkCollisions(self.x, self.y + 1)
-	-- if length > 0 then
-	-- 	for i=1, #collisions_at_x_y_plus_1 do
-	-- 		local col = collisions_at_x_y_plus_1[i]
-	-- 		local other = col.other
-	-- 		if other.className == "Platform" then
-	-- 			other:hit(self)
-	-- 		end
-	-- 	end
-	-- end
-	-- self:setCollidesWithGroups({2,3,4,5,6})
+	-- FallFloor collisions
+	-- We check if the player hits a FallFloor horizontally or from the bottom.
+	-- So we set a rectangle that's 2px wider than the player and 1px taller.
+	if #self.parent.obj[4] > 0 then
+		local rect = pd.geometry.rect.new(self.pos.x + self.hitbox.x - 1, self.pos.y + self.hitbox.y, self.hitbox.width + 2, self.hitbox.height + 1)
+		local query = gfx.sprite.querySpritesInRect(rect)
+		if #query > 1 then
+			for i=1, #query do
+				local other = query[i]
+				if other.className == "FallFloor" then
+					other:hit(self)
+				end
+			end
+		end
+	end
 
 end
 

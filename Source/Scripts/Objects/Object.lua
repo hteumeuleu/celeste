@@ -75,7 +75,12 @@ end
 
 function ParentObject:is_solid(ox, oy)
 
-	local rect <const> = playdate.geometry.rect.new(self.pos.x + self.hitbox.x + ox, self.pos.y + self.hitbox.y + oy, self.hitbox.width, self.hitbox.height)
+	if (#self.parent.obj[12] > 0) and (oy > 0) then
+        if oy > 0 and not self:check("Platform", ox, 0) and self:check("Platform", ox, oy) then
+            return true
+        end
+	end
+	local rect <const> = pd.geometry.rect.new(self.pos.x + self.hitbox.x + ox, self.pos.y + self.hitbox.y + oy, self.hitbox.width, self.hitbox.height)
 	local sprites_in_rect <const> = gfx.sprite.querySpritesInRect(rect)
 	for i=1, #sprites_in_rect do
 		local s = sprites_in_rect[i]

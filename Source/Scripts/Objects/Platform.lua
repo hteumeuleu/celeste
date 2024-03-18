@@ -41,16 +41,6 @@ function Platform:_update()
 	if self.diff > 1 or self.diff < -1 then
 		self.diff = 0
 	end
-
-	if self.parent.player ~= nil then
-		local player_bottom_y = self.parent.player.y + self.parent.player.hitbox.y + self.parent.player.hitbox.height
-		local platform_top_y = self.y + self.hitbox.y
-		if player_bottom_y < platform_top_y then
-			self.is_solid_sprite = true
-		else
-			self.is_solid_sprite = false
-		end
-	end
 		
 	self.last = self.pos.x
 

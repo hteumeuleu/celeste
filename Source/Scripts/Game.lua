@@ -39,13 +39,8 @@ class("Game").extends(gfx.sprite)
 function Game:init()
 
 	Game.super.init(self)
-	self:_init()
-
-	-- self._init = _init
-	-- self._update = _update
-	-- self._draw = _draw
 	-- self:initOptions()
-	-- self:_init(self)
+	self:_init()
 	-- self:load()
 	-- self:addMenuItems()
 	return self
@@ -57,7 +52,7 @@ function Game:_init()
 	self.shake = 0
 	self.will_restart = false
 	self.delay_restart = 0
-	self.level_index = 30
+	self.level_index = 6
 	self.level_total = 31
 	self.seconds = 0
 	self.minutes = 0
