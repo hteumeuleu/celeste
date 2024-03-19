@@ -26,6 +26,7 @@ function Player:init(x, y, parent)
 
 	Player.super.init(self, x, y, parent)
 
+	self.type = "player"
 	self.type_id = 18
 	self.p_jump = false
 	self.p_dash = false
@@ -383,5 +384,14 @@ function Player:addDeadParticles()
 			end
 		end
 	end
+
+end
+
+function Player:move_x(amount, start)
+
+	print("Player:move_x()", amount, start)
+	Player.super.move_x(self, amount, start)
+	print("/Player:move_x()")
+
 
 end

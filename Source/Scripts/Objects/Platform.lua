@@ -11,6 +11,7 @@ function Platform:init(x, y, dir, parent)
 
 	Platform.super.init(self, x-1, y-2, parent)
 
+	self.type = "platform"
 	self.type_id = 12
 	self.dir = dir or 1
 	self.x -= 4
@@ -41,11 +42,11 @@ function Platform:_update()
         local hit = self:collide("Player", 0, -1)
     	print("----", "--", "Platform:_update()", hit)
         if hit ~= nil then
-        	print("Platform:_update()", "hit", self.pos.x - self.last)
+        	print("----", "--", "Platform:_update()", "hit", hit.pos, self.pos, self.pos.x - self.last)
             hit:move_x(self.pos.x - self.last, 1)
         end
    	else
-    	print("----", "!!", "Platform:_update()", "self:check(Player, 0, 0)")
+    	-- print("----", "!!", "Platform:_update()", "self:check(Player, 0, 0)")
     end
 
 	-- self.diff = self.pos.x - self.last

@@ -136,7 +136,6 @@ end
 
 function ParentObject:move_x(amount, start)
 
-	print("----", self.className .. ":move_x", amount, start)
 	if self.solids then
 		local step = 0
 		if amount > 0 then
@@ -186,28 +185,51 @@ function ParentObject:move_y(amount, start)
 
 end
 
-function ParentObject:collide(other, ox, oy)
+function ParentObject:collide(t, ox, oy)
 
-	if type(other) == "string" then
-		local rect = pd.geometry.rect.new(self.pos.x + self.hitbox.x + ox, self.pos.y + self.hitbox.y + oy, self.hitbox.width, self.hitbox.height)
-		local query = gfx.sprite.querySpritesInRect(rect)
-		print("----", self.className .. ":collide(".. ox .. ", " .. oy .. ")", #query)
-		if #query > 1 then
-			for i=1, #query do
-				local otherSprite = query[i]
-				if otherSprite.className == other and self.hitbox:offsetBy(self.pos.x + ox, self.pos.y + oy):intersects(otherSprite.hitbox:offsetBy(otherSprite.pos.x, otherSprite.pos.y)) then
-					print("----", "--", otherSprite.className)
-					return otherSprite
-				end
-			end
-		end
-	else
-		if other ~= nil and other.collideable and self.hitbox:offsetBy(self.pos.x + ox, self.pos.y + oy):intersects(other.hitbox:offsetBy(other.pos.x, other.pos.y)) then
-			return other
-		end
+	if type(t) ~= "string" then
+		t = tostring(t.className)
 	end
-	print("----", self.className .. ":collide(".. ox .. ", " .. oy .. ")", nil)
-	return nil
+	t = string.lower(t)
+    -- obj.collide=function(type,ox,oy)
+        local other
+        local obj = self
+        for i=1,#self.parent.obj do
+        	for j=1, #self.parent.obj[i] do
+	            other=self.parent.obj[i][j]
+	            if other ~=nil and other.type == t and other ~= obj and other.collideable and
+	                other.x+other.hitbox.x+other.hitbox.width > obj.x+obj.hitbox.x+ox and 
+	                other.y+other.hitbox.y+other.hitbox.height > obj.y+obj.hitbox.y+oy and
+	                other.x+other.hitbox.x < obj.x+obj.hitbox.x+obj.hitbox.width+ox and 
+	                other.y+other.hitbox.y < obj.y+obj.hitbox.y+obj.hitbox.height+oy then
+	                return other
+	            end
+	        end
+        end
+        return nil
+    -- end
+
+	-- if type(other) == "string" then
+	-- 	local rect = pd.geometry.rect.new(self.pos.x + self.hitbox.x + ox, self.pos.y + self.hitbox.y + oy, self.hitbox.width, self.hitbox.height)
+	-- 	local query = gfx.sprite.querySpritesInRect(rect)
+	-- 	print("----", self.className .. ":collide(".. tostring(other) .. "," .. ox .. ", " .. oy .. ")", rect, #query)
+	-- 	if #query > 1 then
+	-- 		for i=1, #query do
+	-- 			local otherSprite = query[i]
+	-- 			-- print("----", "--", otherSprite.hitbox, self.hitbox)
+	-- 			if self ~= otherSprite and otherSprite.className == tostring(other) then
+	-- 				-- print("----", "--", otherSprite.className)
+	-- 				return otherSprite
+	-- 			end
+	-- 		end
+	-- 	end
+	-- else
+	-- 	if other ~= nil and other.collideable and self.hitbox:offsetBy(self.pos.x + ox, self.pos.y + oy):intersects(other.hitbox:offsetBy(other.pos.x, other.pos.y)) then
+	-- 		return other
+	-- 	end
+	-- end
+	-- -- print("----", self.className .. ":collide(".. ox .. ", " .. oy .. ")", nil)
+	-- return nil
 
 end
 

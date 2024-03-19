@@ -13,6 +13,7 @@ class('FlyFruit').extends(ParentObject)
 function FlyFruit:init(x, y, parent)
 
 	FlyFruit.super.init(self, x, y, parent)
+	self.type = "fly_fruit"
 	self.type_id = 7
 	self.start = y
 	self.fly = false
@@ -54,7 +55,7 @@ function FlyFruit:_update()
 		self.spd.y = sin(self.step) * 0.5
 	end
 	-- Collect
-	if self:collide(self.parent.player, 0, 0) then
+	if self:collide("player", 0, 0) then
 		self:hit(self.parent.player)
 	end
 
