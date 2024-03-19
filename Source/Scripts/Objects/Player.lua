@@ -277,8 +277,8 @@ function Player:_check_collisions()
 				if spikes_at(self.pos.x + self.hitbox.x, self.pos.y + self.hitbox.y, self.hitbox.width, self.hitbox.height, self.spd.x, self.spd.y) then
 					self:kill()
 				end
-			elseif col.other.className == "Platform" and playerIsAboveObject then
-				col.other:hit(self)
+			-- elseif col.other.className == "Platform" and playerIsAboveObject then
+			-- 	col.other:hit(self)
 			end
 		end
 	end

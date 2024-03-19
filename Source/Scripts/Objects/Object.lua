@@ -75,20 +75,28 @@ end
 
 function ParentObject:is_solid(ox, oy)
 
-	if (#self.parent.obj[12] > 0) and (oy > 0) then
-        if oy > 0 and not self:check("Platform", ox, 0) and self:check("Platform", ox, oy) then
-            return true
-        end
-	end
-	local rect <const> = pd.geometry.rect.new(self.pos.x + self.hitbox.x + ox, self.pos.y + self.hitbox.y + oy, self.hitbox.width, self.hitbox.height)
-	local sprites_in_rect <const> = gfx.sprite.querySpritesInRect(rect)
-	for i=1, #sprites_in_rect do
-		local s = sprites_in_rect[i]
-		if s ~= self and s.is_solid_sprite == true then
-			return true
-		end
-	end
-	return false
+	if (#self.parent.obj[12] > 0) then
+	    if oy > 0 and not self:check("Platform", ox, 0) and self:check("Platform", ox, oy) then
+	        return true
+	    end
+    end
+    return pico8.celeste.solid_at(self.pos.x+self.hitbox.x+ox,self.pos.y+self.hitbox.y+oy,self.hitbox.width,self.hitbox.height,self)
+     or self:check("FallFloor", ox, oy)
+     or self:check("FakeWall", ox, oy)
+	-- if (#self.parent.obj[12] > 0) and (oy > 0) then
+    --     if oy > 0 and not self:check("Platform", ox, 0) and self:check("Platform", ox, oy) then
+    --         return true
+    --     end
+	-- end
+	-- local rect <const> = pd.geometry.rect.new(self.pos.x + self.hitbox.x + ox, self.pos.y + self.hitbox.y + oy, self.hitbox.width, self.hitbox.height)
+	-- local sprites_in_rect <const> = gfx.sprite.querySpritesInRect(rect)
+	-- for i=1, #sprites_in_rect do
+	-- 	local s = sprites_in_rect[i]
+	-- 	if s ~= self and s.is_solid_sprite == true then
+	-- 		return true
+	-- 	end
+	-- end
+	-- return false
 
 end
 
@@ -128,6 +136,7 @@ end
 
 function ParentObject:move_x(amount, start)
 
+	print("----", self.className .. ":move_x", amount, start)
 	if self.solids then
 		local step = 0
 		if amount > 0 then
@@ -182,10 +191,12 @@ function ParentObject:collide(other, ox, oy)
 	if type(other) == "string" then
 		local rect = pd.geometry.rect.new(self.pos.x + self.hitbox.x + ox, self.pos.y + self.hitbox.y + oy, self.hitbox.width, self.hitbox.height)
 		local query = gfx.sprite.querySpritesInRect(rect)
+		print("----", self.className .. ":collide(".. ox .. ", " .. oy .. ")", #query)
 		if #query > 1 then
 			for i=1, #query do
 				local otherSprite = query[i]
-				if otherSprite.className == other then
+				if otherSprite.className == other and self.hitbox:offsetBy(self.pos.x + ox, self.pos.y + oy):intersects(otherSprite.hitbox:offsetBy(otherSprite.pos.x, otherSprite.pos.y)) then
+					print("----", "--", otherSprite.className)
 					return otherSprite
 				end
 			end
@@ -195,6 +206,7 @@ function ParentObject:collide(other, ox, oy)
 			return other
 		end
 	end
+	print("----", self.className .. ":collide(".. ox .. ", " .. oy .. ")", nil)
 	return nil
 
 end

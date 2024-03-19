@@ -47,3 +47,16 @@ pico8.celeste.spikes_at = function(x,y,w,h,xspd,yspd)
 	end
 	return false
 end
+
+pico8.celeste.solid_at = function(x,y,w,h,o)
+	local rect <const> = pd.geometry.rect.new(x, y, w, h)
+	local sprites_in_rect <const> = gfx.sprite.querySpritesInRect(rect)
+	for i=1, #sprites_in_rect do
+		local s = sprites_in_rect[i]
+		if s ~= o and s.is_solid_sprite == true then
+			return true
+		end
+	end
+	return false
+	-- return tile_flag_at(x,y,w,h,0)
+end
