@@ -6,6 +6,7 @@ local appr <const> = pico8.celeste.appr
 local sin <const> = pico8.sin
 local cos <const> = pico8.cos
 local circfill <const> = pico8.circfill
+local sfx <const> = pico8.sfx
 
 class('Orb').extends(ParentObject)
 

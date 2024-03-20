@@ -7,6 +7,7 @@ local max <const> = pico8.max
 local appr <const> = pico8.celeste.appr
 local sign <const> = pico8.celeste.sign
 local flip <const> = pico8.flip
+local sfx <const> = pico8.sfx
 
 class('FlyFruit').extends(ParentObject)
 
@@ -94,7 +95,7 @@ function FlyFruit:hit(player)
 
 	if player ~= nil then
 		player.djump = self.parent.parent.max_djump
-		sfx_timer = 20
+		pico8.celeste.sfx_timer = 20
 		sfx(13)
 		self.parent:addFruit()
 		LifeUp(self.x, self.y, self.parent)

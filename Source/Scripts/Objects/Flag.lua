@@ -1,6 +1,7 @@
 local pd <const> = playdate
 local gfx <const> = pd.graphics
 local image_table <const> = gfx.imagetable.new("Assets/flag")
+local psfx <const> = pico8.celeste.psfx
 
 class('Flag').extends(ParentObject)
 
@@ -33,7 +34,7 @@ function Flag:_draw()
 		end
 	elseif self:collide("Player", 0, 0) ~= nil then
 		psfx(55)
-		sfx_timer = 30
+		pico8.celeste.sfx_timer = 30
 		self.show = true
 	end
 

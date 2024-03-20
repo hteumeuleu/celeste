@@ -1,6 +1,7 @@
 local pd <const> = playdate
 local gfx <const> = pd.graphics
 local image_table <const> = gfx.imagetable.new("Assets/tiles")
+local psfx <const> = pico8.celeste.psfx
 
 class('FallFloor').extends(ParentObject)
 

@@ -6,6 +6,7 @@ local img_balloon <const> = image_table:getImage(1)
 local flip <const> = pico8.flip
 local sin <const> = pico8.sin
 local rnd <const> = pico8.rnd
+local psfx <const> = pico8.celeste.psfx
 
 class('Balloon').extends(ParentObject)
 

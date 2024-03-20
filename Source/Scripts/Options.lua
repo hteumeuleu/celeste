@@ -1,5 +1,5 @@
 class("Options").extends(playdate.graphics.sprite)
-
+local psfx = pico8.celeste.psfx
 local data = g_data
 local firstStart = true
 

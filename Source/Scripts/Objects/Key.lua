@@ -4,6 +4,7 @@ local image_table <const> = gfx.imagetable.new("Assets/key")
 local img <const> = image_table:getImage(1)
 local flip <const> = pico8.flip
 local sin <const> = pico8.sin
+local sfx <const> = pico8.sfx
 
 class('Key').extends(ParentObject)
 
@@ -48,7 +49,7 @@ end
 function Key:hit()
 
 	sfx(23)
-	self.parent.parent.sfx_timer = 10
+	pico8.celeste.sfx_timer = 10
 	self.parent.has_key = true
 	self:destroy()
 

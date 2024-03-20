@@ -3,6 +3,7 @@ local gfx <const> = pd.graphics
 local image_table <const> = gfx.imagetable.new("Assets/tiles")
 local img <const> = image_table:getImage(1)
 local sin <const> = pico8.sin
+local psfx <const> = pico8.celeste.psfx
 
 class('Spring').extends(ParentObject)
 

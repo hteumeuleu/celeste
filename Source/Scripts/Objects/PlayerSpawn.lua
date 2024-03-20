@@ -2,6 +2,7 @@ local pd <const> = playdate
 local gfx <const> = pd.graphics
 local image_table <const> = gfx.imagetable.new("Assets/player")
 local flip <const> = pico8.flip
+local sfx <const> = pico8.sfx
 
 class('PlayerSpawn').extends(ParentObject)
 

@@ -34,16 +34,16 @@ end
 
 -- end
 
-function del(t, value)
+-- function del(t, value)
 
-	for i=1, #t do
-		if t[i] == value then
-			table.remove(t, i)
-			break
-		end
-	end
+-- 	for i=1, #t do
+-- 		if t[i] == value then
+-- 			table.remove(t, i)
+-- 			break
+-- 		end
+-- 	end
 
-end
+-- end
 
 -- function flr(num)
 
@@ -94,32 +94,32 @@ end
 
 -- end
 
-function rectfill(x0, y0, x1, y1, col)
+-- function rectfill(x0, y0, x1, y1, col)
 
-	local left = math.min(x0, x1)
-	local top = math.min(y0, y1)
-	local width = math.max(x0, x1) - left + 1
-	local height = math.max(y0, y1) - top + 1
-	if col == nil then
-		GFX.setColor(GFX.kColorBlack)
-	elseif col == 7 then
-		GFX.setColor(GFX.kColorWhite)
-	end
-	GFX.fillRect(left, top, width, height)
+-- 	local left = math.min(x0, x1)
+-- 	local top = math.min(y0, y1)
+-- 	local width = math.max(x0, x1) - left + 1
+-- 	local height = math.max(y0, y1) - top + 1
+-- 	if col == nil then
+-- 		GFX.setColor(GFX.kColorBlack)
+-- 	elseif col == 7 then
+-- 		GFX.setColor(GFX.kColorWhite)
+-- 	end
+-- 	GFX.fillRect(left, top, width, height)
 
-end
+-- end
 
-function circfill(x, y, r, col)
+-- function circfill(x, y, r, col)
 
-	r = r or 4
-	if col == nil then
-		GFX.setColor(GFX.kColorBlack)
-	elseif col == 7 then
-		GFX.setColor(GFX.kColorWhite)
-	end
-	GFX.fillCircleAtPoint(x, y, r)
+-- 	r = r or 4
+-- 	if col == nil then
+-- 		GFX.setColor(GFX.kColorBlack)
+-- 	elseif col == 7 then
+-- 		GFX.setColor(GFX.kColorWhite)
+-- 	end
+-- 	GFX.fillCircleAtPoint(x, y, r)
 
-end
+-- end
 
 -- function foreach(tbl, func)
 
@@ -140,29 +140,29 @@ end
 -- end
 
 -- spr(n, [x,] [y,] [w,] [h,] [flip_x,] [flip_y])
-function spr(n, x, y, w, h, flip_x, flip_y)
+-- function spr(n, x, y, w, h, flip_x, flip_y)
 
-	if n > #data.imagetables.tiles or n <= 0 then return end
-	n = math.floor(n) or 1
-	x = math.floor(x) or 0
-	y = math.floor(y) or 0
-	w = w or 1.0
-	h = h or 1.0
-	flip_x = flip_x or false
-	flip_y = flip_y or false
-	local flip =  GFX.kImageUnflipped
-	if flip_x and flip_y then
-		 flip = GFX.kImageFlippedXY
-	elseif flip_x then
-		 flip = GFX.kImageFlippedX
-	elseif flip_y then
-		 flip = GFX.kImageFlippedY
-	end
+-- 	if n > #data.imagetables.tiles or n <= 0 then return end
+-- 	n = math.floor(n) or 1
+-- 	x = math.floor(x) or 0
+-- 	y = math.floor(y) or 0
+-- 	w = w or 1.0
+-- 	h = h or 1.0
+-- 	flip_x = flip_x or false
+-- 	flip_y = flip_y or false
+-- 	local flip =  GFX.kImageUnflipped
+-- 	if flip_x and flip_y then
+-- 		 flip = GFX.kImageFlippedXY
+-- 	elseif flip_x then
+-- 		 flip = GFX.kImageFlippedX
+-- 	elseif flip_y then
+-- 		 flip = GFX.kImageFlippedY
+-- 	end
 
-	local img = data.imagetables.tiles:getImage(n + 1)
-	img:draw(x, y, flip)
+-- 	local img = data.imagetables.tiles:getImage(n + 1)
+-- 	img:draw(x, y, flip)
 
-end
+-- end
 
 -- function mget(celx, cely)
 
@@ -170,16 +170,16 @@ end
 
 -- end
 
-function fget(tile, flag)
+-- function fget(tile, flag)
 
-	local mask_at = data.flags[tile+1]
-	if flag == nil then
-		return mask_at
-	end
-	flag = flag or 0x0
-	return (mask_at & (1 << flag)) ~= 0
+-- 	local mask_at = data.flags[tile+1]
+-- 	if flag == nil then
+-- 		return mask_at
+-- 	end
+-- 	flag = flag or 0x0
+-- 	return (mask_at & (1 << flag)) ~= 0
 
-end
+-- end
 
 -- function map(celx, cely, sx, sy, celw, celh, mask)
 
@@ -200,11 +200,11 @@ end
 
 -- end
 
-function pal(c0, c1, p)
+-- function pal(c0, c1, p)
 
-	-- TODO
+-- 	-- TODO
 
-end
+-- end
 
 local current_music_index = 0
 
@@ -243,80 +243,80 @@ pico_8.music = function(n, fade_len, channel_mask)
 
 end
 
-function sfx(n, channel, offset, length)
+-- function sfx(n, channel, offset, length)
 
-	channel = channel or -1
-	offset = offset or 0
-	length = length or 0
+-- 	channel = channel or -1
+-- 	offset = offset or 0
+-- 	length = length or 0
 
-	if fxPlayer == nil then
-		fxPlayer = playdate.sound.sampleplayer.new(data.sfx[n])
-		fxPlayer:setVolume(0.125)
-	else
-		if fxPlayer:isPlaying() then
-			fxPlayer:stop()
-		end
-		fxPlayer:setSample(playdate.sound.sample.new(data.sfx[n]))
-	end
-	if fxPlayer ~= nil then
-		fxPlayer:play()
-	end
+-- 	if fxPlayer == nil then
+-- 		fxPlayer = playdate.sound.sampleplayer.new(data.sfx[n])
+-- 		fxPlayer:setVolume(0.125)
+-- 	else
+-- 		if fxPlayer:isPlaying() then
+-- 			fxPlayer:stop()
+-- 		end
+-- 		fxPlayer:setSample(playdate.sound.sample.new(data.sfx[n]))
+-- 	end
+-- 	if fxPlayer ~= nil then
+-- 		fxPlayer:play()
+-- 	end
 
-end
+-- end
 
-function camera(x, y)
+-- function camera(x, y)
 
-	x = x or 0
-	y = y or 0
-	playdate.display.setOffset(x, y)
+-- 	x = x or 0
+-- 	y = y or 0
+-- 	playdate.display.setOffset(x, y)
 
-end
+-- end
 
-function count(tbl)
+-- function count(tbl)
 
-	return #tbl
+-- 	return #tbl
 
-end
+-- end
 
-function _print(text, x, y, color)
+-- function _print(text, x, y, color)
 
-	x = x or 0
-	y = y or 0
-	if color == 0 then
-		GFX.setImageDrawMode(GFX.kDrawModeFillBlack)
-	else
-		GFX.setImageDrawMode(GFX.kDrawModeFillWhite)
-	end
-	GFX.drawText(text, x, y)
-	GFX.setImageDrawMode(GFX.kDrawModeCopy)
+-- 	x = x or 0
+-- 	y = y or 0
+-- 	if color == 0 then
+-- 		GFX.setImageDrawMode(GFX.kDrawModeFillBlack)
+-- 	else
+-- 		GFX.setImageDrawMode(GFX.kDrawModeFillWhite)
+-- 	end
+-- 	GFX.drawText(text, x, y)
+-- 	GFX.setImageDrawMode(GFX.kDrawModeCopy)
 
-end
+-- end
 
-function sub(str, pos0, pos1)
+-- function sub(str, pos0, pos1)
 
-	pos0 = pos0 or 1
-	if pos1 ~= nil and type(pos1) ~= "number" then
-		pos1 = pos0 + 1
-	else
-		pos1 = pos1 or #str
-	end
-	return string.sub(str,pos0,pos1)
+-- 	pos0 = pos0 or 1
+-- 	if pos1 ~= nil and type(pos1) ~= "number" then
+-- 		pos1 = pos0 + 1
+-- 	else
+-- 		pos1 = pos1 or #str
+-- 	end
+-- 	return string.sub(str,pos0,pos1)
 
-end
+-- end
 
-local line_last_x0 = 0
-local line_last_y0 = 0
-function line(x0, y0, x1, y1, col)
+-- local line_last_x0 = 0
+-- local line_last_y0 = 0
+-- function line(x0, y0, x1, y1, col)
 
-	x1 = x1 or 1
-	y1 = y1 or 1
-	line_last_x0 = x0
-	line_last_y0 = y0
-	if col == nil then
-		GFX.setColor(GFX.kColorBlack)
-	elseif col == 7 then
-		GFX.setColor(GFX.kColorWhite)
-	end
-	GFX.drawLine(x0, y0, x1, y1)
+-- 	x1 = x1 or 1
+-- 	y1 = y1 or 1
+-- 	line_last_x0 = x0
+-- 	line_last_y0 = y0
+-- 	if col == nil then
+-- 		GFX.setColor(GFX.kColorBlack)
+-- 	elseif col == 7 then
+-- 		GFX.setColor(GFX.kColorWhite)
+-- 	end
+-- 	GFX.drawLine(x0, y0, x1, y1)
 
-end
+-- end

@@ -2,6 +2,7 @@ local pd <const> = playdate
 local gfx <const> = pd.graphics
 local img <const> = gfx.image.new("Assets/chest")
 local rnd <const> = pico8.rnd
+local psfx <const> = pico8.celeste.psfx
 
 class('Chest').extends(ParentObject)
 
@@ -28,7 +29,7 @@ function Chest:_update()
 		self.timer -= 1
 		self.pos.x = self.start - 1 + rnd(3)
 		if self.timer <= 0 then
-			sfx_timer = 20
+			pico8.celeste.sfx_timer = 20
 			sfx(16)
 			Fruit(self.pos.x, self.pos.y - 4, self.parent)
 			self:destroy()

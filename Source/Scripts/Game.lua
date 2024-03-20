@@ -33,6 +33,7 @@ import "Scripts/TAS"
 local pd <const> = playdate
 local gfx <const> = pd.graphics
 local camera <const> = pico8.camera
+local rectfill <const> = pico8.rectfill
 
 class("Game").extends(gfx.sprite)
 
@@ -52,14 +53,14 @@ function Game:_init()
 	self.shake = 0
 	self.will_restart = false
 	self.delay_restart = 0
-	self.level_index = 6
+	self.level_index = 30
 	self.level_total = 31
 	self.seconds = 0
 	self.minutes = 0
 	self.frames = 0
 	self.deaths = 0
 	self.music_timer = 0
-	self.sfx_timer = 0
+	pico8.celeste.sfx_timer = 0
 	self.max_djump = 1
 	self.got_fruit = {}
     for i = 0, 29 do
@@ -122,8 +123,8 @@ function Game:_update()
 		end
 	end
 
-	if self.sfx_timer > 0 then
-		self.sfx_timer -= 1
+	if pico8.celeste.sfx_timer > 0 then
+		pico8.celeste.sfx_timer -= 1
 	end
 
 	-- Cancel if freeze
@@ -207,8 +208,8 @@ function Game:_draw()
             	diff = math.min(24, 40 - math.abs(player.pos.x + 4 - 100))
 			end
 			diff += 34
-			rectfill(0, 0, diff, 128, 0)
-			rectfill(200 - diff, 0, 200, 128, 0)
+			rectfill(0, 0, diff, 128)
+			rectfill(200 - diff, 0, 200, 128)
 		gfx.popContext()
 
 	end

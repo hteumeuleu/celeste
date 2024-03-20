@@ -2,6 +2,7 @@ local pd <const> = playdate
 local gfx <const> = pd.graphics
 local img <const> = gfx.image.new("Assets/fake-wall")
 local sign <const> = pico8.celeste.sign
+local sfx <const> = pico8.sfx
 
 class('FakeWall').extends(ParentObject)
 
@@ -39,7 +40,7 @@ end
 
 function FakeWall:hit()
 
-	sfx_timer=20
+	pico8.celeste.sfx_timer = 20
 	sfx(16)
 	self:remove()
 	gfx.sprite.addDirtyRect(self.x, self.y, self.width, self.height)

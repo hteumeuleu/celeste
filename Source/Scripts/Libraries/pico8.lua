@@ -4,6 +4,11 @@ local gfx <const> = pd.graphics
 pico8 = {}
 pico8.frames = 0
 
+pico8._sfx = {}
+for i=0, 64 do
+	pico8._sfx[i] = "Sounds/sfx/sfx" .. i .. ".wav"
+end
+
 pico8.flip = function(flip_x, flip_y)
 	local image_flip =  gfx.kImageUnflipped
 	if flip_x and flip_y then
@@ -102,17 +107,38 @@ pico8._print = function(text, x, y, color)
 	gfx.setImageDrawMode(gfx.kDrawModeCopy)
 end
 
-local _line_last_x0 = 0
-local _line_last_y0 = 0
+pico8._line_last_x0 = 0
+pico8._line_last_y0 = 0
 pico8.line = function(x0, y0, x1, y1, col)
 	x1 = x1 or 1
 	y1 = y1 or 1
-	_line_last_x0 = x0
-	_line_last_y0 = y0
+	pico8._line_last_x0 = x0
+	pico8._line_last_y0 = y0
 	if col == nil then
 		gfx.setColor(gfx.kColorBlack)
 	elseif col == 7 then
 		gfx.setColor(gfx.kColorWhite)
 	end
 	gfx.drawLine(x0, y0, x1, y1)
+end
+
+pico8.sfx = function(n, channel, offset, length)
+
+	channel = channel or -1
+	offset = offset or 0
+	length = length or 0
+
+	if pico8._sfx_player == nil then
+		pico8._sfx_player = pd.sound.sampleplayer.new(pico8._sfx[n])
+		pico8._sfx_player:setVolume(0.125)
+	else
+		if pico8._sfx_player:isPlaying() then
+			pico8._sfx_player:stop()
+		end
+		pico8._sfx_player:setSample(pd.sound.sample.new(pico8._sfx[n]))
+	end
+	if pico8._sfx_player ~= nil then
+		pico8._sfx_player:play()
+	end
+
 end

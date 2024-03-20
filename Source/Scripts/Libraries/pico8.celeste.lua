@@ -60,3 +60,9 @@ pico8.celeste.solid_at = function(x,y,w,h,o)
 	return false
 	-- return tile_flag_at(x,y,w,h,0)
 end
+
+pico8.celeste.psfx = function(num)
+	if pico8.celeste.sfx_timer <= 0 then
+		pico8.sfx(num)
+	end
+end

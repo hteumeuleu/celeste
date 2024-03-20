@@ -13,10 +13,12 @@ local spikes_at <const> = pico8.celeste.spikes_at
 local clamp <const> = pico8.celeste.clamp
 local appr <const> = pico8.celeste.appr
 local sign <const> = pico8.celeste.sign
+local psfx <const> = pico8.celeste.psfx
 local flip <const> = pico8.flip
 local sin <const> = pico8.sin
 local cos <const> = pico8.cos
 local del <const> = pico8.del
+local sfx <const> = pico8.sfx
 
 class('Player').extends(ParentObject)
 

@@ -4,6 +4,7 @@ local image_table <const> = gfx.imagetable.new("Assets/big_chest")
 local img <const> = gfx.image.new(200, 120, gfx.kColorClear)
 local rnd <const> = pico8.rnd
 local line <const> = pico8.line
+local sfx <const> = pico8.sfx
 
 class('BigChest').extends(ParentObject)
 
