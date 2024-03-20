@@ -170,6 +170,9 @@ function Room:load()
 	-- Particles
 	self:initParticles()
 
+	-- Music
+	self:checkMusic()
+
 end
 
 function Room:restart()
@@ -218,5 +221,23 @@ end
 function Room:hasFruit()
 
 	return self.got_single_fruit
+
+end
+
+function Room:checkMusic()
+
+	local music_index = 0
+	if self.index == 31 then
+		music_index = 40 -- title screen
+	elseif self.index == 11 or self.index == 21 or self.index == 30 then
+		music_index = 30 -- old site, orb, summit
+	elseif self.index >= 12 and self.index <= 20 then
+		music_index = 20
+	elseif self.index >= 22 and self.index <= 29 then
+		music_index = 10
+	end
+	if pico8._music_index ~= music_index then
+		pico8.music(music_index)
+	end
 
 end

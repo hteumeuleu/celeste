@@ -9,6 +9,11 @@ for i=0, 64 do
 	pico8._sfx[i] = "Sounds/sfx/sfx" .. i .. ".wav"
 end
 
+pico8._music = {}
+for i=0, 40, 10 do
+	pico8._music[i] = "Sounds/music/" .. i
+end
+
 pico8.flip = function(flip_x, flip_y)
 	local image_flip =  gfx.kImageUnflipped
 	if flip_x and flip_y then
@@ -139,6 +144,33 @@ pico8.sfx = function(n, channel, offset, length)
 	end
 	if pico8._sfx_player ~= nil then
 		pico8._sfx_player:play()
+	end
+
+end
+
+pico8.music = function(n, fade_len, channel_mask)
+
+	fade_len = fade_len or 1000
+	channel_mask = channel_mask or 1
+	pico8._music_index = n
+
+	if n == -1 and pico8._music_player ~= nil and pico8._music_player:isPlaying() then
+		pico8._music_player:stop()
+	end
+
+	if pico8._music[n] ~= nil then
+		if pico8._music_player == nil then
+			pico8._music_player = pd.sound.fileplayer.new(pico8._music[n])
+			pico8._music_player:setStopOnUnderrun(false)
+		else
+			if pico8._music_player:isPlaying() then
+				pico8._music_player:stop()
+			end
+			pico8._music_player:load(pico8._music[n])
+		end
+		if pico8._music_player ~= nil then
+			pico8._music_player:play(0)
+		end
 	end
 
 end

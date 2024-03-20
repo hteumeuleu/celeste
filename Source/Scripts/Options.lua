@@ -3,6 +3,26 @@ local psfx = pico8.celeste.psfx
 local data = g_data
 local firstStart = true
 
+function pauseMusic()
+
+	if pico8._music_player ~= nil then
+		if pico8._music_player:isPlaying() then
+			pico8._music_player:pause()
+		end
+	end
+
+end
+
+function unPauseMusic()
+
+	if pico8._music_player ~= nil then
+		if not pico8._music_player:isPlaying() then
+			pico8._music_player:play()
+		end
+	end
+
+end
+
 function Options:init()
 
 	Options.super.init(self)

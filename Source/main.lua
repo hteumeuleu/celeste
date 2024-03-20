@@ -7,10 +7,10 @@ import "CoreLibs/crank"
 
 import "Scripts/data.lua"
 import "Scripts/Game"
-
-import "Scripts/pico-8.lua" -- useful for celeste.lua, will remove later
-import "Scripts/celeste.lua" -- useful for psfx, will remove later
 -- import "Scripts/Options"
+
+-- import "Scripts/pico-8.lua" -- useful for celeste.lua, will remove later
+-- import "Scripts/celeste.lua" -- useful for psfx, will remove later
 
 local pd <const> = playdate
 local gfx <const> = pd.graphics
