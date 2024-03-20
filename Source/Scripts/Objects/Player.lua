@@ -26,7 +26,6 @@ function Player:init(x, y, parent)
 
 	Player.super.init(self, x, y, parent)
 
-	self.type = "player"
 	self.type_id = 18
 	self.p_jump = false
 	self.p_dash = false
@@ -278,8 +277,6 @@ function Player:_check_collisions()
 				if spikes_at(self.pos.x + self.hitbox.x, self.pos.y + self.hitbox.y, self.hitbox.width, self.hitbox.height, self.spd.x, self.spd.y) then
 					self:kill()
 				end
-			-- elseif col.other.className == "Platform" and playerIsAboveObject then
-			-- 	col.other:hit(self)
 			end
 		end
 	end
@@ -384,14 +381,5 @@ function Player:addDeadParticles()
 			end
 		end
 	end
-
-end
-
-function Player:move_x(amount, start)
-
-	print("Player:move_x()", amount, start)
-	Player.super.move_x(self, amount, start)
-	print("/Player:move_x()")
-
 
 end

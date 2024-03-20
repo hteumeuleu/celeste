@@ -55,7 +55,7 @@ function FlyFruit:_update()
 		self.spd.y = sin(self.step) * 0.5
 	end
 	-- Collect
-	if self:collide("player", 0, 0) then
+	if self:collide("Player", 0, 0) then
 		self:hit(self.parent.player)
 	end
 

@@ -31,7 +31,7 @@ end
 function Orb:_draw()
 
 	self.spd.y = appr(self.spd.y, 0, 0.5)
-	local hit = self:collide(self.parent.player, 0, 0)
+	local hit = self:collide("Player", 0, 0)
 	if self.spd.y == 0 and hit ~= nil then
 		self.parent.parent.music_timer = 45
 		sfx(51)

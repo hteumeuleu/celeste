@@ -25,7 +25,7 @@ end
 
 function Fruit:_update()
 
-	if self:collide(self.parent.player, 0, 0) then
+	if self:collide("Player", 0, 0) then
 		self:hit(self.parent.player)
 	end
 	self.off += 1

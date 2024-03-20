@@ -39,19 +39,10 @@ function Platform:_update()
 
     if not self:check("Player", 0, 0) then
         local hit = self:collide("Player", 0, -1)
-    	print("----", "--", "Platform:_update()", hit)
         if hit ~= nil then
-        	print("----", "--", "Platform:_update()", "hit", hit.pos, self.pos, self.pos.x - self.last)
             hit:move_x(self.pos.x - self.last, 1)
         end
-   	else
-    	-- print("----", "!!", "Platform:_update()", "self:check(Player, 0, 0)")
     end
-
-	-- self.diff = self.pos.x - self.last
-	-- if self.diff > 1 or self.diff < -1 then
-	-- 	self.diff = 0
-	-- end
 		
 	self.last = self.pos.x
 
@@ -62,12 +53,3 @@ function Platform:_draw()
 	self:moveTo(self.pos.x-1, self.pos.y-1)
 
 end
-
--- function Platform:hit(player)
-
--- 	if player ~= nil and self.diff then
--- 		player:move_x(self.diff, 1)
--- 	end
-
--- end
-

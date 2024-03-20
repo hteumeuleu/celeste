@@ -38,7 +38,7 @@ function Spring:_update()
 			self.delay = 0
 		end
 	elseif self.spr == 18 then
-		if self:collide(self.parent.player, 0, 0) then
+		if self:collide("Player", 0, 0) then
 			self:hit(self.parent.player)
 		end
 	elseif self.delay > 0 then

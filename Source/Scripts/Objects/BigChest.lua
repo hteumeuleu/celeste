@@ -31,7 +31,7 @@ end
 function BigChest:_draw()
 
 	if self.state == 0 then
-		local hit = self:collide(self.parent.player, 0, 8)
+		local hit = self:collide("Player", 0, 8)
 		if hit ~= nil and hit:is_solid(0, 1) then
 			-- music(-1, 500, 7)
 			sfx(37)

@@ -34,7 +34,7 @@ end
 
 function Message:_draw()
 
-	if self:collide(self.parent.player, 4, 0) ~= nil then
+	if self:collide("Player", 4, 0) ~= nil then
 		if self.index < #self.text then
 			self.index += 0.5
 			if self.index >= self.last + 1 then

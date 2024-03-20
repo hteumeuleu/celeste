@@ -151,7 +151,6 @@ function Game:_update()
 	end
 
 	-- Update each object
-	print("Game:_update")
 	if self.room.obj and #self.room.obj > 0 then
 		for i=1, #self.room.obj do
 			for j=1, #self.room.obj[i] do
@@ -167,7 +166,6 @@ function Game:_update()
 			end
 		end
 	end
-	print("-- Game:_update")
 
 end
 
