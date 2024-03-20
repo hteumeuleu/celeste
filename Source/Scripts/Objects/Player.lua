@@ -255,7 +255,7 @@ function Player:_update()
 	end
 
 	-- Next level
-	if self.pos.y < -8 and self.parent.parent.level_index < 30 then
+	if self.pos.y < -4 and self.parent.parent.level_index < 30 then
 		self.pos.y = 0
 		self.pos.x = 0
 		self.parent.parent:nextRoom()

@@ -198,10 +198,10 @@ function ParentObject:collide(t, ox, oy)
         	for j=1, #self.parent.obj[i] do
 	            other=self.parent.obj[i][j]
 	            if other ~=nil and other.type == t and other ~= obj and other.collideable and
-	                other.x+other.hitbox.x+other.hitbox.width > obj.x+obj.hitbox.x+ox and 
-	                other.y+other.hitbox.y+other.hitbox.height > obj.y+obj.hitbox.y+oy and
-	                other.x+other.hitbox.x < obj.x+obj.hitbox.x+obj.hitbox.width+ox and 
-	                other.y+other.hitbox.y < obj.y+obj.hitbox.y+obj.hitbox.height+oy then
+	                other.pos.x+other.hitbox.x+other.hitbox.width > obj.pos.x+obj.hitbox.x+ox and 
+	                other.pos.y+other.hitbox.y+other.hitbox.height > obj.pos.y+obj.hitbox.y+oy and
+	                other.pos.x+other.hitbox.x < obj.pos.x+obj.hitbox.x+obj.hitbox.width+ox and 
+	                other.pos.y+other.hitbox.y < obj.pos.y+obj.hitbox.y+obj.hitbox.height+oy then
 	                return other
 	            end
 	        end

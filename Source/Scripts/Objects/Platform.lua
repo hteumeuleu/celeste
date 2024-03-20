@@ -9,12 +9,11 @@ class('Platform').extends(ParentObject)
 
 function Platform:init(x, y, dir, parent)
 
-	Platform.super.init(self, x-1, y-2, parent)
+	Platform.super.init(self, x-4, y, parent)
 
 	self.type = "platform"
 	self.type_id = 12
 	self.dir = dir or 1
-	self.x -= 4
 	self.solids = false
 	self.hitbox = pd.geometry.rect.new(0, 0, 16, 8)
 	self.last = self.pos.x
@@ -60,7 +59,7 @@ end
 
 function Platform:_draw()
 
-	self:moveTo(self.pos.x, self.pos.y)
+	self:moveTo(self.pos.x-1, self.pos.y-1)
 
 end
 
