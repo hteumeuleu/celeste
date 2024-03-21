@@ -56,7 +56,7 @@ end
 --
 function playdate.gameWillTerminate()
 
-	-- g:save()
+	CELESTE:save()
 
 end
 
@@ -64,7 +64,7 @@ end
 --
 function playdate.deviceWillSleep()
 
-	-- g:save()
+	CELESTE:save()
 
 end
 
@@ -72,7 +72,7 @@ end
 --
 function playdate.gameWillPause()
 
-	-- g:updatePauseScreen()
+	CELESTE:updatePauseScreen()
 
 end
 
