@@ -5,6 +5,7 @@ local img <const> = gfx.image.new(200, 120, gfx.kColorClear)
 local rnd <const> = pico8.rnd
 local line <const> = pico8.line
 local sfx <const> = pico8.sfx
+local music <const> = pico8.music
 
 class('BigChest').extends(ParentObject)
 
@@ -34,7 +35,7 @@ function BigChest:_draw()
 	if self.state == 0 then
 		local hit = self:collide("Player", 0, 8)
 		if hit ~= nil and hit:is_solid(0, 1) then
-			-- music(-1, 500, 7)
+			music(-1, 500, 7)
 			sfx(37)
 			self.parent.player.pause_player = true
 			hit.spd.x = 0

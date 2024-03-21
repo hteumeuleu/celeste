@@ -33,7 +33,7 @@ function Key:_update()
 	if is == 10 and is ~= was then
 		self.flip.x = not self.flip.x
 	end
-	if self:check(self.parent.player, 0, 0) then
+	if self:check("Player", 0, 0) then
 		self:hit()
 	end
 

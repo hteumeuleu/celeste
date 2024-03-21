@@ -2,7 +2,7 @@ local pd <const> = playdate
 local gfx <const> = pd.graphics
 local img <const> = gfx.image.new("Assets/chest")
 local rnd <const> = pico8.rnd
-local psfx <const> = pico8.celeste.psfx
+local sfx <const> = pico8.sfx
 
 class('Chest').extends(ParentObject)
 

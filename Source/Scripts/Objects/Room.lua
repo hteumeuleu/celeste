@@ -36,7 +36,7 @@ function Room:init(index, parent)
 		self.offset = pd.geometry.point.new(-8, -4)
 	end
 	gfx.setDrawOffset(self.offset.x, self.offset.y)
-	self.tas = TAS(self.index)
+	-- self.tas = TAS(self.index)
 	self:load()
 	return self
 
@@ -48,6 +48,11 @@ end
 function Room:load()
 
 	gfx.sprite.removeAll()
+
+	-- Level after Orb
+	if self.index > 21 and self.index < 31 then
+		self.parent.max_djump = 2
+	end
 
 	self.obj = {}
 	for i = 1, 19 do

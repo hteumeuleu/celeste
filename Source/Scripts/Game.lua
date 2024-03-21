@@ -34,6 +34,7 @@ local pd <const> = playdate
 local gfx <const> = pd.graphics
 local camera <const> = pico8.camera
 local rectfill <const> = pico8.rectfill
+local music <const> = pico8.music
 
 class("Game").extends(gfx.sprite)
 
@@ -53,7 +54,7 @@ function Game:_init()
 	self.shake = 0
 	self.will_restart = false
 	self.delay_restart = 0
-	self.level_index = 30
+	self.level_index = 20
 	self.level_total = 31
 	self.seconds = 0
 	self.minutes = 0
@@ -119,7 +120,7 @@ function Game:_update()
 	if self.music_timer > 0 then
 		self.music_timer -= 1
 		if self.music_timer <= 0 then
-			-- music(10,0,7)
+			music(10,0,7)
 		end
 	end
 
