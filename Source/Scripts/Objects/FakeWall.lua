@@ -42,13 +42,13 @@ function FakeWall:hit()
 
 	pico8.celeste.sfx_timer = 20
 	sfx(16)
-	self:remove()
 	gfx.sprite.addDirtyRect(self.x, self.y, self.width, self.height)
     Smoke(self.x, self.y, self.parent)
     Smoke(self.x + 8, self.y, self.parent)
     Smoke(self.x, self.y + 8, self.parent)
     Smoke(self.x + 8, self.y + 8, self.parent)
     Fruit(self.x + 4, self.y + 4, self.parent)
+	self:destroy()
 
 end
 
