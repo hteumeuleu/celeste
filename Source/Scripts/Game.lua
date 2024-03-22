@@ -35,6 +35,10 @@ local gfx <const> = pd.graphics
 local camera <const> = pico8.camera
 local rectfill <const> = pico8.rectfill
 local music <const> = pico8.music
+local sfx <const> = pico8.sfx
+local _print <const> = pico8.print
+local k_jump <const> = pd.kButtonA
+local k_dash <const> = pd.kButtonB
 
 class("Game").extends(gfx.sprite)
 
@@ -42,19 +46,19 @@ function Game:init()
 
 	Game.super.init(self)
 	-- self:initOptions()
-	self:_init()
+	self:titleScreen()
 	-- self:load()
 	-- self:addMenuItems()
 	return self
 
 end
 
-function Game:_init()
+function Game:_init(index)
 	self.freeze = 0
 	self.shake = 0
 	self.will_restart = false
 	self.delay_restart = 0
-	self.level_index = 0
+	self.level_index = index or 0
 	self.level_total = 31
 	self.seconds = 0
 	self.minutes = 0
@@ -169,6 +173,33 @@ function Game:_update()
 		end
 	end
 
+	-- Start game
+	if self.room.is_title then
+		if not self.start_game and (pico8.btn(k_jump) or pico8.btn(k_dash)) then
+			music(-1)
+			self.start_game_flash = 50
+			self.start_game = true
+			sfx(38)
+		end
+		if self.start_game then
+			self.start_game_flash -= 1
+			if self.start_game_flash <= -30 then
+				self:begin()
+			end
+		end
+	end
+
+end
+
+function Game:begin()
+	self.frames = 0
+	self.seconds = 0
+	self.minutes = 0
+	self.music_timer = 0
+	self.start_game = false
+	music(0,0,7)
+	self.level_index = 0
+	self.room = Room(self.level_index, self)
 end
 
 function Game:_draw()
@@ -224,6 +255,28 @@ function Game:nextRoom()
 		self.level_index = 0
 	end
 	self.room = Room(self.level_index, self)
+
+end
+
+function Game:titleScreen()
+
+	self:_init(31)
+	music(40, 0, 7)
+	if self.extraLayer == nil then
+		self.extraLayer = gfx.sprite.new(gfx.image.new(200, 128, gfx.kColorClear))
+		self.extraLayer:setCenter(0, 0)
+		self.extraLayer:moveTo(0, 0)
+		self.extraLayer:setZIndex(40)
+		self.extraLayer:setIgnoresDrawOffset(true)
+		self.extraLayer:add()
+	end
+	local image <const> = self.extraLayer:getImage()
+	image:clear(gfx.kColorClear)
+	gfx.pushContext(image)
+		_print("a+b",58+36,80-4,5)
+		_print("maddy thorson",40+36,96-4,5)
+		_print("noel berry",46+36,102-4,5)
+	gfx.popContext()
 
 end
 

@@ -14,7 +14,7 @@ function Room:init(index, parent)
 	Room.super.init(self)
 	self.parent = parent or nil
 	self.index = index
-	if self.index == nil or self.index < 0 or self.index >= self.parent.level_total then
+	if self.index == nil or self.index < 0 or self.index > self.parent.level_total then
 		self.index = 0
 	end
 	self.level = (1 + self.index) * 100
@@ -26,6 +26,7 @@ function Room:init(index, parent)
 		self.title = "summit"
 	end
 	self.got_single_fruit = false
+	self.is_title = (self.index == self.parent.level_total)
 	-- For certain levels, we need to change the horizontal alignment of the level so the player can use the screen boundaries.
 	-- (Especially with TAS.)
 	-- TODO: Set this properly using a custom property within LDtk.
@@ -85,6 +86,9 @@ function Room:load()
 			elseif layer_name == "Foreground" then
 				layerSprite:setTilemap(tilemap)
 				pico8._tilemap = tilemap
+				if self.is_title then
+					layer.rect.x = layer.rect.x - 4
+				end
 			end
 
 			layerSprite:setCenter(0, 0)
@@ -166,11 +170,15 @@ function Room:load()
 		end
 	end
 
-	-- Room Title and Timer
-	RoomTitle(self.title, self)
+	if not self.is_title then
 
-	-- Clouds
-	self:initClouds()
+		-- Room Title and Timer
+		RoomTitle(self.title, self)
+
+		-- Clouds
+		self:initClouds()
+
+	end
 
 	-- Particles
 	self:initParticles()

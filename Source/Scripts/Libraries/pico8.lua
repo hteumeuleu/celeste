@@ -100,7 +100,7 @@ pico8.sub = function(str, pos0, pos1)
 	return string.sub(str, pos0, pos1)
 end
 
-pico8._print = function(text, x, y, color)
+pico8.print = function(text, x, y, color)
 	x = x or 0
 	y = y or 0
 	if color == 0 then

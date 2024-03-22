@@ -3,7 +3,7 @@ local gfx <const> = pd.graphics
 local img <const> = gfx.image.new(115, 23, gfx.kColorClear)
 local rectfill <const> = pico8.rectfill
 local sub <const> = pico8.sub
-local _print <const> = pico8._print
+local _print <const> = pico8.print
 local sfx <const> = pico8.sfx
 
 class('Message').extends(ParentObject)
