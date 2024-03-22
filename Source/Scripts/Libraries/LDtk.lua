@@ -726,7 +726,9 @@ function _.load_tileset_imagetable(path, flipped)
 		local tileset_folder = path:sub(0, -#filename-1)
 		image_filepath = tileset_folder.."flipped-"..filename
 	else
-		image_filepath = path
+		local filename = path:match("^.+/(.+)$")
+		local tileset_folder = path:sub(0, -#filename-1)
+		image_filepath = tileset_folder.."1bit-"..filename
 	end
 
 	local image = playdate.graphics.imagetable.new(image_filepath)
