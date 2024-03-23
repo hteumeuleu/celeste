@@ -88,14 +88,14 @@ function Room:load()
 			end
 
 			layerSprite:setCenter(0, 0)
-			layerSprite:moveTo(layer.rect.x, layer.rect.y)
+			layerSprite:moveTo(0, 0)
 			layerSprite:setZIndex(layer.zIndex)
 			layerSprite:add()
 
 			local addWallSprites = function(tileID, is_solid, is_ice, is_spike, dir, spr)
 				local emptyTiles = ldtk.get_empty_tileIDs(level_name, tileID, layer_name)
 				if emptyTiles then
-					local wallSprites <const> = gfx.sprite.addWallSprites(tilemap, emptyTiles, layer.rect.x, layer.rect.y)
+					local wallSprites <const> = gfx.sprite.addWallSprites(tilemap, emptyTiles, 0, 0)
 					for _, wallSprite in ipairs(wallSprites) do
 						wallSprite:setCenter(0, 0)
 						wallSprite:moveBy((wallSprite.width/2)*-1, (wallSprite.height/2)*-1)
