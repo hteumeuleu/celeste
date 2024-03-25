@@ -86,15 +86,15 @@ function Room:load()
 			elseif layer_name == "Foreground" then
 				layerSprite:setTilemap(tilemap)
 				pico8._tilemap = tilemap
-				if self.is_title then
-					layer.rect.x = layer.rect.x - 4
-				end
 			end
 
 			layerSprite:setCenter(0, 0)
 			layerSprite:moveTo(0, 0)
 			layerSprite:setZIndex(layer.zIndex)
 			layerSprite:add()
+			if self.is_title then
+				layerSprite:moveTo(-4, 0)
+			end
 
 			local addWallSprites = function(tileID, is_solid, is_ice, is_spike, dir, spr)
 				local emptyTiles = ldtk.get_empty_tileIDs(level_name, tileID, layer_name)
