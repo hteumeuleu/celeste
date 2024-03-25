@@ -283,7 +283,7 @@ end
 function Game:restart()
 
 	-- self:initOptions()
-	self:_init(self)
+	self:_init(31)
 
 end
 
@@ -363,7 +363,7 @@ function Game:serialize()
 
 	local status = {}
 	status.fruits = self.got_fruit
-	status.room = self.level_index
+	status.room = pd.geometry.point.new(self.level_index%8, self.level_index/8)
 	status.deaths = self.deaths
 	status.seconds = self.seconds
 	status.minutes = self.minutes
