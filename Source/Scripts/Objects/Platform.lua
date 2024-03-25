@@ -9,7 +9,7 @@ class('Platform').extends(ParentObject)
 
 function Platform:init(x, y, dir, parent)
 
-	Platform.super.init(self, x-4, y, parent)
+	Platform.super.init(self, x-4, y-1, parent)
 
 	self.type = "platform"
 	self.type_id = 12
