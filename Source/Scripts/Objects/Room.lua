@@ -35,6 +35,8 @@ function Room:init(index, parent)
 		self.offset = pd.geometry.point.new(0, -4)
 	elseif self.index == 9 then
 		self.offset = pd.geometry.point.new(-8, -4)
+	elseif self.index == 24 then
+		self.offset = pd.geometry.point.new(-8, -4)
 	end
 	gfx.setDrawOffset(self.offset.x, self.offset.y)
 	-- self.tas = TAS(self.index)
