@@ -48,7 +48,7 @@ function Game:init()
 	-- self:initOptions()
 	self:titleScreen()
 	-- self:load()
-	-- self:addMenuItems()
+	self:addMenuItems()
 	return self
 
 end
@@ -208,6 +208,25 @@ function Game:_draw()
 		return
 	end
 
+	-- Start game flash
+	if self.start_game then
+		local m = gfx.kDrawModeCopy
+		if self.start_game_flash>10 then
+			if self.frames%10<5 then
+				m = gfx.kDrawModeInverted
+			end
+		elseif self.start_game_flash>5 then
+			m = gfx.kDrawModeInverted
+		elseif self.start_game_flash>0 then
+			m = gfx.kDrawModeInverted
+		end
+		gfx.sprite.performOnAllSprites(function(s)
+			if s.width > 4 then
+				s:setImageDrawMode(m)
+			end
+		end)
+	end
+
 	-- Draw objects
 	if self.room.obj and #self.room.obj > 0 then
 		for i=1, #self.room.obj do
@@ -254,7 +273,11 @@ function Game:nextRoom()
 	if self.level_index > self.level_total then
 		self.level_index = 0
 	end
-	self.room = Room(self.level_index, self)
+	if self.level_index == self.level_total then
+		self:restart()
+	else
+		self.room = Room(self.level_index, self)
+	end
 
 end
 
@@ -268,8 +291,8 @@ function Game:titleScreen()
 		self.extraLayer:moveTo(0, 0)
 		self.extraLayer:setZIndex(40)
 		self.extraLayer:setIgnoresDrawOffset(true)
-		self.extraLayer:add()
 	end
+	self.extraLayer:add()
 	local image <const> = self.extraLayer:getImage()
 	image:clear(gfx.kColorClear)
 	gfx.pushContext(image)
@@ -283,7 +306,7 @@ end
 function Game:restart()
 
 	-- self:initOptions()
-	self:_init(31)
+	self:titleScreen()
 
 end
 
@@ -343,7 +366,7 @@ function Game:addMenuItems()
 
 	local menu = playdate.getSystemMenu()
 	menu:addMenuItem("Assist Mode", function()
-		self:toggleOptions()
+		-- self:toggleOptions()
 	end)
 	menu:addMenuItem("Reset", function()
 		self:restart()
