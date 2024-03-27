@@ -65,6 +65,7 @@ function Room:load()
 	self.has_dashed = false
 	local level_name = self.name
 
+
 	for layer_name, layer in pairs(ldtk.get_layers(level_name)) do
 		if layer.tiles then
 			local tilemap = ldtk.create_tilemap(level_name, layer_name)
@@ -169,6 +170,12 @@ function Room:load()
 			Flag(x, y, self)
 		elseif entity.name == "Tree" then
 			Tree(x, y)
+		elseif entity.name == "Text" then
+			local innerText = ""
+			if entity.fields ~= nil and entity.fields.innerText ~= nil then
+				innerText = entity.fields.innerText
+			end
+			Text(x, y, innerText)
 		end
 	end
 

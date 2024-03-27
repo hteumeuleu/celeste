@@ -5,8 +5,7 @@ import "CoreLibs/timer"
 import "CoreLibs/ui"
 import "CoreLibs/crank"
 
-import "Scripts/data.lua"
-import "Scripts/Game"
+-- import "Scripts/data.lua"
 -- import "Scripts/Options"
 
 -- import "Scripts/pico-8.lua" -- useful for celeste.lua, will remove later
@@ -21,6 +20,9 @@ pd.display.setRefreshRate(30)
 pd.display.setScale(2)
 gfx.setBackgroundColor(gfx.kColorBlack)
 gfx.setFont(gfx.font.new("Assets/pico"))
+printTable(1, gfx.getFont())
+
+import "Scripts/Game"
 
 local CELESTE <const> = Game()
 local showFPS = true

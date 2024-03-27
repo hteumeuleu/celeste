@@ -28,6 +28,7 @@ import "Scripts/Objects/Orb"
 import "Scripts/Objects/Flag"
 import "Scripts/Objects/FlagScore"
 import "Scripts/Objects/FlagRestartButton"
+import "Scripts/Objects/Text"
 import "Scripts/TAS"
 
 local pd <const> = playdate
@@ -285,21 +286,21 @@ function Game:titleScreen()
 
 	self:_init(31)
 	music(40, 0, 7)
-	if self.extraLayer == nil then
-		self.extraLayer = gfx.sprite.new(gfx.image.new(200, 128, gfx.kColorClear))
-		self.extraLayer:setCenter(0, 0)
-		self.extraLayer:moveTo(0, 0)
-		self.extraLayer:setZIndex(40)
-		self.extraLayer:setIgnoresDrawOffset(true)
-	end
-	self.extraLayer:add()
-	local image <const> = self.extraLayer:getImage()
-	image:clear(gfx.kColorClear)
-	gfx.pushContext(image)
-		_print("a+b",58+36,80-4,5)
-		_print("maddy thorson",40+36,96-4,5)
-		_print("noel berry",46+36,102-4,5)
-	gfx.popContext()
+	-- if self.extraLayer == nil then
+	-- 	self.extraLayer = gfx.sprite.new(gfx.image.new(200, 128, gfx.kColorClear))
+	-- 	self.extraLayer:setCenter(0, 0)
+	-- 	self.extraLayer:moveTo(0, 0)
+	-- 	self.extraLayer:setZIndex(40)
+	-- 	self.extraLayer:setIgnoresDrawOffset(true)
+	-- end
+	-- self.extraLayer:add()
+	-- local image <const> = self.extraLayer:getImage()
+	-- image:clear(gfx.kColorClear)
+	-- gfx.pushContext(image)
+	-- 	_print("a+b",58+36,80-4,5)
+	-- 	_print("maddy thorson",40+36,96-4,5)
+	-- 	_print("noel berry",46+36,102-4,5)
+	-- gfx.popContext()
 
 end
 
