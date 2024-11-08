@@ -39,7 +39,9 @@ function Room:init(index, parent)
 		self.offset = pd.geometry.point.new(-8, -4)
 	end
 	gfx.setDrawOffset(self.offset.x, self.offset.y)
-	-- self.tas = TAS(self.index)
+	if parent.useTAS then
+		self.tas = TAS(self.index)
+	end
 	self:load()
 	return self
 

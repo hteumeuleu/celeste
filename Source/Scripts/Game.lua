@@ -43,9 +43,10 @@ local k_dash <const> = pd.kButtonB
 
 class("Game").extends(gfx.sprite)
 
-function Game:init()
+function Game:init(useTAS)
 
 	Game.super.init(self)
+	self.useTAS = useTAS or false
 	-- self:initOptions()
 	self:titleScreen()
 	-- self:load()
@@ -286,6 +287,9 @@ function Game:titleScreen()
 
 	self:_init(31)
 	music(40, 0, 7)
+	if self.useTAS then
+		self:nextRoom()
+	end
 	-- if self.extraLayer == nil then
 	-- 	self.extraLayer = gfx.sprite.new(gfx.image.new(200, 128, gfx.kColorClear))
 	-- 	self.extraLayer:setCenter(0, 0)

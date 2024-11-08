@@ -20,11 +20,11 @@ pd.display.setRefreshRate(30)
 pd.display.setScale(2)
 gfx.setBackgroundColor(gfx.kColorBlack)
 gfx.setFont(gfx.font.new("Assets/pico"))
-printTable(1, gfx.getFont())
 
 import "Scripts/Game"
 
-local CELESTE <const> = Game()
+local USE_TAS <const> = true
+local CELESTE <const> = Game(USE_TAS)
 local showFPS = true
 
 -- playdate.update()
