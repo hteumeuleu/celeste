@@ -1,7 +1,6 @@
 local pd <const> = playdate
 local gfx <const> = pd.graphics
 local font <const> = gfx.getFont()
-printTable(font)
 local _print <const> = pico8.print
 
 class('Text').extends(ParentObject)

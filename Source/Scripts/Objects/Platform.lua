@@ -18,6 +18,16 @@ function Platform:init(x, y, dir, parent)
 	self.hitbox = pd.geometry.rect.new(0, 0, 16, 8)
 	self.last = self.pos.x
 
+	local seed <const> = parent.tas:getBalloonSeed()
+	if seed ~= -1 then
+		self.offset = seed
+		self.rem.x = self.dir * 0.65 * self.offset
+		local amount <const> = math.floor(self.rem.x + 0.5)
+		self.rem.x = self.rem.x - amount
+		self.pos.x = self.pos.x + amount
+		self:moveTo(self.pos.x, self.pos.y)
+	end
+
 	self.collisionResponse = gfx.sprite.kCollisionTypeOverlap
 	self:setImage(img)
 	self:setCollideRect(self.hitbox:offsetBy(1,1))

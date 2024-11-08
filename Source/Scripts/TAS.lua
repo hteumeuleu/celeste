@@ -107,6 +107,6 @@ function TAS:getBalloonSeed()
 		end
 		self.balloon_seeds_index += 1
 	end
-	return seed or rnd(1)
+	return seed or -1
 
 end
