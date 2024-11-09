@@ -159,7 +159,7 @@ function Room:load()
 		elseif entity.name == "PlatformLeft" then
 			Platform(x, y, -1, self)
 		elseif entity.name == "PlatformRight" then
-			Platform(x - 8, y, 1, self)
+			Platform(x, y, 1, self)
 		elseif entity.name == "Chest" and not self:hasFruit() then
 			Chest(x, y, self)
 		elseif entity.name == "Key" and not self:hasFruit() then

@@ -9,7 +9,7 @@ class('Platform').extends(ParentObject)
 
 function Platform:init(x, y, dir, parent)
 
-	Platform.super.init(self, x-4, y-1, parent)
+	Platform.super.init(self, x-1-4, y-1, parent)
 
 	self.type = "platform"
 	self.type_id = 12
@@ -41,6 +41,7 @@ end
 function Platform:_update()
 
 	self.spd.x = self.dir * 0.65
+	
 	if self.pos.x < x_min then
 		self.pos.x = x_max
 	elseif self.pos.x > x_max then
@@ -60,6 +61,6 @@ end
 
 function Platform:_draw()
 
-	self:moveTo(self.pos.x-1, self.pos.y-1)
+	self:moveTo(self.pos.x, self.pos.y-1)
 
 end
