@@ -88,5 +88,14 @@ function playdate.keyPressed(key)
 	if key == "f" then
 		CELESTE:nextRoom()
 	end
+	if CELESTE.useTAS then
+		-- Next Frame
+		if key == "l" then
+			pd.stop()
+			pd.timer.updateTimers()
+			gfx.sprite.update()
+			CELESTE:update()
+		end
+	end
 
 end
